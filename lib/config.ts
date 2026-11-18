@@ -10,4 +10,10 @@ export const siteConfig = {
     phoneHref: "+8801700000000",
     address: "Level 3, House 42, Road 11, Banani, Dhaka 1213, Bangladesh",
   },
+  social: {
+    x: "https://x.com/fixmate",
+    facebook: "https://facebook.com/fixmate",
+    instagram: "https://instagram.com/fixmate",
+    linkedin: "https://linkedin.com/company/fixmate",
+  },
 } as const

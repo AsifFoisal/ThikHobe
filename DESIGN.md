@@ -4,7 +4,7 @@
 
 **Workshop calm.** A repair service should feel precise, transparent, and easy to deal with. Deep spruce carries trust and structure, fern supports it, and ember supplies the one live-wire moment. Public pages use generous editorial typography and real repair imagery; dashboards tighten the same system into dense, scannable surfaces. No gradients, decorative glass, or ornamental chrome.
 
-The current `/` route is a temporary foundation preview. It is replaced by the real public homepage in a later phase.
+The `/` route is the public homepage. Services, authentication, profile, and dashboards arrive in later phases; the public layout already owns the shared navbar and footer.
 
 ## Brand colors — exactly three
 
@@ -35,6 +35,22 @@ One family: **Hanken Grotesk**, self-hosted through `next/font/google`, weights 
 
 Body copy is 16px with relaxed leading and a 65–75 character measure. Use weight and scale for hierarchy, not extra colors.
 
+The homepage hero uses the display face at 36–56px with controlled line breaks so the mandated headline holds together on desktop and mobile. Other page heroes may use the larger `.type-display` end of the scale.
+
+## Homepage composition
+
+The public homepage follows this rhythm: paper hero → white featured services → spruce process section → paper categories → white why-FixMate split → sage trust band → spruce final CTA → ink footer.
+
+- **Hero** (`components/home/hero.tsx`): split at `lg`, 4:3 repair photo with a verified badge and a static repair-progress card. The search form is native `GET /services`; the secondary CTA anchors to `#how-it-works`.
+- **Featured services** (`components/home/featured-services.tsx`): six latest approved and available sample services, using the reusable `ServiceCard`.
+- **How it works** (`components/home/how-it-works.tsx`): four numbered steps on a hairline rail plus a pay-after-completion promise panel. The section carries the strongest business differentiator.
+- **Categories** (`components/home/popular-categories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`.
+- **Why FixMate** (`components/home/why-fixmate.tsx`): image-led split with five concrete advantages, not a generic card grid.
+- **Trust** (`components/home/trust-section.tsx`): illustrative platform figures, customer stories, and three trust indicators. The disclosure line is mandatory while data is static.
+- **Final CTA** and **SiteFooter**: the CTA uses the ember accent; the footer is ink, four columns, and exists only inside the public route group.
+
+Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, and a bordered details action. Use the same card on the homepage and Browse Services.
+
 ## Spacing and layout
 
 - Base unit: 4px, using the Tailwind spacing scale. Do not invent arbitrary margins.
@@ -55,6 +71,9 @@ Body copy is 16px with relaxed leading and a 65–75 character measure. Use weig
 
 - **Logo** (`components/layout/logo.tsx`): spruce tile with a tilted wrench, ink wordmark with fern/ember second syllable. Use `tone="light"` on dark surfaces.
 - **PublicNavbar** (`components/layout/public-navbar.tsx`): sticky global header. Accepts `user` and `isAuthLoading`; use it on every public page.
+- **SiteFooter** (`components/layout/site-footer.tsx`): ink four-column footer with quick links, all repair categories, contact details, modern X/Facebook/Instagram/LinkedIn icons, and copyright. It belongs to the public layout only.
+- **SectionHeading** (`components/ui/section-heading.tsx`): shared section title, supporting copy, and optional action.
+- **ServiceCard** (`components/services/service-card.tsx`): the shared service card for the homepage and Browse Services. `ServiceCardSkeleton` and `FeaturedServicesSkeleton` provide the loading state.
 - **Avatar** (`components/ui/avatar.tsx`): initials by default, optional image, shared `sm`/`md`/`lg` sizes.
 - **Button** (`components/ui/button.tsx`): `default`, `secondary`, `outline`, `ghost`, `accent`, `destructive`, `link`; sizes `sm`, `default`, `lg`, `icon`, `icon-sm`.
 - **Badge** (`components/ui/badge.tsx`): tinted, full-radius status label with optional dot. Tones must come from the shared map.
@@ -96,3 +115,5 @@ Use this mapping everywhere. Never remap a status for visual variety.
 ## Content and prototype scope
 
 This is a **visual prototype**. Sample services, people, prices, bookings, and statistics may be used to make screens believable, but they must read as examples. Authentication, payments, API calls, mock backends, CRUD operations, and simulated loading-to-success workflows are intentionally not implemented. The navbar's session loading and sign-out states are visual only. Interface controls are designed in place and may be presentational; never imply that a fake operation succeeded.
+
+Homepage services live in `data/sample-services.ts` and are filtered and sorted synchronously; no API is called. Platform statistics and customer stories are illustrative and carry a visible disclosure. Photography is stored locally under `public/images/` and credited in `public/images/CREDITS.md`.
