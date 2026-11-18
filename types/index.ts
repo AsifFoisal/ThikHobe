@@ -51,6 +51,8 @@ export interface User {
   createdAt: string
 }
 
+export type SessionUser = Pick<User, "id" | "name" | "email" | "role" | "image">
+
 export interface TechnicianSummary {
   id: string
   name: string

@@ -1,20 +1,22 @@
 import type { Metadata } from "next"
 import { ArrowRight } from "lucide-react"
 
-import { Logo } from "@/components/layout/logo"
-import { Badge } from "@/components/ui/badge"
+import { PublicNavbar } from "@/components/layout/public-navbar"
+import { Avatar } from "@/components/ui/avatar"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   BookingStatusBadge,
   PaymentStatusBadge,
 } from "@/components/ui/status-badge"
+import { DEMO_USER } from "@/constants/demo"
 
 export const metadata: Metadata = {
-  title: "Design foundation",
+  title: "Foundation & navigation",
   description:
-    "The FixMate design foundation: three brand colors, one typeface, and shared components.",
+    "The FixMate design foundation: three brand colors, one typeface, shared components, and the global navigation.",
 }
 
 const palette = [
@@ -50,12 +52,7 @@ const palette = [
 export default function FoundationPage() {
   return (
     <div className="min-h-svh">
-      <header className="border-b border-line">
-        <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
-          <Logo />
-          <Badge tone="brand">Foundation · Phase 01</Badge>
-        </div>
-      </header>
+      <PublicNavbar user={DEMO_USER} />
 
       <main id="main">
         <section className="container-page grid items-center gap-14 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-24">
@@ -207,6 +204,38 @@ export default function FoundationPage() {
                     <Skeleton className="h-3 w-4/5" />
                   </div>
                 </div>
+
+                <div>
+                  <h3 className="type-label">Navigation</h3>
+                  <div className="mt-4 overflow-hidden rounded-lg border border-line">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-3 py-2.5">
+                      <span className="text-xs text-muted-ink">Guest</span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={buttonVariants({
+                            variant: "ghost",
+                            size: "sm",
+                          })}
+                        >
+                          Sign in
+                        </span>
+                        <span className={buttonVariants({ size: "sm" })}>
+                          Sign up
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5">
+                      <span className="text-xs text-muted-ink">Signed in</span>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <Avatar name={DEMO_USER.name} size="sm" />
+                        <span className="truncate text-xs font-semibold text-ink">
+                          {DEMO_USER.name}
+                        </span>
+                        <RoleBadge role={DEMO_USER.role} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>
@@ -215,13 +244,13 @@ export default function FoundationPage() {
         <section className="container-page py-12">
           <div className="flex flex-col gap-4 border-t border-line pt-8 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="type-h3">Foundation complete</p>
+              <p className="type-h3">Foundation and navigation</p>
               <p className="mt-1 text-sm text-muted-ink">
-                Public pages, dashboards, and shared flows build on these
-                primitives.
+                The shared system and global navbar are ready for the public
+                pages.
               </p>
             </div>
-            <p className="type-meta">Phase 01 · Foundation</p>
+            <p className="type-meta">Phase 02 · Navigation</p>
           </div>
         </section>
       </main>

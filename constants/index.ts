@@ -49,6 +49,12 @@ export const ROLE_LABELS = {
   admin: "Admin",
 } satisfies Record<UserRole, string>
 
+export const ROLE_BADGE_TONES = {
+  customer: "neutral",
+  technician: "fern",
+  admin: "accent",
+} satisfies Record<UserRole, BadgeTone>
+
 export const ROLE_DASHBOARD = {
   customer: "/dashboard/customer",
   technician: "/dashboard/technician",

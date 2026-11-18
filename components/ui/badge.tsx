@@ -6,7 +6,7 @@ import type { BadgeTone } from "@/types"
 const toneClasses: Record<BadgeTone, string> = {
   neutral: "bg-sage text-spruce",
   brand: "bg-spruce text-paper",
-  fern: "bg-sage-strong text-spruce",
+  fern: "bg-fern/10 text-fern",
   accent: "bg-ember-soft text-ember-ink",
   blue: "bg-status-blue-soft text-status-blue",
   indigo: "bg-status-indigo-soft text-status-indigo",
