@@ -51,6 +51,25 @@ The public homepage follows this rhythm: paper hero → white featured services 
 
 Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, and a bordered details action. Use the same card on the homepage and Browse Services.
 
+## Browse Services
+
+`app/(public)/services/page.tsx` is a dynamic server-rendered page. URL contract:
+
+- `search` — free text against service title and category
+- `category` — one of the seven service categories
+- `mode` — `Home Visit` or `Shop Drop-off`
+- `sort` — `newest` (default), `price-asc`, `price-desc`
+- `page` — 1-based page number, 9 services per page
+
+`lib/services-query.ts` owns parsing, canonical link building, filtering, sorting, and slicing. **No filtering or pagination runs in client JavaScript.** The module currently queries the static presentation dataset and returns `PaginatedData<SampleService>`; replace its internals with the MongoDB query layer when backend integration is in scope. The page contract, filters, and pagination stay unchanged.
+
+- The filter bar is a native `GET /services` form. Submitting it omits `page`, so changing filters resets pagination.
+- Active search/category/mode chips remove one filter at a time. “Clear filters” resets everything.
+- Pagination preserves the current search, filters, and sort; the current page carries `aria-current="page"`.
+- Results show a range and total, with an empty state that offers a clear action.
+- `services/loading.tsx` provides matching card skeletons and a filter-bar skeleton; `services/error.tsx` provides retry and home actions.
+- The grid is 1 column on mobile, 2 on tablet, and 3 on desktop.
+
 ## Spacing and layout
 
 - Base unit: 4px, using the Tailwind spacing scale. Do not invent arbitrary margins.
@@ -74,6 +93,8 @@ Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, 
 - **SiteFooter** (`components/layout/site-footer.tsx`): ink four-column footer with quick links, all repair categories, contact details, modern X/Facebook/Instagram/LinkedIn icons, and copyright. It belongs to the public layout only.
 - **SectionHeading** (`components/ui/section-heading.tsx`): shared section title, supporting copy, and optional action.
 - **ServiceCard** (`components/services/service-card.tsx`): the shared service card for the homepage and Browse Services. `ServiceCardSkeleton` and `FeaturedServicesSkeleton` provide the loading state.
+- **ServicesFilters** (`components/services/services-filters.tsx`): native GET filter bar for search, category, mode, and sort.
+- **ServicesPagination** (`components/services/services-pagination.tsx`): URL-preserving previous/next and page numbers with disabled and current states.
 - **Avatar** (`components/ui/avatar.tsx`): initials by default, optional image, shared `sm`/`md`/`lg` sizes.
 - **Button** (`components/ui/button.tsx`): `default`, `secondary`, `outline`, `ghost`, `accent`, `destructive`, `link`; sizes `sm`, `default`, `lg`, `icon`, `icon-sm`.
 - **Badge** (`components/ui/badge.tsx`): tinted, full-radius status label with optional dot. Tones must come from the shared map.
@@ -116,4 +137,4 @@ Use this mapping everywhere. Never remap a status for visual variety.
 
 This is a **visual prototype**. Sample services, people, prices, bookings, and statistics may be used to make screens believable, but they must read as examples. Authentication, payments, API calls, mock backends, CRUD operations, and simulated loading-to-success workflows are intentionally not implemented. The navbar's session loading and sign-out states are visual only. Interface controls are designed in place and may be presentational; never imply that a fake operation succeeded.
 
-Homepage services live in `data/sample-services.ts` and are filtered and sorted synchronously; no API is called. Platform statistics and customer stories are illustrative and carry a visible disclosure. Photography is stored locally under `public/images/` and credited in `public/images/CREDITS.md`.
+Homepage services live in `data/sample-services.ts` and are filtered and sorted synchronously; no API is called. Browse Services reuses the same dataset through the server query module. Platform statistics and customer stories are illustrative and carry a visible disclosure. Photography is stored locally under `public/images/` and credited in `public/images/CREDITS.md`.

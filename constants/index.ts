@@ -5,6 +5,7 @@ import type {
   ServiceApprovalStatus,
   ServiceCategory,
   ServiceMode,
+  ServiceSort,
   UserRole,
 } from "@/types"
 
@@ -22,6 +23,24 @@ export const SERVICE_MODES = [
   "Home Visit",
   "Shop Drop-off",
 ] as const satisfies readonly ServiceMode[]
+
+export const SERVICE_SORT_OPTIONS = [
+  { value: "newest", label: "Newest" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+] as const satisfies readonly { value: ServiceSort; label: string }[]
+
+export function isServiceCategory(value: string): value is ServiceCategory {
+  return (SERVICE_CATEGORIES as readonly string[]).includes(value)
+}
+
+export function isServiceMode(value: string): value is ServiceMode {
+  return (SERVICE_MODES as readonly string[]).includes(value)
+}
+
+export function isServiceSort(value: string): value is ServiceSort {
+  return SERVICE_SORT_OPTIONS.some((option) => option.value === value)
+}
 
 export const BOOKING_STATUS_META = {
   requested: { label: "Requested", tone: "blue" },

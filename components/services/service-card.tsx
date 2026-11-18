@@ -10,9 +10,14 @@ import type { Service } from "@/types"
 interface ServiceCardProps {
   service: Service
   imagePosition?: string
+  priority?: boolean
 }
 
-export function ServiceCard({ service, imagePosition }: ServiceCardProps) {
+export function ServiceCard({
+  service,
+  imagePosition,
+  priority = false,
+}: ServiceCardProps) {
   const ModeIcon = service.mode === "Home Visit" ? House : Store
   const serviceHref = `/services/${service.id}`
 
@@ -23,6 +28,7 @@ export function ServiceCard({ service, imagePosition }: ServiceCardProps) {
           alt={`${service.title} by ${service.technician.name}`}
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           fill
+          loading={priority ? "eager" : "lazy"}
           sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 92vw"
           src={service.image}
           style={imagePosition ? { objectPosition: imagePosition } : undefined}

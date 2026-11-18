@@ -13,6 +13,8 @@ export type ServiceCategory =
 
 export type ServiceMode = "Home Visit" | "Shop Drop-off"
 
+export type ServiceSort = "newest" | "price-asc" | "price-desc"
+
 export type ServiceApprovalStatus = "pending" | "approved" | "rejected"
 
 export type BookingStatus =
