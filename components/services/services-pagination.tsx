@@ -6,7 +6,7 @@ import { getPageItems } from "@/lib/pagination"
 import {
   buildServicesHref,
   type ServicesQueryState,
-} from "@/data/services-query"
+} from "@/lib/services-query"
 import { cn } from "@/lib/utils"
 import type { PaginationMeta } from "@/types"
 

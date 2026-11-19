@@ -11,8 +11,8 @@ import {
   PaymentStatusBadge,
 } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/state"
-import { SAMPLE_PLATFORM_BOOKINGS } from "@/data/sample-platform"
-import { formatBookingFinalAmount, formatDate } from "@/lib/format"
+import { formatBookingFinalAmount, formatDate, formatPrice } from "@/lib/format"
+import { getAdminBookings } from "@/lib/server-data"
 import { cn } from "@/lib/utils"
 import type { BookingStatus } from "@/types"
 
@@ -51,7 +51,9 @@ export default async function AdminBookingsPage({
     ? rawStatus
     : "all"
 
-  const counts = SAMPLE_PLATFORM_BOOKINGS.reduce(
+  const allBookings = await getAdminBookings()
+
+  const counts = allBookings.reduce(
     (result, booking) => {
       result.all += 1
       result[booking.status] += 1
@@ -70,8 +72,8 @@ export default async function AdminBookingsPage({
 
   const bookings =
     activeFilter === "all"
-      ? SAMPLE_PLATFORM_BOOKINGS
-      : SAMPLE_PLATFORM_BOOKINGS.filter(
+      ? allBookings
+      : allBookings.filter(
           (booking) => booking.status === (activeFilter as BookingStatus)
         )
 
@@ -80,12 +82,8 @@ export default async function AdminBookingsPage({
       <div className="max-w-2xl">
         <h1 className="type-h1">All bookings</h1>
         <p className="type-lead mt-3">
-          Every sample repair booking on the platform, with its service,
-          participants, status, and amount.
-        </p>
-        <p className="type-meta mt-2">
-          Preview workspace · read-only sample history. No booking actions exist
-          on this page.
+          Every repair booking on the platform, with its service, participants,
+          status, and amount.
         </p>
       </div>
 
@@ -94,7 +92,7 @@ export default async function AdminBookingsPage({
           <div>
             <h2 className="type-h3">Platform bookings</h2>
             <p className="mt-1 text-sm text-muted-ink">
-              {bookings.length} of {SAMPLE_PLATFORM_BOOKINGS.length} bookings
+              {bookings.length} of {allBookings.length} bookings
             </p>
           </div>
           <Badge tone="neutral">Read only</Badge>
@@ -148,7 +146,7 @@ export default async function AdminBookingsPage({
                 Clear filter
               </Link>
             }
-            description="There are no sample bookings with this status."
+            description="There are no bookings with this status."
             icon={CalendarX}
             title="No bookings found"
           />
@@ -222,7 +220,7 @@ export default async function AdminBookingsPage({
                         {formatBookingFinalAmount(booking)}
                       </p>
                       <p className="mt-1 text-[11px] text-muted-ink">
-                        Base ৳{booking.basePrice.toLocaleString("en-US")}
+                        Base {formatPrice(booking.basePrice)}
                       </p>
                     </div>
                   ),

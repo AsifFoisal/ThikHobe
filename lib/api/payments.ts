@@ -1,4 +1,9 @@
 import { apiRequest, toQueryString } from "@/lib/api/client"
+import {
+  mapPayment,
+  type BackendList,
+  type BackendPayment,
+} from "@/lib/api/mappers"
 import type { Payment } from "@/types"
 
 export interface CheckoutSession {
@@ -15,9 +20,14 @@ export interface PaymentVerification {
   paidAt: string
 }
 
+export interface AdminTransactions {
+  items: Payment[]
+  totalRevenue: number
+}
+
 export const paymentsApi = {
   createCheckoutSession(bookingId: string) {
-    return apiRequest<CheckoutSession>("/payments/checkout", {
+    return apiRequest<CheckoutSession>("/payments/create-checkout-session", {
       method: "POST",
       body: { bookingId },
     })
@@ -29,11 +39,16 @@ export const paymentsApi = {
     )
   },
 
-  customerHistory() {
-    return apiRequest<Payment[]>("/payments/customer")
+  async customerHistory() {
+    const data = await apiRequest<BackendList<BackendPayment>>("/payments/my")
+    return data.items.map(mapPayment)
   },
 
-  adminTransactions() {
-    return apiRequest<Payment[]>("/payments/admin")
+  async adminTransactions() {
+    const data = await apiRequest<BackendList<BackendPayment>>("/admin/payments")
+    return {
+      items: data.items.map(mapPayment),
+      totalRevenue: data.totalRevenue ?? 0,
+    } satisfies AdminTransactions
   },
 }

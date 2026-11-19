@@ -11,8 +11,23 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Asia/Dhaka",
 })
 
+const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Asia/Dhaka",
+})
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 2,
+})
+
 export function formatPrice(value: number) {
-  return `৳${numberFormatter.format(value)}`
+  return currencyFormatter.format(value)
 }
 
 export function formatNumber(value: number) {
@@ -21,6 +36,12 @@ export function formatNumber(value: number) {
 
 export function formatDate(value: string | Date) {
   return dateFormatter.format(typeof value === "string" ? new Date(value) : value)
+}
+
+export function formatDateTime(value: string | Date) {
+  return dateTimeFormatter.format(
+    typeof value === "string" ? new Date(value) : value
+  )
 }
 
 export function formatBookingFinalAmount(booking: {

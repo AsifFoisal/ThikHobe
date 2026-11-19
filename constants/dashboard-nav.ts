@@ -56,7 +56,7 @@ export const DASHBOARD_NAV = {
       href: "/dashboard/technician/requests",
       icon: Inbox,
     },
-    { label: "Profile", href: "/dashboard/profile/technician", icon: UserRound },
+    { label: "Profile", href: "/dashboard/profile", icon: UserRound },
   ],
   admin: [
     { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
@@ -76,7 +76,7 @@ export const DASHBOARD_NAV = {
       href: "/dashboard/admin/transactions",
       icon: ReceiptText,
     },
-    { label: "Profile", href: "/dashboard/profile/admin", icon: UserRound },
+    { label: "Profile", href: "/dashboard/profile", icon: UserRound },
   ],
 } satisfies Record<UserRole, DashboardNavItem[]>
 

@@ -9,12 +9,12 @@ import Link from "next/link"
 
 import { Card } from "@/components/ui/card"
 import { AddServiceForm } from "@/components/technician/add-service-form"
-import { DEMO_TECHNICIAN } from "@/constants/demo"
+import { requireSessionUser } from "@/lib/server-api"
 
 export const metadata: Metadata = {
   title: "Add a service",
   description:
-    "Create a sample repair service with local validation and image preview for the FixMate technician prototype.",
+    "Create a repair service for administrator review.",
 }
 
 const approvalSteps = [
@@ -35,7 +35,9 @@ const approvalSteps = [
   },
 ]
 
-export default function AddServicePage() {
+export default async function AddServicePage() {
+  const user = await requireSessionUser()
+
   return (
     <div className="space-y-6 lg:space-y-8">
       <div>
@@ -52,16 +54,12 @@ export default function AddServicePage() {
             Turn your repair expertise into a clear, bookable service. Every new
             listing is reviewed before it goes live.
           </p>
-          <p className="type-meta mt-2">
-            Preview workspace · form validation and image preview are local
-            only.
-          </p>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr] xl:items-start">
         <Card className="p-5 sm:p-6 lg:p-8">
-          <AddServiceForm technician={DEMO_TECHNICIAN} />
+          <AddServiceForm technician={user} />
         </Card>
 
         <Card className="p-5 sm:p-6">
@@ -96,8 +94,7 @@ export default function AddServicePage() {
           </ol>
           <div className="mt-6 border-t border-line pt-4">
             <p className="text-xs leading-5 text-muted-ink">
-              This page is a frontend prototype. Submitting the form does not
-              create a service or upload an image.
+              Editing a service later returns it to Pending approval.
             </p>
           </div>
         </Card>

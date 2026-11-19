@@ -153,8 +153,7 @@ export function ServiceImageField({
       {previewUrl ? (
         <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs text-muted-ink" id="service-image-hint">
-            Local preview ready. ImgBB upload is not connected in this
-            prototype.
+            Preview ready. The image uploads when you submit the form.
           </p>
           <label
             className="cursor-pointer rounded-md text-xs font-semibold text-fern transition-colors hover:text-spruce focus-within:ring-2 focus-within:ring-fern focus-within:outline-none"
@@ -169,8 +168,8 @@ export function ServiceImageField({
           className="mt-1.5 text-xs leading-5 text-muted-ink"
           id="service-image-hint"
         >
-          A clear photo helps customers recognise the service. File selection
-          and preview work locally; no upload is sent.
+          A clear photo helps customers recognise the service. JPEG, PNG, or
+          WebP up to 5 MB.
         </p>
       )}
 

@@ -1,8 +1,15 @@
 import { apiRequest, toQueryString } from "@/lib/api/client"
+import {
+  mapBooking,
+  toBackendBookingStatus,
+  type BackendBooking,
+  type BackendList,
+} from "@/lib/api/mappers"
 import type { Booking, BookingStatus, PaginatedData } from "@/types"
 
 export interface CreateBookingInput {
   serviceId: string
+  customerPhone: string
   preferredDate: string
   address: string
   problemDescription: string
@@ -19,54 +26,85 @@ export interface UpdateBookingStatusInput {
   finalAmount?: number
 }
 
+const toPage = (items: Booking[]): PaginatedData<Booking> => ({
+  items,
+  pagination: {
+    page: 1,
+    limit: Math.max(items.length, 1),
+    total: items.length,
+    totalPages: 1,
+  },
+})
+
 export const bookingsApi = {
-  create(input: CreateBookingInput) {
-    return apiRequest<Booking>("/bookings", {
+  async create(input: CreateBookingInput) {
+    const data = await apiRequest<BackendBooking>("/bookings", {
       method: "POST",
       body: input,
     })
+    return mapBooking(data)
   },
 
-  customer(params: BookingListInput = {}) {
-    return apiRequest<PaginatedData<Booking>>(
-      `/bookings/customer${toQueryString({
-        status: params.status,
-        page: params.page,
-        limit: params.limit,
+  async customer(params: BookingListInput = {}) {
+    const data = await apiRequest<BackendList<BackendBooking>>(
+      `/bookings/my${toQueryString({
+        status: params.status
+          ? toBackendBookingStatus(params.status)
+          : undefined,
       })}`
     )
+    return toPage(data.items.map(mapBooking))
   },
 
-  technician(params: BookingListInput = {}) {
-    return apiRequest<PaginatedData<Booking>>(
+  async technician(params: BookingListInput = {}) {
+    const data = await apiRequest<BackendList<BackendBooking>>(
       `/bookings/technician${toQueryString({
-        status: params.status,
-        page: params.page,
-        limit: params.limit,
+        status: params.status
+          ? toBackendBookingStatus(params.status)
+          : undefined,
       })}`
+    )
+    return toPage(data.items.map(mapBooking))
+  },
+
+  async admin(params: BookingListInput = {}) {
+    const data = await apiRequest<BackendList<BackendBooking>>("/admin/bookings")
+    const items = data.items.map(mapBooking)
+    return toPage(
+      params.status
+        ? items.filter((booking) => booking.status === params.status)
+        : items
     )
   },
 
-  admin(params: BookingListInput = {}) {
-    return apiRequest<PaginatedData<Booking>>(
-      `/bookings/admin${toQueryString({
-        status: params.status,
-        page: params.page,
-        limit: params.limit,
-      })}`
+  async getById(id: string) {
+    const data = await apiRequest<BackendBooking>(
+      `/bookings/${encodeURIComponent(id)}`
     )
+    return mapBooking(data)
   },
 
-  cancel(id: string) {
-    return apiRequest<Booking>(`/bookings/${encodeURIComponent(id)}/cancel`, {
-      method: "PATCH",
-    })
+  async cancel(id: string) {
+    const data = await apiRequest<BackendBooking>(
+      `/bookings/${encodeURIComponent(id)}/cancel`,
+      { method: "PATCH" }
+    )
+    return mapBooking(data)
   },
 
-  updateStatus(id: string, input: UpdateBookingStatusInput) {
-    return apiRequest<Booking>(`/bookings/${encodeURIComponent(id)}/status`, {
-      method: "PATCH",
-      body: input,
-    })
+  async updateStatus(id: string, input: UpdateBookingStatusInput) {
+    const data = await apiRequest<BackendBooking>(
+      `/bookings/${encodeURIComponent(id)}/status`,
+      {
+        method: "PATCH",
+        body: {
+          status: toBackendBookingStatus(input.status),
+          ...(input.finalAmount !== undefined
+            ? { finalAmount: input.finalAmount }
+            : {}),
+        },
+      }
+    )
+    return mapBooking(data)
   },
 }

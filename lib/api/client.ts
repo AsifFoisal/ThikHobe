@@ -83,6 +83,13 @@ export async function apiRequest<T>(
     headers.set("Content-Type", "application/json")
   }
 
+  // Express private routes expect the Better Auth JWT as a Bearer token.
+  if (typeof window !== "undefined" && !headers.has("Authorization")) {
+    const { getAuthToken } = await import("@/lib/auth-client")
+    const token = await getAuthToken().catch(() => null)
+    if (token) headers.set("Authorization", `Bearer ${token}`)
+  }
+
   const url = `${apiConfig.baseUrl}${
     path.startsWith("/") ? path : `/${path}`
   }`

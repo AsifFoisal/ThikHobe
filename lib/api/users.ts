@@ -1,10 +1,6 @@
 import { apiRequest, toQueryString } from "@/lib/api/client"
-import type {
-  PaginatedData,
-  SessionUser,
-  User,
-  UserRole,
-} from "@/types"
+import { mapUser, type BackendList, type BackendUser } from "@/lib/api/mappers"
+import type { PaginatedData, User, UserRole } from "@/types"
 
 export interface UserListInput {
   search?: string
@@ -21,29 +17,40 @@ export interface UpdateProfileInput {
   image?: string
 }
 
+const toPage = (items: User[]): PaginatedData<User> => ({
+  items,
+  pagination: {
+    page: 1,
+    limit: Math.max(items.length, 1),
+    total: items.length,
+    totalPages: 1,
+  },
+})
+
 export const usersApi = {
-  list(params: UserListInput = {}) {
-    return apiRequest<PaginatedData<User>>(
-      `/users${toQueryString({
+  async list(params: UserListInput = {}) {
+    const data = await apiRequest<BackendList<BackendUser>>(
+      `/admin/users${toQueryString({
         search: params.search,
         role: params.role === "all" ? undefined : params.role,
-        page: params.page,
-        limit: params.limit,
       })}`
     )
+    return toPage(data.items.map(mapUser))
   },
 
-  updateRole(id: string, role: UserRole) {
-    return apiRequest<User>(`/users/${encodeURIComponent(id)}/role`, {
-      method: "PATCH",
-      body: { role },
-    })
+  async updateRole(id: string, role: UserRole) {
+    const data = await apiRequest<{ success: boolean; user: BackendUser }>(
+      `/admin/users/${encodeURIComponent(id)}/role`,
+      { method: "PATCH", body: { role } }
+    )
+    return mapUser(data.user)
   },
 
-  updateProfile(input: UpdateProfileInput) {
-    return apiRequest<SessionUser>("/users/me/profile", {
+  async updateProfile(input: UpdateProfileInput) {
+    const data = await apiRequest<BackendUser>("/users/profile", {
       method: "PATCH",
       body: input,
     })
+    return mapUser(data)
   },
 }

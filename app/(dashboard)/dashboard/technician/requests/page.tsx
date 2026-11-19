@@ -12,19 +12,19 @@ import {
   PaymentStatusBadge,
 } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/state"
-import { SAMPLE_TECHNICIAN_BOOKINGS } from "@/data/sample-platform"
 import {
   formatBookingFinalAmount,
   formatDate,
   formatPrice,
 } from "@/lib/format"
+import { getTechnicianBookings } from "@/lib/server-data"
 import { cn } from "@/lib/utils"
 import type { Booking, BookingStatus } from "@/types"
 
 export const metadata: Metadata = {
   title: "Repair requests",
   description:
-    "Sample repair requests assigned to the FixMate demo technician, with status-specific action previews.",
+    "Repair requests assigned to you, with status-specific actions.",
 }
 
 const FILTERS = [
@@ -78,7 +78,9 @@ export default async function TechnicianRequestsPage({
     ? rawStatus
     : "all"
 
-  const counts = SAMPLE_TECHNICIAN_BOOKINGS.reduce(
+  const allBookings = await getTechnicianBookings()
+
+  const counts = allBookings.reduce(
     (result, booking) => {
       result.all += 1
       if (booking.status in result) {
@@ -98,8 +100,8 @@ export default async function TechnicianRequestsPage({
 
   const bookings =
     activeFilter === "all"
-      ? SAMPLE_TECHNICIAN_BOOKINGS
-      : SAMPLE_TECHNICIAN_BOOKINGS.filter(
+      ? allBookings
+      : allBookings.filter(
           (booking) => booking.status === (activeFilter as BookingStatus)
         )
 
@@ -110,10 +112,6 @@ export default async function TechnicianRequestsPage({
         <p className="type-lead mt-3">
           Review the jobs assigned to you, contact the customer, and move each
           repair through its next stage.
-        </p>
-        <p className="type-meta mt-2">
-          Preview workspace · sample requests. Status actions validate the
-          interface but do not change bookings.
         </p>
       </div>
 
@@ -166,7 +164,7 @@ export default async function TechnicianRequestsPage({
                 Clear filter
               </Link>
             }
-            description="There are no sample requests in this status right now."
+            description="There are no requests in this status right now."
             icon={ClipboardList}
             title="No requests in this view"
           />

@@ -12,15 +12,15 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { EmptyState } from "@/components/ui/state"
-import { DEMO_ADMIN } from "@/constants/demo"
-import { SAMPLE_PLATFORM_USERS } from "@/data/sample-platform"
 import { formatDate } from "@/lib/format"
+import { getAdminUsers } from "@/lib/server-data"
+import { requireSessionUser } from "@/lib/server-api"
 import type { UserRole } from "@/types"
 
 export const metadata: Metadata = {
   title: "Manage users",
   description:
-    "Sample platform user directory with role filtering, search, and role-change previews.",
+    "Platform user directory with role filtering, search, and role management.",
 }
 
 const ROLE_OPTIONS = [
@@ -46,7 +46,12 @@ export default async function AdminUsersPage({
   const roleFilter = isRoleFilter(rawRole) ? rawRole : "all"
   const normalizedQuery = query.toLowerCase()
 
-  const users = SAMPLE_PLATFORM_USERS.filter((user) => {
+  const [allUsers, currentUser] = await Promise.all([
+    getAdminUsers(),
+    requireSessionUser(),
+  ])
+
+  const users = allUsers.filter((user) => {
     const matchesQuery =
       normalizedQuery.length === 0 ||
       user.name.toLowerCase().includes(normalizedQuery) ||
@@ -62,12 +67,8 @@ export default async function AdminUsersPage({
       <div className="max-w-2xl">
         <h1 className="type-h1">Manage users</h1>
         <p className="type-lead mt-3">
-          Review platform accounts, search by identity, and inspect the role
-          structure behind FixMate.
-        </p>
-        <p className="type-meta mt-2">
-          Preview workspace · sample users. Role changes are visual previews and
-          do not alter accounts.
+          Review platform accounts, search by identity, and manage account
+          roles.
         </p>
       </div>
 
@@ -76,10 +77,10 @@ export default async function AdminUsersPage({
           <div>
             <h2 className="type-h3">Platform users</h2>
             <p className="mt-1 text-sm text-muted-ink">
-              {users.length} of {SAMPLE_PLATFORM_USERS.length} accounts
+              {users.length} of {allUsers.length} accounts
             </p>
           </div>
-          <Badge tone="neutral">{SAMPLE_PLATFORM_USERS.length} total</Badge>
+          <Badge tone="neutral">{allUsers.length} total</Badge>
         </div>
 
         <form
@@ -130,14 +131,14 @@ export default async function AdminUsersPage({
                 Clear filters
               </Link>
             }
-            description="No sample account matches this search and role combination."
+            description="No account matches this search and role combination."
             icon={SearchX}
             title="No users found"
           />
         ) : (
           <div className="p-4">
             <DataTable
-              caption="Sample platform users"
+              caption="Platform users"
               tableFrom="xl"
               columns={[
                 {
@@ -149,7 +150,7 @@ export default async function AdminUsersPage({
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-ink">{user.name}</p>
-                          {user.id === DEMO_ADMIN.id ? (
+                          {user.id === currentUser.id ? (
                             <Badge tone="neutral">You</Badge>
                           ) : null}
                         </div>
@@ -183,7 +184,7 @@ export default async function AdminUsersPage({
                   header: "Actions",
                   className: "text-right",
                   cell: (user) =>
-                    user.id === DEMO_ADMIN.id ? (
+                    user.id === currentUser.id ? (
                       <Button
                         disabled
                         size="sm"

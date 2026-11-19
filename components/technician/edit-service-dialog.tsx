@@ -2,16 +2,21 @@
 
 import { Dialog } from "@base-ui/react/dialog"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import {
   Field,
   fieldControlClass,
   fieldTextareaClass,
 } from "@/components/forms/field"
+import { ServiceImageField } from "@/components/technician/service-image-field"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { SERVICE_CATEGORIES, SERVICE_MODES } from "@/constants"
+import { ApiError, servicesApi } from "@/lib/api"
+import { uploadImage } from "@/lib/upload"
 import { cn } from "@/lib/utils"
 import type { Service, ServiceCategory, ServiceMode } from "@/types"
 
@@ -42,35 +47,40 @@ function valuesFromService(service: Service): EditValues {
 }
 
 export function EditServiceDialog({ service }: EditServiceDialogProps) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [values, setValues] = useState<EditValues>(() =>
     valuesFromService(service)
   )
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [previewed, setPreviewed] = useState(false)
+  const [pending, setPending] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const update = <K extends keyof EditValues>(
     key: K,
     value: EditValues[K]
   ) => {
     setValues((current) => ({ ...current, [key]: value }))
-    setPreviewed(false)
+    setServerError(null)
+  }
+
+  const reset = () => {
+    setValues(valuesFromService(service))
+    setImageFile(null)
+    setErrors({})
+    setServerError(null)
   }
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next)
-    if (!next) {
-      setValues(valuesFromService(service))
-      setErrors({})
-      setPreviewed(false)
-    }
+    if (!next) reset()
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const nextErrors: Record<string, string> = {}
-
     if (values.title.trim().length < 5) {
       nextErrors.title = "Use at least 5 characters."
     }
@@ -88,8 +98,35 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
     }
 
     setErrors(nextErrors)
-    if (Object.keys(nextErrors).length === 0) {
-      setPreviewed(true)
+    if (Object.keys(nextErrors).length > 0) return
+
+    setPending(true)
+    setServerError(null)
+
+    try {
+      const image = imageFile ? await uploadImage(imageFile) : service.image
+      await servicesApi.update(service.id, {
+        title: values.title.trim(),
+        category: values.category,
+        basePrice: Number(values.basePrice),
+        estimatedDuration: values.estimatedDuration.trim(),
+        mode: values.mode,
+        area: values.area.trim(),
+        description: values.description.trim(),
+        image,
+      })
+      toast.success("Service updated and sent for approval")
+      setOpen(false)
+      reset()
+      router.refresh()
+    } catch (error) {
+      setServerError(
+        error instanceof ApiError
+          ? error.message
+          : "The service could not be updated."
+      )
+    } finally {
+      setPending(false)
     }
   }
 
@@ -105,8 +142,7 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
         <Dialog.Popup className="fixed top-1/2 left-1/2 z-[60] max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl border border-line bg-card p-6 text-ink shadow-lift transition-[scale,opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0">
           <Dialog.Title className="type-h3">Edit service</Dialog.Title>
           <Dialog.Description className="mt-2 text-sm leading-6 text-muted-ink">
-            Update the listing details. In a connected build, saving would
-            return this service to Pending approval.
+            Saving returns this service to Pending approval.
           </Dialog.Description>
 
           <div className="mt-5 flex items-center gap-3 rounded-lg bg-paper p-3">
@@ -124,7 +160,7 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
                 {service.title}
               </p>
               <p className="mt-0.5 text-xs text-muted-ink">
-                Current image · image editing is not connected
+                Current listing image
               </p>
             </div>
             <Badge tone="neutral">#{service.id}</Badge>
@@ -195,7 +231,7 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
               <Field
                 error={errors.basePrice}
                 htmlFor={`edit-price-${service.id}`}
-                label="Base price (BDT)"
+                label="Base price (USD)"
                 required
               >
                 <input
@@ -205,10 +241,11 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
                     errors.basePrice && "border-destructive"
                   )}
                   id={`edit-price-${service.id}`}
-                  inputMode="numeric"
+                  inputMode="decimal"
                   min="1"
                   onChange={(event) => update("basePrice", event.target.value)}
                   required
+                  step="0.01"
                   type="number"
                   value={values.basePrice}
                 />
@@ -276,16 +313,18 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
                   value={values.description}
                 />
               </Field>
+
+              <div className="sm:col-span-2">
+                <ServiceImageField onChange={setImageFile} />
+              </div>
             </div>
 
-            {previewed ? (
+            {serverError ? (
               <div
-                className="mt-4 rounded-lg border border-line bg-sage/50 px-4 py-3 text-sm leading-6 text-spruce"
-                role="status"
+                className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 text-status-red"
+                role="alert"
               >
-                <strong className="font-semibold">Preview only.</strong> No
-                changes are saved. In production, this edit would move the
-                service back to Pending approval.
+                {serverError}
               </div>
             ) : null}
 
@@ -295,8 +334,8 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
               >
                 Cancel
               </Dialog.Close>
-              <Button size="sm" type="submit">
-                Save changes
+              <Button disabled={pending} size="sm" type="submit">
+                {pending ? "Saving…" : "Save changes"}
               </Button>
             </div>
           </form>

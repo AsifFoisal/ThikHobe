@@ -1,10 +1,12 @@
 # FixMate Design Foundation
 
+> **Implementation note:** the visual system in this document remains current. Older auth/data scope statements below describe the pre-integration prototype. The app now uses Better Auth, the Express API, MongoDB, Stripe, and ImgBB; see `README.md`, `API.md`, and `server/README.md` for current behavior.
+
 ## Direction
 
 **Workshop calm.** A repair service should feel precise, transparent, and easy to deal with. Deep spruce carries trust and structure, fern supports it, and ember supplies the one live-wire moment. Public pages use generous editorial typography and real repair imagery; dashboards tighten the same system into dense, scannable surfaces. No gradients, decorative glass, or ornamental chrome.
 
-The `/` route is the public homepage. Browse Services, service details, About, and authentication are implemented. The shared dashboard shell and all three demo workspaces — customer, technician, and admin — live under `app/(dashboard)/`.
+The `/` route is the public homepage. Browse Services, service details, About, and authentication are implemented. The shared dashboard shell and all three role workspaces — customer, technician, and admin — live under `app/(dashboard)/`.
 
 ## Brand colors — exactly three
 

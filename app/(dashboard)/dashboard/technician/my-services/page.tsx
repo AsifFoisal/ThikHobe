@@ -3,23 +3,23 @@ import { Plus, Wrench } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { DataTable } from "@/components/dashboard/data-table"
 import { AvailabilityToggle } from "@/components/technician/availability-toggle"
+import { DeleteServiceButton } from "@/components/technician/delete-service-button"
 import { EditServiceDialog } from "@/components/technician/edit-service-dialog"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ApprovalStatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/state"
-import { SAMPLE_TECHNICIAN_SERVICES } from "@/data/sample-technician"
 import { formatPrice } from "@/lib/format"
+import { getTechnicianServices } from "@/lib/server-data"
 import type { Service } from "@/types"
 
 export const metadata: Metadata = {
   title: "My services",
   description:
-    "Sample service listings for the FixMate technician, including approval, availability, edit, and delete previews.",
+    "Your service listings, approval status, availability, and edit controls.",
 }
 
 function serviceDisabledReason(service: Service) {
@@ -28,7 +28,9 @@ function serviceDisabledReason(service: Service) {
   return undefined
 }
 
-export default function TechnicianServicesPage() {
+export default async function TechnicianServicesPage() {
+  const services = await getTechnicianServices()
+
   return (
     <div className="space-y-6 lg:space-y-8">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
@@ -37,10 +39,6 @@ export default function TechnicianServicesPage() {
           <p className="type-lead mt-3">
             Manage your listings, availability, and the details customers see
             before booking.
-          </p>
-          <p className="type-meta mt-2">
-            Preview workspace · sample services. Edit, delete, and availability
-            controls do not change records.
           </p>
         </div>
         <Link
@@ -52,7 +50,7 @@ export default function TechnicianServicesPage() {
         </Link>
       </div>
 
-      {SAMPLE_TECHNICIAN_SERVICES.length === 0 ? (
+      {services.length === 0 ? (
         <Card>
           <EmptyState
             action={
@@ -78,14 +76,12 @@ export default function TechnicianServicesPage() {
                 stay locked.
               </p>
             </div>
-            <Badge tone="neutral">
-              {SAMPLE_TECHNICIAN_SERVICES.length} services
-            </Badge>
+            <Badge tone="neutral">{services.length} services</Badge>
           </div>
 
           <div className="p-4">
             <DataTable
-              caption="Services belonging to the demo technician"
+              caption="Services belonging to your account"
               tableFrom="xl"
               columns={[
                 {
@@ -144,6 +140,7 @@ export default function TechnicianServicesPage() {
                       disabled={service.approvalStatus !== "approved"}
                       disabledReason={serviceDisabledReason(service)}
                       initialAvailable={service.available}
+                      serviceId={service.id}
                       serviceTitle={service.title}
                     />
                   ),
@@ -155,20 +152,16 @@ export default function TechnicianServicesPage() {
                   cell: (service) => (
                     <div className="flex justify-end gap-2">
                       <EditServiceDialog service={service} />
-                      <ConfirmDialog
-                        cancelLabel="Keep service"
-                        confirmLabel="Delete service"
-                        description="Preview only — this service will not be deleted. In a connected build the listing would be removed after confirmation."
-                        title="Delete this service?"
-                        triggerLabel="Delete"
-                        triggerVariant="destructive"
+                      <DeleteServiceButton
+                        serviceId={service.id}
+                        serviceTitle={service.title}
                       />
                     </div>
                   ),
                 },
               ]}
               getRowKey={(service) => service.id}
-              rows={SAMPLE_TECHNICIAN_SERVICES}
+              rows={services}
             />
           </div>
         </Card>

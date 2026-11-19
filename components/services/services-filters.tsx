@@ -7,7 +7,7 @@ import {
   SERVICE_SORT_OPTIONS,
 } from "@/constants"
 import { cn } from "@/lib/utils"
-import type { ServicesQueryState } from "@/data/services-query"
+import type { ServicesQueryState } from "@/lib/services-query"
 
 const controlClass =
   "h-10 w-full rounded-[0.625rem] border border-line-strong bg-paper px-3 text-sm text-ink transition-colors placeholder:text-muted-ink focus-visible:border-fern focus-visible:ring-2 focus-visible:ring-fern/20 focus-visible:outline-none"

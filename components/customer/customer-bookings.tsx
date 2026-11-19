@@ -2,10 +2,8 @@ import { ArrowUpRight, CalendarX } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-import {
-  BookingAction,
-  getBookingAction,
-} from "@/components/customer/booking-actions"
+import { BookingAction } from "@/components/customer/booking-actions"
+import { getBookingAction } from "@/lib/booking-actions"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -57,7 +55,7 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[52rem] border-collapse text-left text-sm">
             <caption className="sr-only">
-              All sample bookings for the demo customer
+              All bookings for this account
             </caption>
             <thead>
               <tr>

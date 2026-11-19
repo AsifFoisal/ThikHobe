@@ -1,14 +1,10 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  CheckCircle2,
-  Database,
-  RefreshCw,
-  UploadCloud,
-} from "lucide-react"
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import {
@@ -16,14 +12,15 @@ import {
   fieldControlClass,
   fieldTextareaClass,
 } from "@/components/forms/field"
-import { useDashboardUser } from "@/components/dashboard/dashboard-route-shell"
 import { ProfilePhotoField } from "@/components/profile/profile-photo-field"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { ROLE_LABELS } from "@/constants"
-import { DEMO_PROFILE_DETAILS } from "@/constants/demo-profiles"
+import { ApiError, usersApi } from "@/lib/api"
+import type { SessionProfile } from "@/lib/session"
+import { uploadImage } from "@/lib/upload"
 import { cn } from "@/lib/utils"
 
 const profileSchema = z.object({
@@ -48,46 +45,66 @@ const profileSchema = z.object({
 
 type ProfileValues = z.infer<typeof profileSchema>
 
-const saveSteps = [
-  {
-    icon: UploadCloud,
-    title: "Upload the photo",
-    copy: "Send the selected image to ImgBB and store its URL.",
-  },
-  {
-    icon: Database,
-    title: "Save the profile",
-    copy: "Persist the name, phone, area, bio, and image on the account.",
-  },
-  {
-    icon: RefreshCw,
-    title: "Synchronize the session",
-    copy: "Refresh the navbar and dashboard identity without another sign-in.",
-  },
-]
-
-export function ProfileView() {
-  const user = useDashboardUser()
-  const details = DEMO_PROFILE_DETAILS[user.role]
-  const [previewed, setPreviewed] = useState(false)
+export function ProfileView({ user }: { user: SessionProfile }) {
+  const router = useRouter()
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [pending, setPending] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user.name,
-      phone: details.phone,
-      area: details.area,
-      bio: details.bio,
+      phone: user.phone ?? "",
+      area: user.area ?? "",
+      bio: user.bio ?? "",
     },
     mode: "onBlur",
     reValidateMode: "onChange",
   })
 
+  useEffect(() => {
+    reset({
+      name: user.name,
+      phone: user.phone ?? "",
+      area: user.area ?? "",
+      bio: user.bio ?? "",
+    })
+  }, [user, reset])
+
   const draftName = useWatch({ control, name: "name" })
+
+  const onSubmit = handleSubmit(async (values) => {
+    setPending(true)
+    setServerError(null)
+
+    try {
+      const image = imageFile ? await uploadImage(imageFile) : undefined
+      await usersApi.updateProfile({
+        name: values.name.trim(),
+        phone: values.phone.trim(),
+        area: values.area.trim(),
+        bio: values.bio.trim(),
+        ...(image ? { image } : {}),
+      })
+      toast.success("Profile updated")
+      setImageFile(null)
+      router.refresh()
+    } catch (error) {
+      setServerError(
+        error instanceof ApiError
+          ? error.message
+          : "The profile could not be updated."
+      )
+    } finally {
+      setPending(false)
+    }
+  })
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -97,22 +114,16 @@ export function ProfileView() {
           Keep the identity and contact details attached to your FixMate
           workspace up to date.
         </p>
-        <p className="type-meta mt-2">
-          Preview workspace · profile edits and photo preview are local. Session
-          synchronization is not connected.
-        </p>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr] xl:items-start">
         <Card className="p-5 sm:p-6 lg:p-8">
-          <form
-            noValidate
-            onSubmit={handleSubmit(
-              () => setPreviewed(true),
-              () => setPreviewed(false)
-            )}
-          >
-            <ProfilePhotoField name={draftName || user.name} />
+          <form noValidate onSubmit={onSubmit}>
+            <ProfilePhotoField
+              image={user.image}
+              name={draftName || user.name}
+              onChange={setImageFile}
+            />
 
             <fieldset className="mt-7 border-t border-line pt-6">
               <legend className="type-h3">Personal details</legend>
@@ -252,40 +263,23 @@ export function ProfileView() {
               </div>
             </fieldset>
 
-            {previewed ? (
+            {serverError ? (
               <div
-                className="mt-6 flex gap-3 rounded-lg border border-line bg-sage/50 px-4 py-3"
-                role="status"
+                className="mt-6 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 text-status-red"
+                role="alert"
               >
-                <CheckCircle2
-                  aria-hidden
-                  className="mt-0.5 size-4 shrink-0 text-fern"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-spruce">
-                    Profile validated
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-muted-ink">
-                    This front-end prototype does not upload the photo, persist
-                    these details, synchronize a session, or update the navbar
-                    and top bar. A connected build would complete all three
-                    steps shown beside the form.
-                  </p>
-                </div>
+                {serverError}
               </div>
             ) : null}
 
             <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-              <Button size="lg" type="submit">
-                Save profile
+              <Button disabled={pending} size="lg" type="submit">
+                {pending ? "Saving…" : "Save profile"}
               </Button>
               <p className="type-meta">
-                Changes are not saved in this prototype.
+                Your session refresh updates the navbar and dashboard identity.
               </p>
             </div>
-            <p className="mt-3 text-xs leading-5 text-muted-ink">
-              Preview only — no image is uploaded and no session data changes.
-            </p>
           </form>
         </Card>
 
@@ -293,7 +287,7 @@ export function ProfileView() {
           <Card className="p-5 sm:p-6">
             <h2 className="type-h3">Current identity</h2>
             <p className="mt-1 text-sm leading-6 text-muted-ink">
-              The demo identity currently driving this workspace.
+              The authenticated account driving this workspace.
             </p>
             <div className="mt-4 flex items-center gap-3 rounded-lg bg-paper p-3">
               <Avatar name={user.name} size="md" src={user.image} />
@@ -307,41 +301,6 @@ export function ProfileView() {
             <div className="mt-3">
               <RoleBadge role={user.role} />
             </div>
-            <p className="mt-4 text-xs leading-5 text-muted-ink">
-              This identity is selected from the workspace route, not a real
-              authenticated session. Saving does not replace it.
-            </p>
-          </Card>
-
-          <Card className="p-5 sm:p-6">
-            <h2 className="type-h3">After a live save</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-ink">
-              These are the backend steps this form is prepared for.
-            </p>
-            <ol className="mt-5 space-y-4">
-              {saveSteps.map((step) => {
-                const Icon = step.icon
-                return (
-                  <li className="flex gap-3" key={step.title}>
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-sage text-spruce">
-                      <Icon aria-hidden className="size-4" strokeWidth={1.9} />
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-ink">
-                        {step.title}
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-muted-ink">
-                        {step.copy}
-                      </p>
-                    </div>
-                  </li>
-                )
-              })}
-            </ol>
-            <p className="mt-5 border-t border-line pt-4 text-xs leading-5 text-muted-ink">
-              ImgBB, persistence, and session refresh are intentionally absent
-              from this frontend-only build.
-            </p>
           </Card>
         </div>
       </div>

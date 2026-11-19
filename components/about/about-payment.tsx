@@ -94,7 +94,7 @@ export function AboutPayment() {
             <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-muted-ink uppercase">
               A booking from request to paid
             </p>
-            <span className="text-xs text-muted-ink">Sample flow</span>
+            <span className="text-xs text-muted-ink">Payment flow</span>
           </div>
 
           <ol className="mt-2">

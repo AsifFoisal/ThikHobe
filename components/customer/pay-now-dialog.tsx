@@ -1,10 +1,12 @@
 "use client"
 
 import { Dialog } from "@base-ui/react/dialog"
-import { CreditCard } from "lucide-react"
+import { CreditCard, Loader2 } from "lucide-react"
+import { useState } from "react"
 
 import { buttonVariants } from "@/components/ui/button"
-import { formatPrice } from "@/lib/format"
+import { ApiError, paymentsApi } from "@/lib/api"
+import { cn } from "@/lib/utils"
 
 interface PayNowDialogProps {
   amount: number
@@ -17,6 +19,31 @@ export function PayNowDialog({
   bookingId,
   size = "sm",
 }: PayNowDialogProps) {
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const displayAmount = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount)
+
+  const startCheckout = async () => {
+    setPending(true)
+    setError(null)
+
+    try {
+      const { url } = await paymentsApi.createCheckoutSession(bookingId)
+      if (!url) throw new Error("Stripe did not return a checkout URL.")
+      window.location.assign(url)
+    } catch (cause) {
+      setError(
+        cause instanceof ApiError
+          ? cause.message
+          : "Could not start checkout. Please try again."
+      )
+      setPending(false)
+    }
+  }
+
   return (
     <Dialog.Root>
       <Dialog.Trigger className={buttonVariants({ size })}>
@@ -29,12 +56,12 @@ export function PayNowDialog({
             <CreditCard aria-hidden className="size-5" strokeWidth={1.8} />
           </span>
           <Dialog.Title className="type-h3 mt-4">
-            Checkout handoff preview
+            Continue to secure checkout
           </Dialog.Title>
           <Dialog.Description className="mt-2 text-sm leading-6 text-muted-ink">
-            This prototype does not contact the payment backend or Stripe. In a
-            connected build, FixMate would send the booking ID to the backend,
-            receive a Stripe Checkout URL, and redirect the browser.
+            Stripe will collect the payment for this completed repair. The
+            server reads the final amount from the booking before creating the
+            checkout session.
           </Dialog.Description>
           <div className="mt-4 border-y border-line py-3">
             <div className="flex items-center justify-between gap-3 text-sm">
@@ -44,23 +71,42 @@ export function PayNowDialog({
               </span>
             </div>
             <div className="mt-2 flex items-center justify-between gap-3 text-sm">
-              <span className="text-muted-ink">Amount on record</span>
+              <span className="text-muted-ink">Amount on record (USD)</span>
               <span className="font-semibold text-ink tabular">
-                {formatPrice(amount)}
+                {displayAmount}
               </span>
             </div>
             <p className="mt-2 text-xs leading-5 text-muted-ink">
-              Display only. The backend and Stripe determine the amount charged;
-              no amount is calculated or trusted on the client.
+              The displayed amount is informational. Stripe charges the server
+              amount derived from the booking, in USD.
             </p>
           </div>
-          <p className="mt-3 text-xs leading-5 text-muted-ink">
-            No checkout session is created and no payment is taken.
-          </p>
-          <div className="mt-6 flex justify-end">
-            <Dialog.Close className={buttonVariants({ size: "sm" })}>
-              Close
+
+          {error ? (
+            <p
+              aria-live="polite"
+              className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs leading-5 text-status-red"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+
+          <div className="mt-6 flex flex-wrap justify-end gap-2">
+            <Dialog.Close className={buttonVariants({ size: "sm", variant: "outline" })}>
+              Cancel
             </Dialog.Close>
+            <button
+              className={cn(buttonVariants({ size: "sm" }))}
+              disabled={pending}
+              onClick={startCheckout}
+              type="button"
+            >
+              {pending ? (
+                <Loader2 aria-hidden className="size-4 animate-spin" />
+              ) : null}
+              {pending ? "Starting checkout…" : "Continue to Stripe"}
+            </button>
           </div>
         </Dialog.Popup>
       </Dialog.Portal>

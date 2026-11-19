@@ -33,7 +33,7 @@ export default function PaymentLayout({
       <footer className="border-t border-line">
         <div className="mx-auto w-full max-w-3xl px-4 py-4 sm:px-6">
           <p className="text-center text-xs leading-5 text-muted-ink">
-            Sample payment surface · no card data is collected or processed.
+            Payments are processed securely by Stripe. FixMate never stores card details.
           </p>
         </div>
       </footer>

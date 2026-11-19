@@ -1,75 +1,153 @@
 # FixMate
 
-A complete visual prototype of a smart device and home appliance repair service platform, built with Next.js App Router, TypeScript, and Tailwind CSS.
+FixMate is a full-stack smart device and home appliance repair platform. Customers request repairs, technicians manage services and jobs, admins moderate the marketplace, and customers pay with Stripe only after a job is completed.
 
 ## Stack
 
-- Next.js 16 (App Router)
-- TypeScript
-- Tailwind CSS 4
-- Base UI
+**Client**
+- Next.js 16 App Router, React 19, TypeScript
+- Tailwind CSS 4, Base UI, Lucide, Sonner, Recharts
 - React Hook Form + Zod
-- Recharts
-- Stripe (server-side verification scaffold)
-- Lucide icons
-- Sonner
+- Better Auth client with the JWT plugin
+
+**Server**
+- Node.js and Express 5
+- MongoDB Node.js driver
+- Better Auth JWT verification through JWKS using `jose`
+- Stripe Checkout, verification, and signed webhooks
+- ImgBB server-side uploads
+
+## Project structure
+
+```text
+thikhobe/                  Next.js app and Better Auth server
+server/                    Express API
+  index.js                 Routes, Stripe, error handling
+  db.js                    MongoDB connection and indexes
+  middleware/auth.js       verifyToken / role middleware
+  seed.js                  Idempotent demo data
+  README.md                Backend setup and API reference
+```
+
+All dashboard and public service data is read from the Express API and MongoDB. There is no frontend mock-data layer.
+
+## Setup
+
+### 1. Frontend environment
+
+Create `thikhobe/.env` from `.env.example` and set:
+
+```text
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:5000
+MONGODB_URI=<MongoDB connection string>
+DB_NAME=<database name>
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=<long random secret>
+JWT_ISSUER=<issuer>
+JWT_AUDIENCE=<audience>
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<Stripe test publishable key>
+```
+
+### 2. Server environment
+
+Create `server/.env` from `server/.env.example` and set the same MongoDB database plus:
+
+```text
+BETTER_AUTH_URL=http://localhost:3000
+JWT_ISSUER=<same issuer as the frontend>
+JWT_AUDIENCE=<same audience as the frontend>
+STRIPE_SECRET_KEY=<Stripe test secret key>
+STRIPE_WEBHOOK_SECRET=<Stripe webhook signing secret>
+IMGBB_API_KEY=<ImgBB API key>
+```
+
+The Express server verifies Better Auth JWTs through JWKS. `BETTER_AUTH_SECRET` stays in the Next.js environment; it is not used by Express.
+
+### 3. Install and run
+
+```bash
+# terminal 1
+cd thikhobe
+npm install
+npm run dev
+
+# terminal 2
+cd server
+npm install
+npm run seed     # optional: demo users, services, and bookings
+npm run dev
+```
+
+The seed requires the Next.js app to be running because accounts are created through Better Auth.
+
+## Authentication
+
+Better Auth lives in the Next.js app at `/api/auth/*`. The client obtains a JWT from `/api/auth/token` and sends it to Express as a Bearer token. Express verifies the signature, issuer, and audience against the Better Auth JWKS endpoint, then loads the current user and role from MongoDB.
+
+Private routes use `verifyToken`, `verifyCustomer`, `verifyTechnician`, and `verifyAdmin`. Dashboard route groups enforce the same roles server-side.
+
+## Main features
+
+- Customer/technician registration and sign-in, with admin self-registration blocked
+- Public service browsing with server-side search, filters, sorting, and pagination
+- Technician service CRUD, image upload, availability, and approval workflow
+- Customer repair requests with duplicate-active protection
+- Server-enforced job status pipeline and final amount
+- Customer payment history and Stripe pay-after-completion
+- Admin user role management, service approvals, bookings, and transactions
+- Shared profile editing with Better Auth session refresh
+- Role-aware dashboard navigation and route guards
+
+## Stripe test mode
+
+```text
+Test card: 4242 4242 4242 4242
+Any future expiry date and any CVC
+```
+
+Webhook endpoint:
+
+```text
+POST /api/payments/webhook
+```
+
+Configure the `checkout.session.completed` event. For local development:
+
+```bash
+stripe listen --forward-to localhost:5000/api/payments/webhook
+```
+
+Set the printed `whsec_...` value as `STRIPE_WEBHOOK_SECRET` in `server/.env`.
+
+## Image uploads
+
+Service and profile images upload through the Express server to ImgBB. Set `IMGBB_API_KEY` in `server/.env`; the key is never exposed to the browser. Without the key, upload endpoints return 503.
 
 ## Scripts
 
+Frontend:
+
 ```bash
-npm run dev        # development server
-npm run build      # production build
-npm run typecheck  # TypeScript check
-npm run lint       # ESLint
-npm run format     # Prettier
+npm run dev
+npm run build
+npm run start
+npm run typecheck
+npm run lint
+npm run format
 ```
 
-## Foundation
+Server:
 
-- `app/(public)/` — public layout with the shared navbar and footer, the homepage, Browse Services, and About
-- `app/(public)/services/` — server-rendered browse page, loading skeletons, error boundary, and service details
-- `app/(public)/services/[id]/` — service details, Not Found, loading, and error states
-- `app/(public)/about/` — detailed About / How It Works page
-- `app/(auth)/` — sign-in and sign-up shell and forms
-- `app/(dashboard)/` — role-aware dashboard shell, the `/dashboard` component foundation, and all three demo workspaces; the shell selects the demo identity by route, not authentication
-- `app/(dashboard)/dashboard/customer/` — customer overview, My bookings, booking timeline details, and payment history
-- `app/(dashboard)/dashboard/technician/` — technician overview, Add Service, My Services, and Repair Requests
-- `app/(dashboard)/dashboard/admin/` — admin overview, Manage Users, Service Approvals, All Bookings, and Transactions
-- `app/(dashboard)/dashboard/profile/` — shared profile surface, with role-specific demo entry points at `/dashboard/profile`, `/dashboard/profile/technician`, and `/dashboard/profile/admin`
-- `app/payment/` — standalone payment success and cancel surfaces; success verifies a Stripe session server-side, with invalid-session, failure, loading, and error states
-- `app/not-found.tsx` / `app/error.tsx` — tools-themed 404 and application error boundary
-- `app/globals.css` — brand tokens, typography, layout utilities, and global interaction styles
-- `components/home/` — homepage sections
-- `components/about/` — About page sections
-- `components/auth/` — sign-up/sign-in forms and password field
-- `components/dashboard/` — shell, sidebar, stat cards, data tables, filters, pagination, charts, confirmation dialog, and skeletons
-- `components/customer/` — customer overview cards, responsive bookings table/cards, timeline, action previews, and payment history
-- `components/technician/` — add-service form, local image field, editable service previews, availability toggle, and request action dialogs
-- `components/admin/` — role-change and service-approval dialogs
-- `components/profile/` — shared profile form and local profile-photo preview
-- `components/services/` — service cards, skeletons, URL-backed filters, pagination, summary, technician cards, and category icons
-- `components/bookings/` — role-aware request modal and validated request form
-- `components/forms/` — shared field, label, hint, and error primitives
-- `components/ui/` — reusable buttons, badges, avatars, cards, skeletons, state components, tools illustration, and the toaster
-- `components/layout/` — logo, public navbar, and footer
-- `components/icons/` — authored social logos, including the modern X mark
-- `constants/` — categories, modes, sort options, status language, roles, demo profile details, booking-status chart colors, and dashboard/public navigation configuration
-- `data/` — dedicated mock presentation layer for services, customer bookings and payments, and shared technician/admin records
-- `lib/` — typed API modules, formatting, API base configuration, shared pagination helpers, preview notifications, and the server-only Stripe client
-- `types/` — User, Service, Booking, Payment, API response, and pagination contracts
-- `public/images/` — local photography, with credits in `CREDITS.md`
-- `API.md` — API layering, transport behavior, domain functions, and assumed REST contract
-- `AUDIT.md` — route/width sweep, state verification, and remaining integration gaps
-- `DESIGN.md` — the visual system future phases must follow
+```bash
+npm run dev
+npm run start
+npm run seed
+```
 
-The `/` homepage, `/services` Browse Services page, `/services/[id]` service details page, `/about` page, `/sign-in` / `/sign-up` screens, the shared dashboard foundation at `/dashboard`, the customer, technician, and admin workspaces, the shared profile surfaces, and the standalone payment result surfaces at `/payment/success` and `/payment/cancel` are implemented. Authentication is visual only; the dashboard shell selects `DEMO_USER`, `DEMO_TECHNICIAN`, or `DEMO_ADMIN` by route, no session checks or route guards run, and technician/admin profiles use the role-specific profile URLs so their workspace identity survives a direct load. Route-level skeletons, meaningful empty states, the tools-themed 404/error surfaces, and the Sonner preview-notification layer are in place across the app. The public route group keeps the footer out of the dashboard layout.
+## Documentation
 
-## Scope
-
-This repository is primarily a frontend prototype with one server-side payment verification surface and a checkout API scaffold. Authentication and session management, ImgBB uploads, profile/service/booking persistence, role and approval mutations, and general data API integration remain outside the current build. The navbar's profile, loading, and sign-out states are visual presentation only. The sign-in and sign-up screens validate field input and preserve redirect context visually, but do not connect to BetterAuth, create accounts or sessions, fake toasts/loading, or enforce role-aware route protection. The dashboard foundation at `/dashboard` shares one shell across all three roles, and each role workspace is selected by URL rather than a session. No session checks or route guards run.
-
-The customer workspace at `/dashboard/customer` displays sample bookings, a status-only timeline without fabricated timestamps, and sample receipts. Cancel opens a confirmation but leaves the record unchanged; Pay now is available only for Completed and Unpaid bookings and opens a handoff preview rather than contacting Checkout. The technician workspace adds local-only image selection, preview, validation, form submission, service editing, deletion confirmation, availability toggling, and request status/amount validation, but does not upload to ImgBB, persist services, or change bookings. The admin workspace filters static users, services, and bookings and shows role-change and approval confirmations without changing accounts, services, or records. The shared profile validates and previews edits and a selected photo locally, but does not upload to ImgBB, persist the profile, synchronize session data, or update the navbar and dashboard identity.
-
-`/payment/success` reads `session_id` and verifies the checkout session with Stripe server-side. Invalid, failed, open, or non-complete sessions never show a receipt; a complete session renders the verified line item, customer, amount, transaction, and payment date. The checkout API scaffold still contains placeholder price/integration values and is not called by Pay Now, so checkout initiation is not complete end-to-end. `/payment/cancel` does not modify payment information. Toasts are limited to truthful preview-only feedback for confirmations, availability, and request status actions; no backend success is announced. Route skeletons, empty states, the tools-themed 404/error surfaces, and contextual not-found states are implemented across the app.
-
-Homepage service listings, platform figures, and customer stories are illustrative sample data. The Browse Services query runs on the server over that static dataset; MongoDB/API integration is outside this frontend build. The public site currently runs as the demo customer so the request modal is reachable; guest and staff branches are implemented in the components. The repair request form validates locally but does not send or persist a booking, so there is no success toast, duplicate-request handling, or My Bookings redirect yet. Photography is sourced from Pexels and credited locally.
+- `server/README.md` — backend setup, environment variables, API routes, database, and Stripe details
+- `DESIGN.md` — visual system
+- `PRODUCT.md` — product brief
+- `public/images/CREDITS.md` — photography credits

@@ -1,5 +1,7 @@
 # FixMate final audit
 
+> **Historical note:** this audit was written before the backend integration. Auth, MongoDB, Express, Stripe, ImgBB, and live dashboard data have since been implemented. See `README.md`, `API.md`, and `server/README.md` for current behavior.
+
 ## Responsive sweep
 
 All implemented routes were loaded directly at 390, 768, 1280, 1440, and 1920 px:

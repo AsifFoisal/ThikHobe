@@ -5,10 +5,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { ReactNode } from "react"
 
-import {
-  BookingAction,
-  getBookingAction,
-} from "@/components/customer/booking-actions"
+import { BookingAction } from "@/components/customer/booking-actions"
+import { getBookingAction } from "@/lib/booking-actions"
 import { BookingTimeline } from "@/components/customer/booking-timeline"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -16,30 +14,23 @@ import {
   BookingStatusBadge,
   PaymentStatusBadge,
 } from "@/components/ui/status-badge"
-import { getCustomerBookingById } from "@/data/sample-customer-bookings"
 import {
   formatBookingFinalAmount,
   formatDate,
   formatPrice,
 } from "@/lib/format"
+import { getBookingById } from "@/lib/server-data"
+import { ServerApiError } from "@/lib/server-api"
 import { cn } from "@/lib/utils"
+
+export const metadata: Metadata = {
+  title: "Booking details",
+  description:
+    "Repair timeline, status, and payment summary for your booking.",
+}
 
 interface BookingDetailPageProps {
   params: Promise<{ id: string }>
-}
-
-export async function generateMetadata({
-  params,
-}: BookingDetailPageProps): Promise<Metadata> {
-  const { id } = await params
-  const booking = getCustomerBookingById(id)
-
-  return {
-    title: booking?.service.title ?? "Booking not found",
-    description: booking
-      ? `Booking timeline, repair status, and payment summary for ${booking.service.title}.`
-      : "This sample booking could not be found.",
-  }
 }
 
 function SummaryRow({
@@ -61,10 +52,18 @@ export default async function CustomerBookingDetailPage({
   params,
 }: BookingDetailPageProps) {
   const { id } = await params
-  const booking = getCustomerBookingById(id)
 
-  if (!booking) {
-    notFound()
+  let booking
+  try {
+    booking = await getBookingById(id)
+  } catch (error) {
+    if (
+      error instanceof ServerApiError &&
+      (error.status === 404 || error.status === 403)
+    ) {
+      notFound()
+    }
+    throw error
   }
 
   const action = getBookingAction(booking)
@@ -92,9 +91,6 @@ export default async function CustomerBookingDetailPage({
           <p className="type-lead mt-3">
             Booking #{booking.id} · Preferred date{" "}
             {formatDate(booking.preferredDate)}
-          </p>
-          <p className="type-meta mt-2">
-            Preview workspace · sample booking and status.
           </p>
         </div>
       </div>
@@ -145,9 +141,6 @@ export default async function CustomerBookingDetailPage({
                   </p>
                 )}
               </div>
-              <p className="mt-3 text-xs leading-5 text-muted-ink">
-                Preview only — actions do not change bookings or payments.
-              </p>
             </Card>
           </div>
         </div>

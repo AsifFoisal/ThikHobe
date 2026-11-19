@@ -9,9 +9,11 @@ import { cn } from "@/lib/utils"
 import type { SessionUser } from "@/types"
 
 export function RequestRepairDialog({
+  serviceId,
   serviceTitle,
   viewer,
 }: {
+  serviceId: string
   serviceTitle: string
   viewer: SessionUser
 }) {
@@ -46,7 +48,7 @@ export function RequestRepairDialog({
           </div>
 
           <div className="px-5 pb-5 sm:px-7 sm:pb-7">
-            <RepairRequestForm viewer={viewer} />
+            <RepairRequestForm serviceId={serviceId} viewer={viewer} />
           </div>
         </Dialog.Popup>
       </Dialog.Portal>

@@ -5,10 +5,10 @@ import { ServiceCard } from "@/components/services/service-card"
 import { buttonVariants } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/state"
 import { SectionHeading } from "@/components/ui/section-heading"
-import { getFeaturedServices } from "@/data/sample-services"
+import { getFeaturedServices } from "@/lib/server-data"
 
-export function FeaturedServices() {
-  const services = getFeaturedServices()
+export async function FeaturedServices() {
+  const services = await getFeaturedServices()
 
   return (
     <section className="section border-y border-line bg-card">
@@ -33,11 +33,7 @@ export function FeaturedServices() {
         {services.length > 0 ? (
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
-              <ServiceCard
-                imagePosition={service.imagePosition}
-                key={service.id}
-                service={service}
-              />
+              <ServiceCard key={service.id} service={service} />
             ))}
           </div>
         ) : (

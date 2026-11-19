@@ -21,21 +21,18 @@ import {
   BOOKING_STATUS_COLORS,
   BOOKING_STATUS_ORDER,
 } from "@/constants/booking-status-visuals"
-import {
-  SAMPLE_MONTHLY_REVENUE,
-  SAMPLE_PLATFORM_ACTIVITY,
-  SAMPLE_PLATFORM_BOOKINGS,
-  SAMPLE_PLATFORM_PAYMENTS,
-  SAMPLE_PLATFORM_SERVICES,
-  SAMPLE_PLATFORM_USERS,
-  type PlatformActivity,
-} from "@/data/sample-platform"
 import { formatDate, formatPrice } from "@/lib/format"
+import {
+  getAdminBookings,
+  getAdminPayments,
+  getAdminServices,
+  getAdminUsers,
+} from "@/lib/server-data"
 
 export const metadata: Metadata = {
   title: "Admin overview",
   description:
-    "Sample platform overview with users, technicians, pending services, revenue, role, booking, and activity views.",
+    "Platform overview with users, technicians, pending services, revenue, roles, and booking activity.",
 }
 
 const ROLE_VISUALS = {
@@ -44,39 +41,93 @@ const ROLE_VISUALS = {
   admin: { bar: "bg-ember", dot: "bg-ember" },
 } as const
 
-const ACTIVITY_ICONS: Record<PlatformActivity["kind"], LucideIcon> = {
+type PlatformActivityKind = "user" | "service" | "booking" | "payment"
+
+const ACTIVITY_ICONS: Record<PlatformActivityKind, LucideIcon> = {
   user: Users,
   service: ShieldCheck,
   booking: CalendarDays,
   payment: Wallet,
 }
 
-export default function AdminOverviewPage() {
-  const pendingServices = SAMPLE_PLATFORM_SERVICES.filter(
+export default async function AdminOverviewPage() {
+  const [users, services, bookings, paymentsData] = await Promise.all([
+    getAdminUsers(),
+    getAdminServices(),
+    getAdminBookings(),
+    getAdminPayments(),
+  ])
+
+  const pendingServices = services.filter(
     (service) => service.approvalStatus === "pending"
   )
-  const technicianCount = SAMPLE_PLATFORM_USERS.filter(
+  const technicianCount = users.filter(
     (user) => user.role === "technician"
   ).length
-  const totalRevenue = SAMPLE_PLATFORM_PAYMENTS.reduce(
-    (total, payment) => total + payment.amount,
-    0
-  )
+  const totalRevenue = paymentsData.totalRevenue
 
-  const roleCounts = (
-    ["customer", "technician", "admin"] as const
-  ).map((role) => ({
-    role,
-    count: SAMPLE_PLATFORM_USERS.filter((user) => user.role === role).length,
-  }))
+  const roleCounts = (["customer", "technician", "admin"] as const).map(
+    (role) => ({
+      role,
+      count: users.filter((user) => user.role === role).length,
+    })
+  )
 
   const statusData = BOOKING_STATUS_ORDER.map((status) => ({
     label: BOOKING_STATUS_META[status].label,
-    value: SAMPLE_PLATFORM_BOOKINGS.filter(
-      (booking) => booking.status === status
-    ).length,
+    value: bookings.filter((booking) => booking.status === status).length,
     color: BOOKING_STATUS_COLORS[status],
   }))
+
+  const revenueData = Array.from({ length: 6 }, (_, index) => {
+    const date = new Date()
+    date.setDate(1)
+    date.setMonth(date.getMonth() - (5 - index))
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+    return {
+      label: date.toLocaleDateString("en-US", { month: "short" }),
+      value: paymentsData.items
+        .filter((payment) => payment.paidAt.slice(0, 7) === key)
+        .reduce((total, payment) => total + payment.amount, 0),
+    }
+  })
+
+  const activity = [
+    ...users.slice(0, 2).map((user) => ({
+      id: `user-${user.id}`,
+      kind: "user" as const,
+      title: user.name,
+      detail: `Joined as ${ROLE_LABELS[user.role].toLowerCase()}.`,
+      href: "/dashboard/admin/users",
+      date: user.createdAt,
+    })),
+    ...services.slice(0, 1).map((service) => ({
+      id: `service-${service.id}`,
+      kind: "service" as const,
+      title: service.title,
+      detail: `Listed by ${service.technician.name}.`,
+      href: "/dashboard/admin/services",
+      date: service.createdAt,
+    })),
+    ...bookings.slice(0, 1).map((booking) => ({
+      id: `booking-${booking.id}`,
+      kind: "booking" as const,
+      title: booking.service.title,
+      detail: `Requested by ${booking.customer.name}.`,
+      href: "/dashboard/admin/bookings",
+      date: booking.createdAt,
+    })),
+    ...paymentsData.items.slice(0, 1).map((payment) => ({
+      id: `payment-${payment.id}`,
+      kind: "payment" as const,
+      title: payment.serviceTitle,
+      detail: `Paid by ${payment.customerName} · ${formatPrice(payment.amount)}.`,
+      href: "/dashboard/admin/transactions",
+      date: payment.paidAt,
+    })),
+  ]
+    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+    .slice(0, 5)
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -86,10 +137,6 @@ export default function AdminOverviewPage() {
           <p className="type-lead mt-3">
             Monitor the marketplace, review new services, and keep an eye on the
             people and payments behind every repair.
-          </p>
-          <p className="type-meta mt-2">
-            Preview workspace · sample platform data. No live operations are
-            connected.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -115,7 +162,7 @@ export default function AdminOverviewPage() {
           hint="Across all platform roles"
           icon={Users}
           label="Total users"
-          value={String(SAMPLE_PLATFORM_USERS.length)}
+          value={String(users.length)}
         />
         <StatCard
           hint="Approved and pending service providers"
@@ -130,7 +177,7 @@ export default function AdminOverviewPage() {
           value={String(pendingServices.length)}
         />
         <StatCard
-          hint="Sample paid transactions"
+          hint="Successful platform payments"
           icon={Wallet}
           label="Platform revenue"
           value={formatPrice(totalRevenue)}
@@ -142,16 +189,15 @@ export default function AdminOverviewPage() {
           <div>
             <h2 className="type-h3">Users by role</h2>
             <p className="mt-1 text-sm leading-6 text-muted-ink">
-              {SAMPLE_PLATFORM_USERS.length} sample accounts across the
-              marketplace.
+              {users.length} accounts across the marketplace.
             </p>
           </div>
 
           <div className="mt-5 space-y-4">
             {roleCounts.map(({ role, count }) => {
-              const percentage = Math.round(
-                (count / SAMPLE_PLATFORM_USERS.length) * 100
-              )
+              const percentage = users.length
+                ? Math.round((count / users.length) * 100)
+                : 0
               return (
                 <div key={role}>
                   <div className="flex items-center justify-between gap-3">
@@ -190,16 +236,16 @@ export default function AdminOverviewPage() {
 
         <BookingStatusChart
           data={statusData}
-          description="All sample bookings across the platform."
+          description="All bookings across the platform."
           title="Booking status"
-          total={SAMPLE_PLATFORM_BOOKINGS.length}
+          total={bookings.length}
         />
 
         <ChartCard
-          data={SAMPLE_MONTHLY_REVENUE}
-          description="Sample completed payments by month."
+          data={revenueData}
+          description="Successful payments grouped by month."
           fill
-          footerLabel="Sample platform revenue"
+          footerLabel="Platform revenue"
           title="Revenue overview"
         />
       </div>
@@ -209,44 +255,51 @@ export default function AdminOverviewPage() {
           <div>
             <h2 className="type-h3">Recent platform activity</h2>
             <p className="mt-1 text-sm text-muted-ink">
-              Sample account, service, booking, and payment events.
+              Latest account, service, booking, and payment events.
             </p>
           </div>
-          <Badge tone="neutral">Sample activity</Badge>
+          <Badge tone="neutral">Live records</Badge>
         </div>
 
-        <ol className="grid gap-px bg-line sm:grid-cols-2 xl:grid-cols-5">
-          {SAMPLE_PLATFORM_ACTIVITY.map((activity) => {
-            const Icon = ACTIVITY_ICONS[activity.kind]
-            return (
-              <li className="bg-card" key={activity.id}>
-                <Link
-                  className="group flex h-full flex-col p-5 transition-colors hover:bg-sage/20 focus-visible:bg-sage/20 focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-inset focus-visible:outline-none"
-                  href={activity.href}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="grid size-9 place-items-center rounded-[0.625rem] bg-sage text-spruce">
-                      <Icon aria-hidden className="size-4" strokeWidth={1.9} />
+        {activity.length === 0 ? (
+          <p className="px-5 py-8 text-sm text-muted-ink">
+            Platform activity will appear here as accounts, services, bookings,
+            and payments are created.
+          </p>
+        ) : (
+          <ol className="grid gap-px bg-line sm:grid-cols-2 xl:grid-cols-5">
+            {activity.map((item) => {
+              const Icon = ACTIVITY_ICONS[item.kind]
+              return (
+                <li className="bg-card" key={item.id}>
+                  <Link
+                    className="group flex h-full flex-col p-5 transition-colors hover:bg-sage/20 focus-visible:bg-sage/20 focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-inset focus-visible:outline-none"
+                    href={item.href}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="grid size-9 place-items-center rounded-[0.625rem] bg-sage text-spruce">
+                        <Icon aria-hidden className="size-4" strokeWidth={1.9} />
+                      </span>
+                      <span className="text-xs text-muted-ink">
+                        {formatDate(item.date)}
+                      </span>
+                    </div>
+                    <p className="mt-4 text-sm font-semibold text-ink">
+                      {item.title}
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-ink">
+                      {item.detail}
+                    </p>
+                    <span className="mt-auto inline-flex items-center gap-1 pt-4 text-xs font-semibold text-fern">
+                      View
+                      <ArrowRight aria-hidden className="size-3.5" />
                     </span>
-                    <span className="text-xs text-muted-ink">
-                      {formatDate(activity.date)}
-                    </span>
-                  </div>
-                  <p className="mt-4 text-sm font-semibold text-ink">
-                    {activity.title}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-ink">
-                    {activity.detail}
-                  </p>
-                  <span className="mt-auto inline-flex items-center gap-1 pt-4 text-xs font-semibold text-fern">
-                    View
-                    <ArrowRight aria-hidden className="size-3.5" />
-                  </span>
-                </Link>
-              </li>
-            )
-          })}
-        </ol>
+                  </Link>
+                </li>
+              )
+            })}
+          </ol>
+        )}
       </Card>
     </div>
   )

@@ -4,16 +4,15 @@ import Link from "next/link"
 import { RequestRepairDialog } from "@/components/bookings/request-repair-dialog"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import type { SampleService } from "@/data/sample-services"
 import { formatPrice } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import type { SessionUser } from "@/types"
+import type { Service, SessionUser } from "@/types"
 
 export function ServiceSummaryCard({
   service,
   viewer,
 }: {
-  service: SampleService
+  service: Service
   viewer: SessionUser | null
 }) {
   const ModeIcon = service.mode === "Home Visit" ? House : Store
@@ -63,7 +62,11 @@ export function ServiceSummaryCard({
 
       <div className="mt-6">
         {viewer?.role === "customer" ? (
-          <RequestRepairDialog serviceTitle={service.title} viewer={viewer} />
+          <RequestRepairDialog
+            serviceId={service.id}
+            serviceTitle={service.title}
+            viewer={viewer}
+          />
         ) : viewer ? (
           <span
             aria-disabled="true"

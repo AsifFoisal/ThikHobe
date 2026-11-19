@@ -9,7 +9,6 @@ import {
 import Link from "next/link"
 
 import { BookingStatusChart } from "@/components/dashboard/booking-status-chart"
-import { RecentActivityCard } from "@/components/customer/recent-activity-card"
 import { RecentBookingsCard } from "@/components/customer/recent-bookings-card"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { buttonVariants } from "@/components/ui/button"
@@ -18,45 +17,47 @@ import {
   BOOKING_STATUS_COLORS,
   BOOKING_STATUS_ORDER,
 } from "@/constants/booking-status-visuals"
-import {
-  SAMPLE_CUSTOMER_ACTIVITY,
-  SAMPLE_CUSTOMER_BOOKINGS,
-  SAMPLE_CUSTOMER_PAYMENTS,
-} from "@/data/sample-customer-bookings"
 import { formatPrice } from "@/lib/format"
+import { requireSessionUser } from "@/lib/server-api"
+import { getMyBookings, getMyPayments } from "@/lib/server-data"
 
 export const metadata: Metadata = {
   title: "Customer overview",
   description:
-    "Sample customer dashboard with repair statistics, recent bookings, activity, and booking status distribution.",
+    "Your repair statistics, recent bookings, and payment summary.",
 }
 
-export default function CustomerOverviewPage() {
-  const totalRequests = SAMPLE_CUSTOMER_BOOKINGS.length
-  const requestedJobs = SAMPLE_CUSTOMER_BOOKINGS.filter(
+export default async function CustomerOverviewPage() {
+  const user = await requireSessionUser()
+  const [bookings, payments] = await Promise.all([
+    getMyBookings(),
+    getMyPayments(),
+  ])
+
+  const totalRequests = bookings.length
+  const requestedJobs = bookings.filter(
     (booking) => booking.status === "requested"
   ).length
-  const activeJobs = SAMPLE_CUSTOMER_BOOKINGS.filter(
+  const activeJobs = bookings.filter(
     (booking) =>
       booking.status === "accepted" || booking.status === "in_progress"
   ).length
-  const completedJobs = SAMPLE_CUSTOMER_BOOKINGS.filter(
+  const completedJobs = bookings.filter(
     (booking) => booking.status === "completed"
   ).length
-  const paidTotal = SAMPLE_CUSTOMER_PAYMENTS.reduce(
+  const paidTotal = payments.reduce(
     (total, payment) => total + payment.amount,
     0
   )
 
   const statusData = BOOKING_STATUS_ORDER.map((status) => ({
     label: BOOKING_STATUS_META[status].label,
-    value: SAMPLE_CUSTOMER_BOOKINGS.filter(
-      (booking) => booking.status === status
-    ).length,
+    value: bookings.filter((booking) => booking.status === status).length,
     color: BOOKING_STATUS_COLORS[status],
   }))
 
-  const recentBookings = SAMPLE_CUSTOMER_BOOKINGS.slice(0, 5)
+  const recentBookings = bookings.slice(0, 5)
+  const firstName = user.name.split(" ")[0]
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -64,11 +65,8 @@ export default function CustomerOverviewPage() {
         <div className="max-w-2xl">
           <h1 className="type-h1">Customer overview</h1>
           <p className="type-lead mt-3">
-            Welcome back, Arif. Track active repairs, review requests, and keep
-            payments in one place.
-          </p>
-          <p className="type-meta mt-2">
-            Preview workspace · sample bookings and payments.
+            Welcome back, {firstName}. Track active repairs, review requests,
+            and keep payments in one place.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -109,7 +107,7 @@ export default function CustomerOverviewPage() {
           value={String(completedJobs)}
         />
         <StatCard
-          hint={`${SAMPLE_CUSTOMER_PAYMENTS.length} completed payments`}
+          hint={`${payments.length} completed payments`}
           icon={Wallet}
           label="Paid to date"
           value={formatPrice(paidTotal)}
@@ -120,8 +118,6 @@ export default function CustomerOverviewPage() {
         <RecentBookingsCard bookings={recentBookings} />
         <BookingStatusChart data={statusData} total={totalRequests} />
       </div>
-
-      <RecentActivityCard activities={SAMPLE_CUSTOMER_ACTIVITY} />
     </div>
   )
 }

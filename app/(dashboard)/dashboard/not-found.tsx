@@ -19,7 +19,7 @@ export default function DashboardNotFound() {
               Back to dashboard
             </Link>
           }
-          description="The workspace page you requested doesn't exist. The demo dashboard has a component gallery, a customer workspace, a technician workspace, and an admin workspace."
+          description="The workspace page you requested doesn't exist. Return to your dashboard to continue."
           icon={SearchX}
           title="Page not found"
         />

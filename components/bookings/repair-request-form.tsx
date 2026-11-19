@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -11,6 +12,7 @@ import {
   fieldTextareaClass,
 } from "@/components/forms/field"
 import { Button } from "@/components/ui/button"
+import { ApiError, bookingsApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import type { SessionUser } from "@/types"
 
@@ -54,8 +56,16 @@ function getTodayInputValue() {
   ].join("-")
 }
 
-export function RepairRequestForm({ viewer }: { viewer: SessionUser }) {
-  const [previewed, setPreviewed] = useState(false)
+export function RepairRequestForm({
+  serviceId,
+  viewer,
+}: {
+  serviceId: string
+  viewer: SessionUser
+}) {
+  const router = useRouter()
+  const [pending, setPending] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -76,15 +86,32 @@ export function RepairRequestForm({ viewer }: { viewer: SessionUser }) {
 
   const minDate = getTodayInputValue()
 
+  const onSubmit = handleSubmit(async (values) => {
+    setPending(true)
+    setServerError(null)
+
+    try {
+      await bookingsApi.create({
+        serviceId,
+        customerPhone: values.phone,
+        preferredDate: values.preferredDate,
+        address: values.address,
+        problemDescription: values.problemDescription,
+      })
+      router.push("/dashboard/customer/bookings")
+      router.refresh()
+    } catch (error) {
+      setServerError(
+        error instanceof ApiError
+          ? error.message
+          : "The repair request could not be sent. Please try again."
+      )
+      setPending(false)
+    }
+  })
+
   return (
-    <form
-      className="mt-6"
-      noValidate
-      onSubmit={handleSubmit(
-        () => setPreviewed(true),
-        () => setPreviewed(false)
-      )}
-    >
+    <form className="mt-6" noValidate onSubmit={onSubmit}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
           hint="From your account."
@@ -230,27 +257,25 @@ export function RepairRequestForm({ viewer }: { viewer: SessionUser }) {
         </Field>
       </div>
 
-      {previewed ? (
+      {serverError ? (
         <div
-          className="mt-5 rounded-lg border border-line bg-sage/60 px-4 py-3 text-sm leading-6 text-spruce"
-          role="status"
+          className="mt-5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 text-status-red"
+          role="alert"
         >
-          <strong className="font-semibold">Details validated.</strong> This
-          front-end prototype does not send repair requests to a backend. No
-          booking has been created.
+          {serverError}
         </div>
       ) : null}
 
       <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <Button size="lg" type="submit">
-          Send repair request
+        <Button disabled={pending} size="lg" type="submit">
+          {pending ? "Sending request…" : "Send repair request"}
         </Button>
         <p className="type-meta">No payment is collected with this request.</p>
       </div>
 
       <p className="mt-3 text-xs leading-5 text-muted-ink">
-        Preview only — submitting validates the form but does not create a
-        booking.
+        The technician reviews the request before accepting. The final amount is
+        confirmed after the repair is complete.
       </p>
     </form>
   )

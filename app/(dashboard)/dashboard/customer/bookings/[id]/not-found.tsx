@@ -19,7 +19,7 @@ export default function CustomerBookingNotFound() {
               Back to my bookings
             </Link>
           }
-          description="This sample booking doesn't exist or isn't part of the customer workspace."
+          description="This booking doesn't exist or isn't part of your account."
           icon={CalendarX}
           title="Booking not found"
         />

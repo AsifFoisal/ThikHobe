@@ -1,9 +1,11 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CheckCircle2, ChevronDown, LockKeyhole } from "lucide-react"
+import { ChevronDown, LockKeyhole } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import {
@@ -16,6 +18,8 @@ import { Avatar } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { SERVICE_CATEGORIES, SERVICE_MODES } from "@/constants"
+import { ApiError, servicesApi } from "@/lib/api"
+import { uploadImage } from "@/lib/upload"
 import { cn } from "@/lib/utils"
 import type { SessionUser } from "@/types"
 
@@ -38,7 +42,7 @@ const serviceSchema = z.object({
     .refine((value) => Number(value) > 0, "Base price must be greater than zero.")
     .refine(
       (value) => Number(value) <= 500000,
-      "Keep the base price under ৳500,000."
+      "Keep the base price under $500,000."
     ),
   estimatedDuration: z
     .string()
@@ -57,7 +61,10 @@ const serviceSchema = z.object({
 type ServiceValues = z.infer<typeof serviceSchema>
 
 export function AddServiceForm({ technician }: { technician: SessionUser }) {
-  const [previewed, setPreviewed] = useState(false)
+  const router = useRouter()
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [pending, setPending] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const {
     register,
     setValue,
@@ -80,20 +87,49 @@ export function AddServiceForm({ technician }: { technician: SessionUser }) {
   })
 
   const setImage = (file: File | null) => {
+    setImageFile(file)
     setValue("image", file?.name ?? "", {
       shouldDirty: true,
       shouldValidate: true,
     })
   }
 
+  const onSubmit = handleSubmit(async (values) => {
+    if (!imageFile) {
+      setServerError("Choose a service image.")
+      return
+    }
+
+    setPending(true)
+    setServerError(null)
+
+    try {
+      const image = await uploadImage(imageFile)
+      await servicesApi.create({
+        title: values.title.trim(),
+        category: values.category,
+        description: values.description.trim(),
+        basePrice: Number(values.basePrice),
+        estimatedDuration: values.estimatedDuration.trim(),
+        mode: values.mode,
+        area: values.area.trim(),
+        image,
+      })
+      toast.success("Service submitted for approval")
+      router.push("/dashboard/technician/my-services")
+      router.refresh()
+    } catch (error) {
+      setServerError(
+        error instanceof ApiError
+          ? error.message
+          : "The service could not be created."
+      )
+      setPending(false)
+    }
+  })
+
   return (
-    <form
-      noValidate
-      onSubmit={handleSubmit(
-        () => setPreviewed(true),
-        () => setPreviewed(false)
-      )}
-    >
+    <form noValidate onSubmit={onSubmit}>
       <div className="flex items-center gap-3 rounded-lg bg-paper p-3">
         <Avatar name={technician.name} size="sm" src={technician.image} />
         <div className="min-w-0 flex-1">
@@ -239,7 +275,7 @@ export function AddServiceForm({ technician }: { technician: SessionUser }) {
             error={errors.basePrice?.message}
             hint="Starting price before any additional parts."
             htmlFor="service-price"
-            label="Base price (BDT)"
+            label="Base price (USD)"
             required
           >
             <input
@@ -253,11 +289,11 @@ export function AddServiceForm({ technician }: { technician: SessionUser }) {
                 errors.basePrice && "border-destructive"
               )}
               id="service-price"
-              inputMode="numeric"
+              inputMode="decimal"
               min="1"
-              placeholder="2500"
+              placeholder="120"
               required
-              step="1"
+              step="0.01"
               type="number"
             />
           </Field>
@@ -318,40 +354,26 @@ export function AddServiceForm({ technician }: { technician: SessionUser }) {
         </div>
       </fieldset>
 
-      {previewed ? (
+      {serverError ? (
         <div
-          className="mt-6 flex gap-3 rounded-lg border border-line bg-sage/50 px-4 py-3"
-          role="status"
+          className="mt-6 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 text-status-red"
+          role="alert"
         >
-          <CheckCircle2
-            aria-hidden
-            className="mt-0.5 size-4 shrink-0 text-fern"
-          />
-          <div>
-            <p className="text-sm font-semibold text-spruce">
-              Ready for approval
-            </p>
-            <p className="mt-1 text-sm leading-6 text-muted-ink">
-              This front-end prototype validates the form but does not upload or
-              save anything. In a connected build, the service would be created
-              with Pending approval and Availability on, then wait for an
-              administrator to review it.
-            </p>
-          </div>
+          {serverError}
         </div>
       ) : null}
 
       <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <Button size="lg" type="submit">
-          Submit for approval
+        <Button disabled={pending} size="lg" type="submit">
+          {pending ? "Submitting…" : "Submit for approval"}
         </Button>
         <p className="type-meta">
           New services are reviewed before they go live.
         </p>
       </div>
       <p className="mt-3 text-xs leading-5 text-muted-ink">
-        Preview only — no service is created, no image is uploaded, and no
-        administrator is notified.
+        The service is created with Pending approval and Availability on. An
+        administrator reviews it before it appears publicly.
       </p>
     </form>
   )

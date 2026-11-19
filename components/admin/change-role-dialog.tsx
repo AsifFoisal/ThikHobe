@@ -1,31 +1,52 @@
 "use client"
 
 import { Dialog } from "@base-ui/react/dialog"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import { ROLE_LABELS } from "@/constants"
+import { ApiError, usersApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import type { User, UserRole } from "@/types"
 
 const ROLES: UserRole[] = ["customer", "technician", "admin"]
 
 export function ChangeRoleDialog({ user }: { user: User }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [role, setRole] = useState<UserRole>(user.role)
-  const [previewed, setPreviewed] = useState(false)
+  const [pending, setPending] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next)
     if (!next) {
       setRole(user.role)
-      setPreviewed(false)
+      setServerError(null)
     }
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setPreviewed(true)
+    setPending(true)
+    setServerError(null)
+
+    try {
+      await usersApi.updateRole(user.id, role)
+      toast.success("User role updated")
+      setOpen(false)
+      router.refresh()
+    } catch (error) {
+      setServerError(
+        error instanceof ApiError
+          ? error.message
+          : "The role could not be updated."
+      )
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
@@ -40,8 +61,8 @@ export function ChangeRoleDialog({ user }: { user: User }) {
         <Dialog.Popup className="fixed top-1/2 left-1/2 z-[60] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-line bg-card p-6 text-ink shadow-lift transition-[scale,opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0">
           <Dialog.Title className="type-h3">Change role</Dialog.Title>
           <Dialog.Description className="mt-2 text-sm leading-6 text-muted-ink">
-            Choose a new role for {user.name}. This prototype does not update
-            accounts or permissions.
+            Choose a new role for {user.name}. The change applies to the
+            existing account immediately.
           </Dialog.Description>
 
           <form className="mt-5" onSubmit={handleSubmit}>
@@ -58,7 +79,7 @@ export function ChangeRoleDialog({ user }: { user: User }) {
               id={`role-${user.id}`}
               onChange={(event) => {
                 setRole(event.target.value as UserRole)
-                setPreviewed(false)
+                setServerError(null)
               }}
               value={role}
             >
@@ -69,16 +90,13 @@ export function ChangeRoleDialog({ user }: { user: User }) {
               ))}
             </select>
 
-            {previewed ? (
-              <div
-                className="mt-4 rounded-lg border border-line bg-sage/50 px-4 py-3 text-sm leading-6 text-spruce"
-                role="status"
+            {serverError ? (
+              <p
+                className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs leading-5 text-status-red"
+                role="alert"
               >
-                <strong className="font-semibold">Preview only.</strong> This
-                user remains a {ROLE_LABELS[user.role].toLowerCase()}. In a
-                connected build, saving would request the new role and its
-                permissions from the backend.
-              </div>
+                {serverError}
+              </p>
             ) : null}
 
             <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-4">
@@ -87,8 +105,12 @@ export function ChangeRoleDialog({ user }: { user: User }) {
               >
                 Cancel
               </Dialog.Close>
-              <Button size="sm" type="submit">
-                Review change
+              <Button
+                disabled={pending || role === user.role}
+                size="sm"
+                type="submit"
+              >
+                {pending ? "Saving…" : "Save role"}
               </Button>
             </div>
           </form>

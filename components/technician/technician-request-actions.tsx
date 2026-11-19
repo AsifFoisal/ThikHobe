@@ -1,13 +1,15 @@
 "use client"
 
 import { Dialog } from "@base-ui/react/dialog"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import { Button, buttonVariants } from "@/components/ui/button"
-import { previewToast } from "@/lib/preview-toast"
-import { cn } from "@/lib/utils"
+import { ApiError, bookingsApi } from "@/lib/api"
 import { formatPrice } from "@/lib/format"
-import type { Booking } from "@/types"
+import { cn } from "@/lib/utils"
+import type { Booking, BookingStatus } from "@/types"
 
 type RequestAction = "accept" | "reject" | "start" | "complete"
 
@@ -18,36 +20,38 @@ const dialogCopy: Record<
   accept: {
     title: "Accept this request?",
     description:
-      "Preview only — accepting would assign this repair to you. No booking changes and no customer notification is sent in this prototype.",
+      "The repair will be assigned to you and the booking moves to Accepted.",
     confirm: "Accept request",
   },
   reject: {
     title: "Reject this request?",
     description:
-      "Preview only — rejecting would close the request. No records change in this prototype.",
+      "The request will be closed and the customer will see it as rejected.",
     confirm: "Reject request",
     destructive: true,
   },
   start: {
     title: "Start this repair?",
     description:
-      "Preview only — the booking would move to In Progress. No status is changed here.",
+      "The booking will move to In Progress so the customer can follow the work.",
     confirm: "Start work",
   },
 }
 
 export function TechnicianRequestActions({ booking }: { booking: Booking }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [action, setAction] = useState<RequestAction | null>(null)
   const [finalAmount, setFinalAmount] = useState("")
   const [amountError, setAmountError] = useState("")
-  const [previewed, setPreviewed] = useState(false)
+  const [pending, setPending] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const openAction = (nextAction: RequestAction) => {
     setAction(nextAction)
     setFinalAmount(booking.finalAmount ? String(booking.finalAmount) : "")
     setAmountError("")
-    setPreviewed(false)
+    setServerError(null)
     setOpen(true)
   }
 
@@ -55,12 +59,35 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
     setOpen(nextOpen)
     if (!nextOpen) {
       setAction(null)
-      setPreviewed(false)
       setAmountError("")
+      setServerError(null)
     }
   }
 
-  const handleComplete = (event: React.FormEvent<HTMLFormElement>) => {
+  const updateStatus = async (status: BookingStatus, amount?: number) => {
+    setPending(true)
+    setServerError(null)
+
+    try {
+      await bookingsApi.updateStatus(booking.id, {
+        status,
+        ...(amount !== undefined ? { finalAmount: amount } : {}),
+      })
+      toast.success("Booking status updated")
+      setOpen(false)
+      router.refresh()
+    } catch (error) {
+      setServerError(
+        error instanceof ApiError
+          ? error.message
+          : "The booking status could not be updated."
+      )
+    } finally {
+      setPending(false)
+    }
+  }
+
+  const handleComplete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const amount = Number(finalAmount)
 
@@ -70,17 +97,14 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
     }
 
     setAmountError("")
-    setPreviewed(true)
+    await updateStatus("completed", Math.round(amount * 100) / 100)
   }
 
-  if (
-    !["requested", "accepted", "in_progress"].includes(booking.status)
-  ) {
+  if (!["requested", "accepted", "in_progress"].includes(booking.status)) {
     return null
   }
 
-  const copy =
-    action && action !== "complete" ? dialogCopy[action] : null
+  const copy = action && action !== "complete" ? dialogCopy[action] : null
   const isComplete = action === "complete"
 
   return (
@@ -121,8 +145,8 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                 Mark this job completed
               </Dialog.Title>
               <Dialog.Description className="mt-2 text-sm leading-6 text-muted-ink">
-                Enter the final amount for this repair. This prototype
-                validates the amount but does not save a status or payment.
+                Enter the final amount for this repair. Payment opens for the
+                customer only after completion.
               </Dialog.Description>
 
               <form className="mt-5" noValidate onSubmit={handleComplete}>
@@ -139,7 +163,7 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                   className="mt-4 block text-[0.8125rem] font-medium text-ink"
                   htmlFor={`final-amount-${booking.id}`}
                 >
-                  Final amount (BDT)
+                  Final amount (USD)
                   <span aria-hidden className="text-fern">
                     {" "}
                     *
@@ -158,15 +182,15 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                   )}
                   id={`final-amount-${booking.id}`}
                   inputMode="decimal"
-                  min="1"
+                  min="0.01"
                   onChange={(event) => {
                     setFinalAmount(event.target.value)
                     setAmountError("")
-                    setPreviewed(false)
+                    setServerError(null)
                   }}
                   placeholder="Enter the agreed final amount"
                   required
-                  step="1"
+                  step="0.01"
                   type="number"
                   value={finalAmount}
                 />
@@ -187,17 +211,13 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                   </p>
                 )}
 
-                {previewed ? (
-                  <div
-                    className="mt-4 rounded-lg border border-line bg-sage/50 px-4 py-3 text-sm leading-6 text-spruce"
-                    role="status"
+                {serverError ? (
+                  <p
+                    className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs leading-5 text-status-red"
+                    role="alert"
                   >
-                    <strong className="font-semibold">
-                      Validated locally.
-                    </strong>{" "}
-                    No status or final amount was saved. A connected build would
-                    submit the new completion and amount to the backend.
-                  </div>
+                    {serverError}
+                  </p>
                 ) : null}
 
                 <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-4">
@@ -209,8 +229,8 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                   >
                     Cancel
                   </Dialog.Close>
-                  <Button disabled={previewed} size="sm" type="submit">
-                    Save completion
+                  <Button disabled={pending} size="sm" type="submit">
+                    {pending ? "Saving…" : "Save completion"}
                   </Button>
                 </div>
               </form>
@@ -221,6 +241,14 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
               <Dialog.Description className="mt-2 text-sm leading-6 text-muted-ink">
                 {copy.description}
               </Dialog.Description>
+              {serverError ? (
+                <p
+                  className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs leading-5 text-status-red"
+                  role="alert"
+                >
+                  {serverError}
+                </p>
+              ) : null}
               <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-4">
                 <Dialog.Close
                   className={buttonVariants({
@@ -230,17 +258,22 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                 >
                   Keep request
                 </Dialog.Close>
-                <Dialog.Close
-                  className={buttonVariants({
-                    size: "sm",
-                    variant: copy.destructive ? "destructive" : "default",
-                  })}
+                <Button
+                  disabled={pending}
                   onClick={() =>
-                    previewToast("The request status is unchanged.")
+                    updateStatus(
+                      action === "accept"
+                        ? "accepted"
+                        : action === "reject"
+                          ? "rejected"
+                          : "in_progress"
+                    )
                   }
+                  size="sm"
+                  variant={copy.destructive ? "destructive" : "default"}
                 >
-                  {copy.confirm}
-                </Dialog.Close>
+                  {pending ? "Saving…" : copy.confirm}
+                </Button>
               </div>
             </>
           ) : null}

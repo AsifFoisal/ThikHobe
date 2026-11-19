@@ -1,13 +1,15 @@
 import type { Metadata } from "next"
 
 import { ProfileView } from "@/components/profile/profile-view"
+import { requireSessionUser } from "@/lib/server-api"
 
 export const metadata: Metadata = {
   title: "Profile",
   description:
-    "Shared FixMate profile surface with local validation and image preview for customer, technician, and admin demo identities.",
+    "Update your FixMate name, contact details, bio, and profile photo.",
 }
 
-export default function ProfilePage() {
-  return <ProfileView />
+export default async function ProfilePage() {
+  const user = await requireSessionUser()
+  return <ProfileView user={user} />
 }

@@ -23,7 +23,7 @@ export function BookingStatusChart({
   data,
   total,
   title = "Booking status",
-  description = "A sample breakdown of all your repair requests.",
+  description = "A breakdown of all your repair requests.",
   className,
 }: BookingStatusChartProps) {
   const summary = data

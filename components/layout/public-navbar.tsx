@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState, type KeyboardEvent } from "react"
 
 import { Logo } from "@/components/layout/logo"
@@ -19,7 +19,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PUBLIC_NAV, ROLE_DASHBOARD } from "@/constants"
-import { previewToast } from "@/lib/preview-toast"
+import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import type { SessionUser } from "@/types"
 
@@ -69,7 +69,13 @@ function NavLink({
   )
 }
 
-function ProfileMenu({ user }: { user: SessionUser }) {
+function ProfileMenu({
+  user,
+  onSignOut,
+}: {
+  user: SessionUser
+  onSignOut: () => void
+}) {
   return (
     <Menu.Root modal={false}>
       <Menu.Trigger className="group flex h-10 items-center gap-2.5 rounded-full border border-line bg-card py-1 pr-3 pl-1 transition-colors outline-none hover:border-line-strong hover:bg-sage/30 focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-offset-2 focus-visible:ring-offset-paper data-popup-open:bg-sage/50">
@@ -125,12 +131,9 @@ function ProfileMenu({ user }: { user: SessionUser }) {
 
             <Menu.Separator className={menuSeparatorClass} />
 
-            {/* Presentation-only: authentication is not wired in this prototype. */}
             <Menu.Item
               className={cn(menuItemClass, "text-muted-ink")}
-              onClick={() =>
-                previewToast("Sign-out is not connected in this preview.")
-              }
+              onClick={onSignOut}
             >
               <LogOut aria-hidden className="size-4" />
               Sign out
@@ -169,11 +172,13 @@ function MobilePanel({
   isAuthLoading,
   pathname,
   onClose,
+  onSignOut,
 }: {
   user: SessionUser | null
   isAuthLoading: boolean
   pathname: string
   onClose: () => void
+  onSignOut: () => void
 }) {
   return (
     <div
@@ -231,14 +236,11 @@ function MobilePanel({
                   <UserRound aria-hidden className="size-4 text-muted-ink" />
                   Update profile
                 </Link>
-                {/* Presentation-only: authentication is not wired in this prototype. */}
                 <button
                   className={cn(mobileActionClass, "w-full text-left")}
                   onClick={() => {
                     onClose()
-                    previewToast(
-                      "Sign-out is not connected in this preview."
-                    )
+                    onSignOut()
                   }}
                   type="button"
                 >
@@ -284,7 +286,16 @@ export function PublicNavbar({
   isAuthLoading = false,
 }: PublicNavbarProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut()
+    } finally {
+      router.refresh()
+    }
+  }
 
   const closeMobile = () => setMobileOpen(false)
   const closeMobileAndRestoreFocus = () => {
@@ -324,7 +335,7 @@ export function PublicNavbar({
           <AuthSkeleton />
         ) : user ? (
           <div className="ml-auto hidden items-center lg:flex">
-            <ProfileMenu user={user} />
+            <ProfileMenu onSignOut={handleSignOut} user={user} />
           </div>
         ) : (
           <div className="ml-auto hidden items-center gap-2 lg:flex">
@@ -369,6 +380,7 @@ export function PublicNavbar({
         <MobilePanel
           isAuthLoading={isAuthLoading}
           onClose={closeMobile}
+          onSignOut={handleSignOut}
           pathname={pathname}
           user={user}
         />

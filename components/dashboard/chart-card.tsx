@@ -30,7 +30,7 @@ interface ChartCardProps {
 export function ChartCard({
   title,
   description,
-  footerLabel = "Sample weekly requests",
+  footerLabel = "Weekly requests",
   data,
   fill = false,
   className,

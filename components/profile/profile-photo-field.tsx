@@ -15,7 +15,15 @@ function formatFileSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export function ProfilePhotoField({ name }: { name: string }) {
+export function ProfilePhotoField({
+  name,
+  image,
+  onChange,
+}: {
+  name: string
+  image?: string
+  onChange: (file: File | null) => void
+}) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [fileSize, setFileSize] = useState<number | null>(null)
@@ -55,11 +63,13 @@ export function ProfilePhotoField({ name }: { name: string }) {
     setFileName(file.name)
     setFileSize(file.size)
     setPreviewUrl(URL.createObjectURL(file))
+    onChange(file)
   }
 
   const clear = () => {
     reset()
     setError(null)
+    onChange(null)
   }
 
   const input = (
@@ -82,7 +92,7 @@ export function ProfilePhotoField({ name }: { name: string }) {
           className="size-20 text-lg"
           name={name}
           size="lg"
-          src={previewUrl ?? undefined}
+          src={previewUrl ?? image}
         />
 
         <div className="min-w-0">
@@ -120,8 +130,7 @@ export function ProfilePhotoField({ name }: { name: string }) {
               className="mt-2 text-xs leading-5 text-muted-ink"
               id="profile-photo-hint"
             >
-              JPEG, PNG, or WebP · 5 MB maximum. File selection and preview
-              happen locally.
+              JPEG, PNG, or WebP · 5 MB maximum.
             </p>
           )}
         </div>
@@ -129,7 +138,7 @@ export function ProfilePhotoField({ name }: { name: string }) {
 
       {previewUrl ? (
         <p className="mt-3 text-xs leading-5 text-muted-ink">
-          Local preview only. ImgBB upload is not connected in this prototype.
+          Preview ready. The image uploads when you save the profile.
         </p>
       ) : null}
 

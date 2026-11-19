@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { toast } from "sonner"
 
-import { previewToast } from "@/lib/preview-toast"
+import { ApiError, servicesApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
 interface AvailabilityToggleProps {
+  serviceId: string
   serviceTitle: string
   initialAvailable: boolean
   disabled?: boolean
@@ -13,13 +15,39 @@ interface AvailabilityToggleProps {
 }
 
 export function AvailabilityToggle({
+  serviceId,
   serviceTitle,
   initialAvailable,
   disabled = false,
   disabledReason,
 }: AvailabilityToggleProps) {
   const [available, setAvailable] = useState(initialAvailable)
+  const [pending, setPending] = useState(false)
   const [announcement, setAnnouncement] = useState("")
+
+  const toggle = async () => {
+    const next = !available
+    setPending(true)
+
+    try {
+      const updated = await servicesApi.setAvailability(serviceId, next)
+      setAvailable(updated.available)
+      setAnnouncement(
+        `Availability is now ${updated.available ? "available" : "unavailable"}.`
+      )
+      toast.success(
+        updated.available ? "Service is available" : "Service is unavailable"
+      )
+    } catch (error) {
+      toast.error(
+        error instanceof ApiError
+          ? error.message
+          : "Availability could not be updated."
+      )
+    } finally {
+      setPending(false)
+    }
+  }
 
   return (
     <div className="inline-flex items-center gap-2">
@@ -32,17 +60,8 @@ export function AvailabilityToggle({
             ? "border-fern bg-fern"
             : "border-line-strong bg-sage-strong"
         )}
-        disabled={disabled}
-        onClick={() => {
-          const next = !available
-          setAvailable(next)
-          setAnnouncement(
-            `Preview only — availability is not saved. Preview is now ${
-              next ? "available" : "unavailable"
-            }.`
-          )
-          previewToast("Availability is not saved.")
-        }}
+        disabled={disabled || pending}
+        onClick={toggle}
         role="switch"
         title={disabled ? disabledReason : undefined}
         type="button"
@@ -58,9 +77,11 @@ export function AvailabilityToggle({
       <span className="text-xs text-muted-ink">
         {disabled
           ? disabledReason
-          : available
-            ? "Available"
-            : "Unavailable"}
+          : pending
+            ? "Saving…"
+            : available
+              ? "Available"
+              : "Unavailable"}
       </span>
       <span aria-live="polite" className="sr-only">
         {announcement}

@@ -10,15 +10,15 @@ import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ApprovalStatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/state"
-import { SAMPLE_PLATFORM_SERVICES } from "@/data/sample-platform"
 import { formatDate, formatPrice } from "@/lib/format"
+import { getAdminServices } from "@/lib/server-data"
 import { cn } from "@/lib/utils"
 import type { ServiceApprovalStatus } from "@/types"
 
 export const metadata: Metadata = {
   title: "Service approvals",
   description:
-    "Sample service approval queue for FixMate administrators, with pending, approved, and rejected filters.",
+    "Service approval queue with pending, approved, and rejected filters.",
 }
 
 const FILTERS = [
@@ -47,22 +47,24 @@ export default async function AdminServicesPage({
     ? rawStatus
     : "pending"
 
+  const allServices = await getAdminServices()
+
   const counts = {
-    all: SAMPLE_PLATFORM_SERVICES.length,
-    pending: SAMPLE_PLATFORM_SERVICES.filter(
+    all: allServices.length,
+    pending: allServices.filter(
       (service) => service.approvalStatus === "pending"
     ).length,
-    approved: SAMPLE_PLATFORM_SERVICES.filter(
+    approved: allServices.filter(
       (service) => service.approvalStatus === "approved"
     ).length,
-    rejected: SAMPLE_PLATFORM_SERVICES.filter(
+    rejected: allServices.filter(
       (service) => service.approvalStatus === "rejected"
     ).length,
   }
 
   const services =
     activeFilter === "all"
-      ? [...SAMPLE_PLATFORM_SERVICES].sort((a, b) => {
+      ? [...allServices].sort((a, b) => {
           const rank = (status: ServiceApprovalStatus) =>
             status === "pending" ? 0 : 1
           return (
@@ -70,9 +72,9 @@ export default async function AdminServicesPage({
             Date.parse(b.createdAt) - Date.parse(a.createdAt)
           )
         })
-      : SAMPLE_PLATFORM_SERVICES.filter(
-          (service) => service.approvalStatus === activeFilter
-        ).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+      : allServices
+          .filter((service) => service.approvalStatus === activeFilter)
+          .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -81,10 +83,6 @@ export default async function AdminServicesPage({
         <p className="type-lead mt-3">
           Review new listings before they reach customers, with pending services
           surfaced first.
-        </p>
-        <p className="type-meta mt-2">
-          Preview workspace · sample services. Approve and reject are
-          confirmation previews and do not change records.
         </p>
       </div>
 
@@ -150,7 +148,7 @@ export default async function AdminServicesPage({
                 View pending queue
               </Link>
             }
-            description="There are no sample services in this approval state."
+            description="There are no services in this approval state."
             icon={ShieldCheck}
             title="No services found"
           />

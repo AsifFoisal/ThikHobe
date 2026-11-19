@@ -13,8 +13,9 @@ import {
   hasNonDefaultServiceQuery,
   hasServiceFilters,
   parseServicesQuery,
-  queryServices,
-} from "@/data/services-query"
+  SERVICES_PAGE_SIZE,
+} from "@/lib/services-query"
+import { getPublicServices } from "@/lib/server-data"
 
 export const metadata: Metadata = {
   title: "Browse repair services",
@@ -28,7 +29,10 @@ export default async function ServicesPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const query = parseServicesQuery(await searchParams)
-  const { items, pagination } = queryServices(query)
+  const { items, pagination } = await getPublicServices({
+    ...query,
+    limit: SERVICES_PAGE_SIZE,
+  })
   const state = { ...query, page: pagination.page }
   const activeFilters = hasServiceFilters(query)
   const nonDefaultQuery = hasNonDefaultServiceQuery(query)
@@ -131,7 +135,6 @@ export default async function ServicesPage({
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((service, index) => (
               <ServiceCard
-                imagePosition={service.imagePosition}
                 key={service.id}
                 priority={index < 3}
                 service={service}

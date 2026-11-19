@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -10,6 +11,8 @@ import { z } from "zod"
 import { PasswordField } from "@/components/auth/password-field"
 import { Field, fieldControlClass } from "@/components/forms/field"
 import { Button } from "@/components/ui/button"
+import { ROLE_DASHBOARD } from "@/constants"
+import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 const signInSchema = z.object({
@@ -24,7 +27,9 @@ const signInSchema = z.object({
 type SignInValues = z.infer<typeof signInSchema>
 
 export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
-  const [previewed, setPreviewed] = useState(false)
+  const router = useRouter()
+  const [submitting, setSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -39,6 +44,33 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
   const signUpHref = redirectTo
     ? `/sign-up?redirect=${encodeURIComponent(redirectTo)}`
     : "/sign-up"
+
+  const onSubmit = handleSubmit(async (values) => {
+    setSubmitting(true)
+    setServerError(null)
+
+    const { data, error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+    })
+
+    if (error) {
+      setServerError(error.message || "Invalid email or password.")
+      setSubmitting(false)
+      return
+    }
+
+    const role = data?.user?.role
+    const destination =
+      redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+        ? redirectTo
+        : ROLE_DASHBOARD[
+            role === "technician" || role === "admin" ? role : "customer"
+          ]
+
+    router.push(destination)
+    router.refresh()
+  })
 
   return (
     <div className="w-full max-w-[26rem]">
@@ -57,14 +89,7 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
         </div>
       ) : null}
 
-      <form
-        className="mt-7"
-        noValidate
-        onSubmit={handleSubmit(
-          () => setPreviewed(true),
-          () => setPreviewed(false)
-        )}
-      >
+      <form className="mt-7" noValidate onSubmit={onSubmit}>
         <div className="space-y-4">
           <Field
             error={errors.email?.message}
@@ -98,22 +123,25 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
           />
         </div>
 
-        {previewed ? (
+        {serverError ? (
           <div
-            className="mt-5 rounded-lg border border-line bg-sage/60 px-4 py-3 text-sm leading-6 text-spruce"
-            role="status"
+            className="mt-5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 text-status-red"
+            role="alert"
           >
-            <strong className="font-semibold">Details validated.</strong> No
-            session was started. Authentication is not connected in this
-            front-end prototype.
+            {serverError}
           </div>
         ) : null}
 
-        <Button className="mt-6 w-full" size="lg" type="submit">
-          Sign in
+        <Button
+          className="mt-6 w-full"
+          disabled={submitting}
+          size="lg"
+          type="submit"
+        >
+          {submitting ? "Signing in…" : "Sign in"}
         </Button>
         <p className="mt-3 text-xs leading-5 text-muted-ink">
-          Preview only — this does not sign in or connect to BetterAuth.
+          Sessions are managed by Better Auth.
         </p>
       </form>
 

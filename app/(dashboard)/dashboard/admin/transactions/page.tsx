@@ -9,37 +9,39 @@ import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/state"
-import {
-  SAMPLE_MONTHLY_REVENUE,
-  SAMPLE_PLATFORM_PAYMENTS,
-} from "@/data/sample-platform"
 import { formatDate, formatPrice } from "@/lib/format"
+import { getAdminPayments } from "@/lib/server-data"
 
 export const metadata: Metadata = {
   title: "Transactions",
   description:
-    "Sample platform payment transactions, total revenue, and monthly revenue overview.",
+    "Platform payment transactions, total revenue, and monthly revenue overview.",
 }
 
-export default function AdminTransactionsPage() {
-  const payments = SAMPLE_PLATFORM_PAYMENTS
-  const totalRevenue = payments.reduce(
-    (total, payment) => total + payment.amount,
-    0
-  )
+export default async function AdminTransactionsPage() {
+  const { items: payments, totalRevenue } = await getAdminPayments()
   const averagePayment =
-    payments.length > 0 ? Math.round(totalRevenue / payments.length) : 0
+    payments.length > 0 ? totalRevenue / payments.length : 0
+
+  const revenueData = Array.from({ length: 6 }, (_, index) => {
+    const date = new Date()
+    date.setDate(1)
+    date.setMonth(date.getMonth() - (5 - index))
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+    return {
+      label: date.toLocaleDateString("en-US", { month: "short" }),
+      value: payments
+        .filter((payment) => payment.paidAt.slice(0, 7) === key)
+        .reduce((total, payment) => total + payment.amount, 0),
+    }
+  })
 
   const header = (
     <div className="max-w-2xl">
       <h1 className="type-h1">Transactions</h1>
       <p className="type-lead mt-3">
-        Every sample payment on the platform, with the people, service, and
-        transaction reference behind it.
-      </p>
-      <p className="type-meta mt-2">
-        Preview workspace · sample receipts. No live payment provider is
-        connected.
+        Every payment on the platform, with the people, service, and transaction
+        reference behind it.
       </p>
     </div>
   )
@@ -73,7 +75,7 @@ export default function AdminTransactionsPage() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
-          hint="All sample payments"
+          hint="All successful payments"
           icon={Wallet}
           label="Total revenue"
           value={formatPrice(totalRevenue)}
@@ -93,9 +95,9 @@ export default function AdminTransactionsPage() {
       </div>
 
       <ChartCard
-        data={SAMPLE_MONTHLY_REVENUE}
-        description="Sample completed payments grouped by month."
-        footerLabel="Sample platform revenue"
+        data={revenueData}
+        description="Successful payments grouped by month."
+        footerLabel="Platform revenue"
         title="Revenue overview"
       />
 
@@ -103,9 +105,7 @@ export default function AdminTransactionsPage() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="type-h3">All transactions</h2>
           <div className="flex items-center gap-2">
-            <Badge tone="neutral">
-              {payments.length} payments
-            </Badge>
+            <Badge tone="neutral">{payments.length} payments</Badge>
             <p className="text-sm font-semibold text-ink tabular">
               {formatPrice(totalRevenue)}
             </p>

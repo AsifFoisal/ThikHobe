@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight, UserRound, Wrench } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
@@ -10,6 +11,8 @@ import { z } from "zod"
 import { PasswordField } from "@/components/auth/password-field"
 import { Field, fieldControlClass } from "@/components/forms/field"
 import { Button } from "@/components/ui/button"
+import { ROLE_DASHBOARD } from "@/constants"
+import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 const signUpSchema = z.object({
@@ -46,7 +49,9 @@ const accountTypes = [
 ] as const
 
 export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
-  const [previewed, setPreviewed] = useState(false)
+  const router = useRouter()
+  const [submitting, setSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -69,6 +74,32 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
     ? `/sign-in?redirect=${encodeURIComponent(redirectTo)}`
     : "/sign-in"
 
+  const onSubmit = handleSubmit(async (values) => {
+    setSubmitting(true)
+    setServerError(null)
+
+    const { error } = await authClient.signUp.email({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      role: values.role,
+    })
+
+    if (error) {
+      setServerError(error.message || "Could not create your account.")
+      setSubmitting(false)
+      return
+    }
+
+    const destination =
+      redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+        ? redirectTo
+        : ROLE_DASHBOARD[values.role]
+
+    router.push(destination)
+    router.refresh()
+  })
+
   return (
     <div className="w-full max-w-[26rem]">
       <h1 className="type-h1">Create your account.</h1>
@@ -86,14 +117,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
         </div>
       ) : null}
 
-      <form
-        className="mt-7"
-        noValidate
-        onSubmit={handleSubmit(
-          () => setPreviewed(true),
-          () => setPreviewed(false)
-        )}
-      >
+      <form className="mt-7" noValidate onSubmit={onSubmit}>
         <div className="space-y-4">
           <Field
             error={errors.name?.message}
@@ -217,23 +241,26 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
           </fieldset>
         </div>
 
-        {previewed ? (
+        {serverError ? (
           <div
-            className="mt-5 rounded-lg border border-line bg-sage/60 px-4 py-3 text-sm leading-6 text-spruce"
-            role="status"
+            className="mt-5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm leading-6 text-status-red"
+            role="alert"
           >
-            <strong className="font-semibold">Details validated.</strong> No
-            account was created. Authentication is not connected in this
-            front-end prototype.
+            {serverError}
           </div>
         ) : null}
 
-        <Button className="mt-6 w-full" size="lg" type="submit">
-          Create account
+        <Button
+          className="mt-6 w-full"
+          disabled={submitting}
+          size="lg"
+          type="submit"
+        >
+          {submitting ? "Creating account…" : "Create account"}
         </Button>
         <p className="mt-3 text-xs leading-5 text-muted-ink">
-          Preview only — this does not create an account or connect to
-          BetterAuth.
+          Your password is hashed by Better Auth. Admin accounts are created
+          internally.
         </p>
       </form>
 

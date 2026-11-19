@@ -1,9 +1,12 @@
 import { DashboardRouteShell } from "@/components/dashboard/dashboard-route-shell"
+import { requireSessionUser } from "@/lib/server-api"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return <DashboardRouteShell>{children}</DashboardRouteShell>
+  const user = await requireSessionUser()
+
+  return <DashboardRouteShell user={user}>{children}</DashboardRouteShell>
 }

@@ -25,8 +25,8 @@ export default function PaymentCancelPage() {
         </p>
 
         <p className="mt-5 rounded-lg bg-paper px-3 py-2 text-xs leading-5 text-muted-ink">
-          This frontend prototype does not contact Stripe. No payment
-          information was modified on the client.
+          Stripe checkout was cancelled. No payment document was created and the
+          booking&apos;s payment status was not changed.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-2">
@@ -44,8 +44,7 @@ export default function PaymentCancelPage() {
           </Link>
         </div>
         <p className="mt-3 text-xs leading-5 text-muted-ink">
-          Choose the completed, unpaid booking and select Pay now to start
-          checkout again in a connected build.
+          Choose the completed, unpaid booking and select Pay now to try again.
         </p>
       </Card>
     </div>

@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import { CheckCircle2, CircleAlert, Link2Off } from "lucide-react"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { headers } from "next/headers"
 
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { stripe } from "@/lib/stripe"
+import { auth } from "@/lib/auth"
 import { formatDate } from "@/lib/format"
 
 export const metadata: Metadata = {
@@ -17,6 +17,16 @@ export const metadata: Metadata = {
 
 interface PaymentSuccessPageProps {
   searchParams: Promise<{ session_id?: string | string[] }>
+}
+
+interface PaymentReceipt {
+  status: "paid"
+  bookingId: string
+  serviceTitle: string
+  amount: number
+  currency: string
+  transactionId: string
+  paidAt: string
 }
 
 function ResultActions() {
@@ -96,57 +106,95 @@ export default async function PaymentSuccessPage({
     )
   }
 
-  let session: Awaited<
-    ReturnType<typeof stripe.checkout.sessions.retrieve>
-  >
+  const requestHeaders = await headers()
+  const session = await auth.api
+    .getSession({ headers: requestHeaders })
+    .catch(() => null)
 
+  if (!session) {
+    return (
+      <PaymentError
+        description="Sign in to the account that paid for this repair, then open the payment link again."
+        title="Sign in to verify this payment"
+      />
+    )
+  }
+
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "")
+  if (!apiUrl) {
+    return (
+      <PaymentError
+        description="The payment verification service is not configured."
+        title="Verification unavailable"
+      />
+    )
+  }
+
+  let token: string
   try {
-    session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["line_items", "payment_intent"],
-    })
+    ({ token } = await auth.api.getToken({ headers: requestHeaders }))
   } catch {
     return (
       <PaymentError
-        description="Stripe could not verify this checkout session. No successful payment has been shown. Return to My Bookings and try again if needed."
+        description="Your session could not be used to verify this payment. Sign in again and retry."
+        title="Session expired"
+      />
+    )
+  }
+
+  let response: Response
+  try {
+    response = await fetch(
+      `${apiUrl}/api/payments/verify?session_id=${encodeURIComponent(sessionId)}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      }
+    )
+  } catch {
+    return (
+      <PaymentError
+        description="The payment service could not be reached. No successful payment has been shown."
         title="We couldn't verify this payment"
       />
     )
   }
 
-  if (session.status === "open") {
-    redirect("/")
-  }
+  const payload = (await response.json().catch(() => null)) as
+    | (PaymentReceipt & { message?: string })
+    | null
 
-  if (session.status !== "complete") {
+  if (!response.ok || !payload || payload.status !== "paid") {
+    const messages: Record<number, string> = {
+      400: "Stripe has not confirmed this payment yet. If you just paid, wait a moment and refresh this page.",
+      401: "Your session expired. Sign in again and reopen the payment link.",
+      403: "This payment does not belong to your signed-in account.",
+      404: "We couldn't find this checkout session or its booking.",
+      503: "Payment verification is not configured yet.",
+    }
+
     return (
       <PaymentError
-        description="This checkout did not complete, so no successful payment is shown. Your booking's payment status remains unchanged."
-        title="Payment not completed"
+        description={
+          messages[response.status] ??
+          "The payment could not be verified. No successful payment has been shown."
+        }
+        title="We couldn't verify this payment"
       />
     )
   }
 
-  const customerEmail = session.customer_details?.email ?? "your email"
-  const serviceTitle =
-    session.line_items?.data[0]?.description ?? "FixMate repair payment"
-  const amount =
-    session.amount_total != null && session.currency
-      ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: session.currency.toUpperCase(),
-        }).format(session.amount_total / 100)
-      : "Confirmed"
-  const transactionId =
-    typeof session.payment_intent === "string"
-      ? session.payment_intent
-      : (session.payment_intent?.id ?? session.id)
-  const paymentDate = formatDate(new Date(session.created * 1000))
+  const amount = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: payload.currency.toUpperCase(),
+  }).format(payload.amount)
+  const paymentDate = formatDate(new Date(payload.paidAt))
 
   const rows = [
-    { label: "Service", value: serviceTitle },
-    { label: "Customer", value: customerEmail },
+    { label: "Service", value: payload.serviceTitle },
+    { label: "Customer", value: session.user.email },
     { label: "Amount paid", value: amount },
-    { label: "Transaction ID", value: transactionId },
+    { label: "Transaction ID", value: payload.transactionId },
     { label: "Payment date", value: paymentDate },
   ]
 
@@ -184,7 +232,7 @@ export default async function PaymentSuccessPage({
         <ResultActions />
         <p className="mt-3 text-xs leading-5 text-muted-ink">
           This receipt is rendered only after server-side Stripe verification.
-          The client never calculates or trusts the amount.
+          The payment amount is read from the booking in MongoDB.
         </p>
       </Card>
     </div>

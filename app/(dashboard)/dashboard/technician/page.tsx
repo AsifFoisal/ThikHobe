@@ -14,57 +14,62 @@ import { Avatar } from "@/components/ui/avatar"
 import { BookingStatusBadge } from "@/components/ui/status-badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import {
-  SAMPLE_TECHNICIAN_BOOKINGS,
-  SAMPLE_TECHNICIAN_WEEKLY_ACTIVITY,
-} from "@/data/sample-platform"
-import { SAMPLE_TECHNICIAN_SERVICES } from "@/data/sample-technician"
 import { formatDate } from "@/lib/format"
+import { getTechnicianBookings, getTechnicianServices } from "@/lib/server-data"
 
 export const metadata: Metadata = {
   title: "Technician overview",
   description:
-    "Sample technician workspace with service approval, availability, repair requests, and booking activity.",
+    "Your services, approval status, availability, and repair requests.",
 }
 
-export default function TechnicianOverviewPage() {
-  const approvedServices = SAMPLE_TECHNICIAN_SERVICES.filter(
+export default async function TechnicianOverviewPage() {
+  const [services, bookings] = await Promise.all([
+    getTechnicianServices(),
+    getTechnicianBookings(),
+  ])
+
+  const approvedServices = services.filter(
     (service) => service.approvalStatus === "approved"
   )
-  const pendingServices = SAMPLE_TECHNICIAN_SERVICES.filter(
+  const pendingServices = services.filter(
     (service) => service.approvalStatus === "pending"
   )
-  const rejectedServices = SAMPLE_TECHNICIAN_SERVICES.filter(
+  const rejectedServices = services.filter(
     (service) => service.approvalStatus === "rejected"
   )
   const availableApproved = approvedServices.filter(
     (service) => service.available
   )
-  const pendingRequests = SAMPLE_TECHNICIAN_BOOKINGS.filter(
+  const pendingRequests = bookings.filter(
     (booking) => booking.status === "requested"
   )
-  const recentRequests = SAMPLE_TECHNICIAN_BOOKINGS.filter((booking) =>
-    ["requested", "accepted", "in_progress"].includes(booking.status)
-  ).slice(0, 4)
+  const recentRequests = bookings
+    .filter((booking) =>
+      ["requested", "accepted", "in_progress"].includes(booking.status)
+    )
+    .slice(0, 4)
 
-  const approvalTotal = SAMPLE_TECHNICIAN_SERVICES.length
+  const approvalTotal = services.length
   const approvalBars = [
-    {
-      label: "Approved",
-      value: approvedServices.length,
-      tone: "bg-fern",
-    },
-    {
-      label: "Pending",
-      value: pendingServices.length,
-      tone: "bg-status-amber",
-    },
-    {
-      label: "Rejected",
-      value: rejectedServices.length,
-      tone: "bg-status-red",
-    },
+    { label: "Approved", value: approvedServices.length, tone: "bg-fern" },
+    { label: "Pending", value: pendingServices.length, tone: "bg-status-amber" },
+    { label: "Rejected", value: rejectedServices.length, tone: "bg-status-red" },
   ]
+
+  const weeklyActivity = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date()
+    date.setDate(date.getDate() - (6 - index))
+    return {
+      key: date.toISOString().slice(0, 10),
+      label: date.toLocaleDateString("en-US", { weekday: "short" }),
+    }
+  }).map((day) => ({
+    label: day.label,
+    value: bookings.filter(
+      (booking) => booking.createdAt.slice(0, 10) === day.key
+    ).length,
+  }))
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -74,9 +79,6 @@ export default function TechnicianOverviewPage() {
           <p className="type-lead mt-3">
             Keep your services ready, keep requests moving, and see what needs
             your attention today.
-          </p>
-          <p className="type-meta mt-2">
-            Preview workspace · sample services and repair requests.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -102,7 +104,7 @@ export default function TechnicianOverviewPage() {
           hint="Across approved, pending, and rejected"
           icon={Wrench}
           label="Total services"
-          value={String(SAMPLE_TECHNICIAN_SERVICES.length)}
+          value={String(services.length)}
         />
         <StatCard
           hint={`${availableApproved.length} currently available`}
@@ -135,30 +137,36 @@ export default function TechnicianOverviewPage() {
               <ArrowRight aria-hidden className="size-4" />
             </Link>
           </div>
-          <ul>
-            {recentRequests.map((booking) => (
-              <li key={booking.id}>
-                <div className="flex items-center gap-3 border-b border-line px-4 py-3.5 last:border-b-0 sm:px-5">
-                  <Avatar name={booking.customer.name} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-ink">
-                      {booking.customer.name}
-                    </p>
-                    <p className="mt-0.5 truncate text-xs text-muted-ink">
-                      {booking.service.title} ·{" "}
-                      {formatDate(booking.preferredDate)}
-                    </p>
+          {recentRequests.length === 0 ? (
+            <p className="px-5 py-8 text-sm text-muted-ink">
+              No active repair requests right now.
+            </p>
+          ) : (
+            <ul>
+              {recentRequests.map((booking) => (
+                <li key={booking.id}>
+                  <div className="flex items-center gap-3 border-b border-line px-4 py-3.5 last:border-b-0 sm:px-5">
+                    <Avatar name={booking.customer.name} size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-ink">
+                        {booking.customer.name}
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-muted-ink">
+                        {booking.service.title} ·{" "}
+                        {formatDate(booking.preferredDate)}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <BookingStatusBadge status={booking.status} />
+                      <span className="text-[11px] text-muted-ink tabular">
+                        #{booking.id}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1">
-                    <BookingStatusBadge status={booking.status} />
-                    <span className="text-[11px] text-muted-ink tabular">
-                      #{booking.id}
-                    </span>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
 
         <Card className="flex h-full flex-col p-5 sm:p-6">
@@ -175,7 +183,9 @@ export default function TechnicianOverviewPage() {
                 className={bar.tone}
                 key={bar.label}
                 style={{
-                  width: `${(bar.value / approvalTotal) * 100}%`,
+                  width: approvalTotal
+                    ? `${(bar.value / approvalTotal) * 100}%`
+                    : "0%",
                 }}
               />
             ))}
@@ -215,10 +225,10 @@ export default function TechnicianOverviewPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <ChartCard
-          data={SAMPLE_TECHNICIAN_WEEKLY_ACTIVITY}
-          description="Sample repair requests across the last seven days."
+          data={weeklyActivity}
+          description="Repair requests assigned to you across the last seven days."
           fill
-          footerLabel="Sample weekly activity"
+          footerLabel="Weekly activity"
           title="Booking activity"
         />
 

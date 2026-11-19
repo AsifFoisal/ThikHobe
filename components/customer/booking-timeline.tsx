@@ -1,6 +1,7 @@
 import { Check, XCircle } from "lucide-react"
 
 import { Card } from "@/components/ui/card"
+import { formatDateTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { Booking } from "@/types"
 
@@ -54,6 +55,9 @@ export function BookingTimeline({ booking }: { booking: Booking }) {
 
   if (currentIndex === null) {
     const rejected = booking.status === "rejected"
+    const closedAt = booking.timeline?.find(
+      (entry) => entry.status === booking.status
+    )?.at
 
     return (
       <Card className="p-5 sm:p-6">
@@ -78,6 +82,11 @@ export function BookingTimeline({ booking }: { booking: Booking }) {
                 ? "This request closed before a repair timeline began. Contact support if you need more detail."
                 : "This booking was cancelled before the repair started. No further timeline steps were recorded."}
             </p>
+            {closedAt ? (
+              <p className="mt-1 text-xs text-muted-ink">
+                {formatDateTime(closedAt)}
+              </p>
+            ) : null}
           </div>
         </div>
       </Card>
@@ -93,11 +102,6 @@ export function BookingTimeline({ booking }: { booking: Booking }) {
         </p>
       </div>
 
-      <p className="mt-4 rounded-lg bg-paper px-3 py-2 text-xs leading-5 text-muted-ink">
-        Timestamps are omitted because live status history is not connected in
-        this prototype. No times are invented.
-      </p>
-
       <ol aria-label="Job timeline" className="mt-6">
         {TIMELINE_STEPS.map((step, index) => {
           const state =
@@ -106,6 +110,9 @@ export function BookingTimeline({ booking }: { booking: Booking }) {
               : index === currentIndex
                 ? "current"
                 : "pending"
+          const at = booking.timeline?.find(
+            (entry) => entry.status === step.key
+          )?.at
 
           return (
             <li
@@ -174,6 +181,11 @@ export function BookingTimeline({ booking }: { booking: Booking }) {
                 <p className="mt-1 text-sm leading-6 text-muted-ink">
                   {step.description}
                 </p>
+                {at ? (
+                  <p className="mt-1 text-xs text-muted-ink">
+                    {formatDateTime(at)}
+                  </p>
+                ) : null}
               </div>
             </li>
           )

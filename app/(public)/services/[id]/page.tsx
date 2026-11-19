@@ -7,23 +7,8 @@ import { notFound } from "next/navigation"
 import { ServiceSummaryCard } from "@/components/services/service-summary-card"
 import { TechnicianCard } from "@/components/services/technician-card"
 import { Badge } from "@/components/ui/badge"
-import { DEMO_USER } from "@/constants/demo"
-import { SAMPLE_SERVICES } from "@/data/sample-services"
-
-function getApprovedService(id: string) {
-  return SAMPLE_SERVICES.find(
-    (service) =>
-      service.id === id &&
-      service.approvalStatus === "approved" &&
-      service.available
-  )
-}
-
-export function generateStaticParams() {
-  return SAMPLE_SERVICES.filter(
-    (service) => service.approvalStatus === "approved" && service.available
-  ).map((service) => ({ id: service.id }))
-}
+import { getServiceById } from "@/lib/server-data"
+import { getSessionProfile, ServerApiError } from "@/lib/server-api"
 
 export async function generateMetadata({
   params,
@@ -31,18 +16,20 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const service = getApprovedService(id)
 
-  if (!service) return { title: "Service not found" }
-
-  return {
-    title: service.title,
-    description: service.description,
-    openGraph: {
+  try {
+    const service = await getServiceById(id)
+    return {
       title: service.title,
       description: service.description,
-      images: [{ url: service.image, alt: service.title }],
-    },
+      openGraph: {
+        title: service.title,
+        description: service.description,
+        images: [{ url: service.image, alt: service.title }],
+      },
+    }
+  } catch {
+    return { title: "Service not found" }
   }
 }
 
@@ -52,10 +39,16 @@ export default async function ServiceDetailsPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const service = getApprovedService(id)
 
-  if (!service) notFound()
+  let service
+  try {
+    service = await getServiceById(id)
+  } catch (error) {
+    if (error instanceof ServerApiError && error.status === 404) notFound()
+    throw error
+  }
 
+  const viewer = await getSessionProfile()
   const ModeIcon = service.mode === "Home Visit" ? House : Store
 
   return (
@@ -108,11 +101,6 @@ export default async function ServiceDetailsPage({
               loading="eager"
               sizes="(min-width: 1024px) 680px, 100vw"
               src={service.image}
-              style={
-                service.imagePosition
-                  ? { objectPosition: service.imagePosition }
-                  : undefined
-              }
             />
           </div>
 
@@ -121,7 +109,7 @@ export default async function ServiceDetailsPage({
 
         <aside className="lg:self-stretch">
           <div className="lg:sticky lg:top-24">
-            <ServiceSummaryCard service={service} viewer={DEMO_USER} />
+            <ServiceSummaryCard service={service} viewer={viewer} />
           </div>
         </aside>
       </div>

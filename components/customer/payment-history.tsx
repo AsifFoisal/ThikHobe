@@ -52,7 +52,7 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
             <caption className="sr-only">
-              Payment history for the demo customer
+              Payment history for this account
             </caption>
             <thead>
               <tr>
