@@ -17,6 +17,11 @@ FixMate is a full-stack smart device and home appliance repair platform. Custome
 - Stripe Checkout, verification, and signed webhooks
 - ImgBB server-side uploads
 
+**Key npm packages**
+
+- Client: `next`, `react`, `react-dom`, `better-auth`, `@better-auth/mongo-adapter`, `mongodb`, `stripe`, `@stripe/stripe-js`, `react-hook-form`, `zod`, `@hookform/resolvers`, `recharts`, `sonner`, `lucide-react`, `@base-ui/react`, `tailwindcss`, `typescript`
+- Server: `express`, `cors`, `dotenv`, `mongodb`, `jose`, `stripe`
+
 ## Project structure
 
 ```text
@@ -35,7 +40,7 @@ All dashboard and public service data is read from the Express API and MongoDB. 
 
 ### 1. Frontend environment
 
-Create `thikhobe/.env` from `.env.example` and set:
+Create `thikhobe/.env.local` from `.env.example` and set:
 
 ```text
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -80,6 +85,24 @@ npm run dev
 ```
 
 The seed requires the Next.js app to be running because accounts are created through Better Auth.
+
+## Deployment and test accounts
+
+- Live site: _add the deployed frontend URL_
+- Live API: _add the deployed Express URL_
+- Client repository: _add the GitHub URL_
+- Server repository: _add the GitHub URL_
+
+Seed demo accounts (`npm run seed`):
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@fixmate.test` | `Demo1234` |
+| Technician | `rafi@fixmate.test` | `Demo1234` |
+| Technician | `nusrat@fixmate.test` | `Demo1234` |
+| Customer | `tanvir@fixmate.test` | `Demo1234` |
+
+Change these passwords before any non-local deployment.
 
 ## Authentication
 

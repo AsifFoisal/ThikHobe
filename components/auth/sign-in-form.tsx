@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { PasswordField } from "@/components/auth/password-field"
@@ -55,7 +56,9 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
     })
 
     if (error) {
-      setServerError(error.message || "Invalid email or password.")
+      const message = error.message || "Invalid email or password."
+      setServerError(message)
+      toast.error(message)
       setSubmitting(false)
       return
     }
@@ -68,6 +71,7 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
             role === "technician" || role === "admin" ? role : "customer"
           ]
 
+    toast.success("Signed in")
     router.push(destination)
     router.refresh()
   })

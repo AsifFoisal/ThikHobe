@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { CalendarDays, ClipboardList, MapPin, Phone } from "lucide-react"
 import Link from "next/link"
 
+import { DataTable } from "@/components/dashboard/data-table"
 import { TechnicianRequestActions } from "@/components/technician/technician-request-actions"
 import { Avatar } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -170,8 +171,94 @@ export default async function TechnicianRequestsPage({
           />
         </Card>
       ) : (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {bookings.map((booking) => {
+        <>
+          <Card className="hidden overflow-hidden xl:block">
+            <div className="overflow-x-auto p-4">
+              <DataTable
+                caption="Repair requests assigned to you"
+                tableFrom="xl"
+                columns={[
+                  {
+                    key: "service",
+                    header: "Service",
+                    cell: (booking) => (
+                      <div className="min-w-0">
+                        <p className="font-medium text-ink">
+                          {booking.service.title}
+                        </p>
+                        <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                          #{booking.id}
+                        </p>
+                      </div>
+                    ),
+                  },
+                  {
+                    key: "customer",
+                    header: "Customer",
+                    cell: (booking) => (
+                      <div>
+                        <p className="font-medium text-ink">
+                          {booking.customer.name}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-ink">
+                          {booking.customer.phone ?? "No phone"}
+                        </p>
+                      </div>
+                    ),
+                  },
+                  {
+                    key: "address",
+                    header: "Address",
+                    cell: (booking) => (
+                      <p className="max-w-[12rem] text-muted-ink">
+                        {booking.address}
+                      </p>
+                    ),
+                  },
+                  {
+                    key: "date",
+                    header: "Preferred date",
+                    cell: (booking) => (
+                      <span className="whitespace-nowrap text-muted-ink">
+                        {formatDate(booking.preferredDate)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "problem",
+                    header: "Problem",
+                    cell: (booking) => (
+                      <p className="max-w-[14rem] text-muted-ink">
+                        {booking.problemDescription}
+                      </p>
+                    ),
+                  },
+                  {
+                    key: "status",
+                    header: "Status",
+                    cell: (booking) => (
+                      <BookingStatusBadge status={booking.status} />
+                    ),
+                  },
+                  {
+                    key: "actions",
+                    header: "Actions",
+                    className: "text-right",
+                    cell: (booking) => (
+                      <div className="flex justify-end">
+                        <TechnicianRequestActions booking={booking} />
+                      </div>
+                    ),
+                  },
+                ]}
+                getRowKey={(booking) => booking.id}
+                rows={bookings}
+              />
+            </div>
+          </Card>
+
+          <div className="grid gap-4 xl:hidden">
+            {bookings.map((booking) => {
             const payment = paymentLine(booking)
 
             return (
@@ -262,10 +349,11 @@ export default async function TechnicianRequestsPage({
                     <TechnicianRequestActions booking={booking} />
                   </div>
                 </div>
-              </Card>
-            )
-          })}
-        </div>
+                </Card>
+              )
+            })}
+          </div>
+        </>
       )}
     </div>
   )

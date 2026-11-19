@@ -119,11 +119,12 @@ export function AddServiceForm({ technician }: { technician: SessionUser }) {
       router.push("/dashboard/technician/my-services")
       router.refresh()
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
           : "The service could not be created."
-      )
+      setServerError(message)
+      toast.error(message)
       setPending(false)
     }
   })

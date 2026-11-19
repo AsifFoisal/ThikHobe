@@ -3,6 +3,7 @@
 import { Dialog } from "@base-ui/react/dialog"
 import { CreditCard, Loader2 } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import { buttonVariants } from "@/components/ui/button"
 import { ApiError, paymentsApi } from "@/lib/api"
@@ -33,13 +34,15 @@ export function PayNowDialog({
     try {
       const { url } = await paymentsApi.createCheckoutSession(bookingId)
       if (!url) throw new Error("Stripe did not return a checkout URL.")
+      toast.success("Opening Stripe Checkout…")
       window.location.assign(url)
     } catch (cause) {
-      setError(
+      const message =
         cause instanceof ApiError
           ? cause.message
           : "Could not start checkout. Please try again."
-      )
+      setError(message)
+      toast.error(message)
       setPending(false)
     }
   }

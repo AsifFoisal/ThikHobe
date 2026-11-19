@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { PasswordField } from "@/components/auth/password-field"
@@ -86,7 +87,9 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
     })
 
     if (error) {
-      setServerError(error.message || "Could not create your account.")
+      const message = error.message || "Could not create your account."
+      setServerError(message)
+      toast.error(message)
       setSubmitting(false)
       return
     }
@@ -96,6 +99,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
         ? redirectTo
         : ROLE_DASHBOARD[values.role]
 
+    toast.success("Account created")
     router.push(destination)
     router.refresh()
   })

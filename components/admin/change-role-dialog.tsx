@@ -39,11 +39,12 @@ export function ChangeRoleDialog({ user }: { user: User }) {
       setOpen(false)
       router.refresh()
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
           : "The role could not be updated."
-      )
+      setServerError(message)
+      toast.error(message)
     } finally {
       setPending(false)
     }

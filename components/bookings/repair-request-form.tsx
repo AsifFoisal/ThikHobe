@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import {
@@ -98,14 +99,16 @@ export function RepairRequestForm({
         address: values.address,
         problemDescription: values.problemDescription,
       })
+      toast.success("Repair request sent")
       router.push("/dashboard/customer/bookings")
       router.refresh()
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
           : "The repair request could not be sent. Please try again."
-      )
+      setServerError(message)
+      toast.error(message)
       setPending(false)
     }
   })

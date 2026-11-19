@@ -120,11 +120,12 @@ export function EditServiceDialog({ service }: EditServiceDialogProps) {
       reset()
       router.refresh()
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
           : "The service could not be updated."
-      )
+      setServerError(message)
+      toast.error(message)
     } finally {
       setPending(false)
     }

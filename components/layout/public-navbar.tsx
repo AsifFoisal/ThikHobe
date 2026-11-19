@@ -12,6 +12,7 @@ import {
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState, type KeyboardEvent } from "react"
+import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/logo"
 import { Avatar } from "@/components/ui/avatar"
@@ -292,6 +293,7 @@ export function PublicNavbar({
   const handleSignOut = async () => {
     try {
       await authClient.signOut()
+      toast.success("Signed out")
     } finally {
       router.refresh()
     }

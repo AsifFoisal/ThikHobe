@@ -49,7 +49,7 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
 
   const openAction = (nextAction: RequestAction) => {
     setAction(nextAction)
-    setFinalAmount(booking.finalAmount ? String(booking.finalAmount) : "")
+    setFinalAmount(String(booking.finalAmount ?? booking.basePrice))
     setAmountError("")
     setServerError(null)
     setOpen(true)
@@ -77,11 +77,12 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
       setOpen(false)
       router.refresh()
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
           : "The booking status could not be updated."
-      )
+      setServerError(message)
+      toast.error(message)
     } finally {
       setPending(false)
     }

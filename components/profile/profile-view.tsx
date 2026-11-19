@@ -96,11 +96,12 @@ export function ProfileView({ user }: { user: SessionProfile }) {
       setImageFile(null)
       router.refresh()
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
           : "The profile could not be updated."
-      )
+      setServerError(message)
+      toast.error(message)
     } finally {
       setPending(false)
     }
