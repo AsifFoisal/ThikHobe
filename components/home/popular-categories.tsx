@@ -1,31 +1,9 @@
-import {
-  AirVent,
-  ArrowRight,
-  ArrowUpRight,
-  Laptop,
-  LayoutGrid,
-  Refrigerator,
-  Smartphone,
-  Tv,
-  WashingMachine,
-  Zap,
-  type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react"
 import Link from "next/link"
 
+import { CATEGORY_ICONS } from "@/components/services/category-icons"
 import { SectionHeading } from "@/components/ui/section-heading"
 import { SERVICE_CATEGORIES } from "@/constants"
-import type { ServiceCategory } from "@/types"
-
-const categoryIcons: Record<ServiceCategory, LucideIcon> = {
-  Smartphone,
-  "Laptop & PC": Laptop,
-  AC: AirVent,
-  Refrigerator,
-  TV: Tv,
-  "Washing Machine": WashingMachine,
-  Electrical: Zap,
-}
 
 export function PopularCategories() {
   return (
@@ -50,7 +28,7 @@ export function PopularCategories() {
 
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {SERVICE_CATEGORIES.map((category) => {
-            const Icon = categoryIcons[category]
+            const Icon = CATEGORY_ICONS[category]
             return (
               <Link
                 className="group flex min-h-[8.75rem] flex-col justify-between rounded-xl border border-line bg-card p-5 transition-colors duration-200 hover:border-spruce/30 hover:bg-sage/40"

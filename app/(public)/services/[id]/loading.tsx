@@ -21,11 +21,6 @@ export default function ServiceDetailsLoading() {
         </div>
         <Skeleton className="h-[28rem] w-full rounded-xl" />
       </div>
-
-      <div className="mt-14 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <Skeleton className="h-[30rem] w-full rounded-xl" />
-        <Skeleton className="h-72 w-full rounded-xl" />
-      </div>
     </div>
   )
 }

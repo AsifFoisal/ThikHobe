@@ -1,6 +1,7 @@
-import { ArrowRight, Clock3, House, MapPin, Store, Wallet } from "lucide-react"
+import { Clock3, House, MapPin, Store, Wallet } from "lucide-react"
 import Link from "next/link"
 
+import { RequestRepairDialog } from "@/components/bookings/request-repair-dialog"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import type { SampleService } from "@/data/sample-services"
@@ -18,7 +19,7 @@ export function ServiceSummaryCard({
   const ModeIcon = service.mode === "Home Visit" ? House : Store
   const isCustomer = viewer?.role === "customer"
   const signInHref = `/sign-in?redirect=${encodeURIComponent(
-    `/services/${service.id}#request-repair`
+    `/services/${service.id}`
   )}`
 
   return (
@@ -61,14 +62,8 @@ export function ServiceSummaryCard({
       </dl>
 
       <div className="mt-6">
-        {isCustomer ? (
-          <Link
-            className={cn(buttonVariants({ size: "lg" }), "w-full")}
-            href="#request-repair"
-          >
-            Request repair
-            <ArrowRight aria-hidden />
-          </Link>
+        {viewer?.role === "customer" ? (
+          <RequestRepairDialog serviceTitle={service.title} viewer={viewer} />
         ) : viewer ? (
           <span
             aria-disabled="true"

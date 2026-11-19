@@ -74,13 +74,27 @@ Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, 
 
 `app/(public)/services/[id]/page.tsx` is a server-rendered detail page. Approved and available services are pre-rendered; pending, rejected, unavailable, or unknown IDs call `notFound()` and render the themed service Not Found page.
 
-- **Layout:** breadcrumb → two columns at `lg` (title, description, large image, technician on the left; sticky price summary on the right) → full-width repair request section.
+- **Layout:** breadcrumb → two columns at `lg` (title, description, large image, technician on the left; sticky price summary on the right). The customer request form opens in an accessible modal from the summary CTA.
 - **Summary:** starting price, final-amount explanation, estimated duration, mode, area, role-aware CTA, and the no-upfront-payment promise.
 - **Technician:** monogram avatar, verified and Pro badges when applicable, area, bio, and skills.
-- **Request section:** customer form; guest sign-in prompt with the intended destination preserved; staff notice for technician/admin accounts. The prototype runs as the demo customer (`DEMO_USER`) so the form is visible; the guest and staff branches remain implemented through component props.
+- **Request modal:** the customer CTA opens a Base UI dialog with the validated form; guest CTA links to sign-in with the intended destination preserved; technician/admin accounts see a disabled customer-only CTA and note. The prototype runs as the demo customer (`DEMO_USER`) so the modal is reachable; the guest and staff branches remain implemented through component props.
 - **Form:** read-only name and email, phone, service address, preferred date, and problem description. React Hook Form and Zod enforce required fields, phone format, no past dates, and a 20-character description minimum.
 - **Scope:** a valid submit shows an honest preview notice and does not send or persist a booking. There is no success toast, duplicate-request check, or My Bookings navigation until a backend is in scope.
 - **States:** segment-specific loading skeletons and error boundary; `notFound` covers removed, pending, rejected, and unavailable services.
+
+## About page
+
+`app/(public)/about/page.tsx` is a static long-form page. It must stay distinct from the homepage rather than repeating its hero, featured services, trust cards, or category tile grid.
+
+- **Introduction:** text-led editorial opening with an on-page index, followed by a full-bleed technician image and caption.
+- **Problem:** ink section with four specific “not-knowing” pain points and the “information first, payment last” thesis.
+- **Process:** a vertical, detailed four-stage list with status badges, paired with a sticky introductory statement. This replaces the homepage’s horizontal step rail.
+- **Benefits:** one split panel contrasting the customer experience with the technician experience; the technician side is spruce.
+- **Payment:** a dedicated explanation with a status ledger from Requested through Paid, using the shared booking/payment badges.
+- **Categories:** an editorial list of all seven categories with descriptions and links, not the homepage tile grid.
+- **Final CTA:** a light sage closing band with a spruce browse action, distinct from the homepage’s dark final CTA.
+
+Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`. Every anchor has `scroll-mt-24` so the sticky navbar does not overlap it.
 
 ## Spacing and layout
 
@@ -109,7 +123,9 @@ Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, 
 - **ServicesPagination** (`components/services/services-pagination.tsx`): URL-preserving previous/next and page numbers with disabled and current states.
 - **ServiceSummaryCard** (`components/services/service-summary-card.tsx`): sticky price/duration/mode/area summary with the role-aware request CTA.
 - **TechnicianCard** (`components/services/technician-card.tsx`): technician identity, verification, bio, and skills.
-- **RepairRequestSection** (`components/bookings/repair-request-section.tsx`): customer form, guest sign-in prompt, or staff notice based on the viewer.
+- **About sections** (`components/about/`): editorial intro, problem, vertical process, customer/technician benefits, payment ledger, category list, and closing CTA.
+- **Category icons** (`components/services/category-icons.tsx`): the shared Lucide map for all seven categories, used by the homepage and About page.
+- **RequestRepairDialog** (`components/bookings/request-repair-dialog.tsx`): accessible trigger and modal containing the customer request form.
 - **RepairRequestForm** (`components/bookings/repair-request-form.tsx`): the validated customer request form with an honest prototype-only submit state.
 - **Field** (`components/forms/field.tsx`): shared labels, controls, hints, and inline error styling for forms.
 - **Avatar** (`components/ui/avatar.tsx`): initials by default, optional image, shared `sm`/`md`/`lg` sizes.

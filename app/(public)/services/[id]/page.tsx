@@ -4,7 +4,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { RepairRequestSection } from "@/components/bookings/repair-request-section"
 import { ServiceSummaryCard } from "@/components/services/service-summary-card"
 import { TechnicianCard } from "@/components/services/technician-card"
 import { Badge } from "@/components/ui/badge"
@@ -126,8 +125,6 @@ export default async function ServiceDetailsPage({
           </div>
         </aside>
       </div>
-
-      <RepairRequestSection service={service} viewer={DEMO_USER} />
     </div>
   )
 }

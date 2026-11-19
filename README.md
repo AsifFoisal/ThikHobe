@@ -24,13 +24,15 @@ npm run format     # Prettier
 
 ## Foundation
 
-- `app/(public)/` — public layout with the shared navbar and footer, the homepage, and Browse Services
+- `app/(public)/` — public layout with the shared navbar and footer, the homepage, Browse Services, and About
 - `app/(public)/services/` — server-rendered browse page, loading skeletons, error boundary, and service details
 - `app/(public)/services/[id]/` — service details, Not Found, loading, and error states
+- `app/(public)/about/` — detailed About / How It Works page
 - `app/globals.css` — brand tokens, typography, layout utilities, and global interaction styles
 - `components/home/` — homepage sections
-- `components/services/` — service cards, skeletons, URL-backed filters, pagination, summary, and technician cards
-- `components/bookings/` — role-aware request section and validated request form
+- `components/about/` — About page sections
+- `components/services/` — service cards, skeletons, URL-backed filters, pagination, summary, technician cards, and category icons
+- `components/bookings/` — role-aware request modal and validated request form
 - `components/forms/` — shared field, label, hint, and error primitives
 - `components/ui/` — reusable buttons, badges, avatars, cards, skeletons, state components, and the toaster
 - `components/layout/` — logo, public navbar, and footer
@@ -42,8 +44,8 @@ npm run format     # Prettier
 - `public/images/` — local photography, with credits in `CREDITS.md`
 - `DESIGN.md` — the visual system future phases must follow
 
-The `/` homepage, `/services` Browse Services page, and `/services/[id]` service details page are implemented. About, authentication, profile, and dashboards arrive in subsequent phases. The public route group keeps the footer out of the future dashboard layout.
+The `/` homepage, `/services` Browse Services page, `/services/[id]` service details page, and `/about` About / How It Works page are implemented. Authentication, profile, and dashboards arrive in subsequent phases. The public route group keeps the footer out of the future dashboard layout.
 
 ## Scope
 
-This repository is frontend-only. It contains no authentication, payment processing, API integration, mock backend, or simulated workflows. The navbar's profile, loading, and sign-out states are visual presentation only. Homepage service listings, platform figures, and customer stories are illustrative sample data. The Browse Services query runs on the server over that static dataset; MongoDB/API integration is outside this frontend build. The public site currently runs as the demo customer so the request form is visible; guest and staff branches are implemented in the components. The repair request form validates locally but does not send or persist a booking, so there is no success toast, duplicate-request handling, or My Bookings redirect yet. Photography is sourced from Pexels and credited locally.
+This repository is frontend-only. It contains no authentication, payment processing, API integration, mock backend, or simulated workflows. The navbar's profile, loading, and sign-out states are visual presentation only. Homepage service listings, platform figures, and customer stories are illustrative sample data. The Browse Services query runs on the server over that static dataset; MongoDB/API integration is outside this frontend build. The public site currently runs as the demo customer so the request modal is reachable; guest and staff branches are implemented in the components. The repair request form validates locally but does not send or persist a booking, so there is no success toast, duplicate-request handling, or My Bookings redirect yet. Photography is sourced from Pexels and credited locally.
