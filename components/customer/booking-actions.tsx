@@ -9,6 +9,7 @@ import { ApiError, bookingsApi } from "@/lib/api"
 import { getBookingAction } from "@/lib/booking-actions"
 import type { Booking } from "@/types"
 
+// Cancel only while requested; Pay Now only after completion and before payment.
 export function BookingAction({
   booking,
   size = "sm",
