@@ -114,6 +114,7 @@ export const auth = betterAuth({
     }),
   },
 
+  // The JWT plugin issues the short-lived token Express verifies through JWKS.
   plugins: [
     jwt({
       jwt: {
