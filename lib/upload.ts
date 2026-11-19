@@ -9,6 +9,7 @@ function readAsDataUrl(file: File) {
   })
 }
 
+// Files become data URLs and go to the authenticated Express upload route.
 export async function uploadImage(file: File) {
   const image = await readAsDataUrl(file)
   const data = await apiRequest<{ success: boolean; url: string }>("/api/uploads", {
