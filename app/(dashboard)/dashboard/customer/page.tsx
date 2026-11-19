@@ -15,35 +15,20 @@ import { StatCard } from "@/components/dashboard/stat-card"
 import { buttonVariants } from "@/components/ui/button"
 import { BOOKING_STATUS_META } from "@/constants"
 import {
+  BOOKING_STATUS_COLORS,
+  BOOKING_STATUS_ORDER,
+} from "@/constants/booking-status-visuals"
+import {
   SAMPLE_CUSTOMER_ACTIVITY,
   SAMPLE_CUSTOMER_BOOKINGS,
   SAMPLE_CUSTOMER_PAYMENTS,
 } from "@/data/sample-customer-bookings"
 import { formatPrice } from "@/lib/format"
-import type { BookingStatus } from "@/types"
 
 export const metadata: Metadata = {
   title: "Customer overview",
   description:
     "Sample customer dashboard with repair statistics, recent bookings, activity, and booking status distribution.",
-}
-
-const STATUS_ORDER: BookingStatus[] = [
-  "requested",
-  "accepted",
-  "in_progress",
-  "completed",
-  "rejected",
-  "cancelled",
-]
-
-const STATUS_COLORS: Record<BookingStatus, string> = {
-  requested: "var(--status-blue)",
-  accepted: "var(--status-indigo)",
-  in_progress: "var(--status-amber)",
-  completed: "var(--status-green)",
-  rejected: "var(--status-red)",
-  cancelled: "var(--status-gray)",
 }
 
 export default function CustomerOverviewPage() {
@@ -63,12 +48,12 @@ export default function CustomerOverviewPage() {
     0
   )
 
-  const statusData = STATUS_ORDER.map((status) => ({
+  const statusData = BOOKING_STATUS_ORDER.map((status) => ({
     label: BOOKING_STATUS_META[status].label,
     value: SAMPLE_CUSTOMER_BOOKINGS.filter(
       (booking) => booking.status === status
     ).length,
-    color: STATUS_COLORS[status],
+    color: BOOKING_STATUS_COLORS[status],
   }))
 
   const recentBookings = SAMPLE_CUSTOMER_BOOKINGS.slice(0, 5)

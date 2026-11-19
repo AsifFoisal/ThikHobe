@@ -21,18 +21,28 @@ export interface ChartDatum {
 interface ChartCardProps {
   title: string
   description?: string
+  footerLabel?: string
   data: ChartDatum[]
+  fill?: boolean
   className?: string
 }
 
 export function ChartCard({
   title,
   description,
+  footerLabel = "Sample weekly requests",
   data,
+  fill = false,
   className,
 }: ChartCardProps) {
   return (
-    <Card className={cn("flex h-full flex-col p-5 sm:p-6", className)}>
+    <Card
+      className={cn(
+        "flex flex-col p-5 sm:p-6",
+        fill && "h-full",
+        className
+      )}
+    >
       <div>
         <h2 className="type-h3">{title}</h2>
         {description ? (
@@ -42,7 +52,10 @@ export function ChartCard({
 
       <div
         aria-label={`${title} bar chart`}
-        className="mt-5 min-h-52 min-w-0 flex-1"
+        className={cn(
+          "mt-5 min-w-0",
+          fill ? "min-h-52 flex-1" : "h-52"
+        )}
         role="img"
       >
         <ResponsiveContainer height="100%" width="100%">
@@ -79,7 +92,7 @@ export function ChartCard({
 
       <div className="mt-4 flex items-center gap-2 border-t border-line pt-4 text-xs text-muted-ink">
         <span aria-hidden className="size-2 rounded-full bg-fern" />
-        Sample weekly requests
+        {footerLabel}
       </div>
     </Card>
   )

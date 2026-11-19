@@ -1,10 +1,9 @@
-import { DashboardShell } from "@/components/dashboard/dashboard-shell"
-import { DEMO_USER } from "@/constants/demo"
+import { DashboardRouteShell } from "@/components/dashboard/dashboard-route-shell"
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return <DashboardShell user={DEMO_USER}>{children}</DashboardShell>
+  return <DashboardRouteShell>{children}</DashboardRouteShell>
 }

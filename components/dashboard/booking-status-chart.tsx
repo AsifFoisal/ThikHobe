@@ -14,12 +14,16 @@ export interface BookingStatusDatum {
 interface BookingStatusChartProps {
   data: BookingStatusDatum[]
   total: number
+  title?: string
+  description?: string
   className?: string
 }
 
 export function BookingStatusChart({
   data,
   total,
+  title = "Booking status",
+  description = "A sample breakdown of all your repair requests.",
   className,
 }: BookingStatusChartProps) {
   const summary = data
@@ -29,10 +33,8 @@ export function BookingStatusChart({
   return (
     <Card className={cn("flex h-full flex-col p-5 sm:p-6", className)}>
       <div>
-        <h2 className="type-h3">Booking status</h2>
-        <p className="mt-1 text-sm leading-6 text-muted-ink">
-          A sample breakdown of all your repair requests.
-        </p>
+        <h2 className="type-h3">{title}</h2>
+        <p className="mt-1 text-sm leading-6 text-muted-ink">{description}</p>
       </div>
 
       <div

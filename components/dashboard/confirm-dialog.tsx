@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 
 interface ConfirmDialogProps {
   triggerLabel: string
+  triggerVariant?: "default" | "outline" | "destructive"
   title: string
   description: string
   confirmLabel?: string
@@ -17,6 +18,7 @@ interface ConfirmDialogProps {
 
 export function ConfirmDialog({
   triggerLabel,
+  triggerVariant = "outline",
   title,
   description,
   confirmLabel = "Confirm",
@@ -27,7 +29,7 @@ export function ConfirmDialog({
   return (
     <Dialog.Root>
       <Dialog.Trigger
-        className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+        className={cn(buttonVariants({ size: "sm", variant: triggerVariant }))}
       >
         {triggerLabel}
       </Dialog.Trigger>

@@ -14,6 +14,7 @@ interface DataTableProps<T> {
   rows: T[]
   getRowKey: (row: T) => string
   caption?: string
+  tableFrom?: "md" | "xl"
   className?: string
 }
 
@@ -22,13 +23,19 @@ export function DataTable<T>({
   rows,
   getRowKey,
   caption = "Data table",
+  tableFrom = "md",
   className,
 }: DataTableProps<T>) {
   if (rows.length === 0) return null
 
+  const visibility =
+    tableFrom === "xl"
+      ? { desktop: "hidden xl:block", mobile: "xl:hidden" }
+      : { desktop: "hidden md:block", mobile: "md:hidden" }
+
   return (
     <div className={className}>
-      <div className="hidden overflow-x-auto md:block">
+      <div className={cn("overflow-x-auto", visibility.desktop)}>
         <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
           <caption className="sr-only">{caption}</caption>
           <thead>
@@ -70,7 +77,7 @@ export function DataTable<T>({
         </table>
       </div>
 
-      <ul className="divide-y divide-line md:hidden">
+      <ul className={cn("divide-y divide-line", visibility.mobile)}>
         {rows.map((row) => (
           <li className="py-4" key={getRowKey(row)}>
             <dl className="space-y-2">

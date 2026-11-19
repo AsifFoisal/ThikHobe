@@ -236,9 +236,9 @@ export default async function DashboardFoundationPage({
         </Card>
 
         <ChartCard
-          className="h-full"
           data={chartData}
           description="A sample view of incoming repair requests."
+          fill
           title="Requests this week"
         />
       </div>
