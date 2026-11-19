@@ -41,6 +41,7 @@ export async function requireRole(role: UserRole): Promise<SessionProfile> {
   return user
 }
 
+// Server components forward the Better Auth JWT; private pages never call Express anonymously.
 export async function serverApi<T>(
   path: string,
   { auth: requireAuth = false }: { auth?: boolean } = {}
