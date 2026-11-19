@@ -72,8 +72,7 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
           ]
 
     toast.success("Signed in")
-    router.push(destination)
-    router.refresh()
+    router.replace(destination)
   })
 
   return (

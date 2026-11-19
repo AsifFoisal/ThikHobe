@@ -100,8 +100,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
         : ROLE_DASHBOARD[values.role]
 
     toast.success("Account created")
-    router.push(destination)
-    router.refresh()
+    router.replace(destination)
   })
 
   return (
@@ -262,10 +261,6 @@ export function SignUpForm({ redirectTo }: { redirectTo: string | null }) {
         >
           {submitting ? "Creating account…" : "Create account"}
         </Button>
-        <p className="mt-3 text-xs leading-5 text-muted-ink">
-          Your password is hashed by Better Auth. Admin accounts are created
-          internally.
-        </p>
       </form>
 
       <p className="mt-6 border-t border-line pt-5 text-sm text-muted-ink">
