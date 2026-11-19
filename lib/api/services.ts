@@ -72,14 +72,14 @@ const toBackendServicePatch = (input: ServiceUpdateInput) => ({
 export const servicesApi = {
   async getFeatured(limit = 6) {
     const data = await apiRequest<{ items: BackendService[] }>(
-      `/services${toQueryString({ limit, sort: "newest" })}`
+      `/api/services${toQueryString({ limit, sort: "newest" })}`
     )
     return data.items.map(mapService)
   },
 
   async list(params: ServicesQueryInput = {}) {
     const data = await apiRequest<BackendServicePage>(
-      `/services${toQueryString({
+      `/api/services${toQueryString({
         search: params.search,
         category: params.category,
         mode: params.mode,
@@ -97,18 +97,18 @@ export const servicesApi = {
 
   async getById(id: string) {
     const data = await apiRequest<BackendService>(
-      `/services/${encodeURIComponent(id)}`
+      `/api/services/${encodeURIComponent(id)}`
     )
     return mapService(data)
   },
 
   async mine() {
-    const data = await apiRequest<BackendList<BackendService>>("/services/mine")
+    const data = await apiRequest<BackendList<BackendService>>("/api/services/mine")
     return data.items.map(mapService)
   },
 
   async create(input: ServiceInput) {
-    const data = await apiRequest<BackendService>("/services", {
+    const data = await apiRequest<BackendService>("/api/services", {
       method: "POST",
       body: toBackendService(input),
     })
@@ -117,7 +117,7 @@ export const servicesApi = {
 
   async update(id: string, input: ServiceUpdateInput) {
     const data = await apiRequest<BackendService>(
-      `/services/${encodeURIComponent(id)}`,
+      `/api/services/${encodeURIComponent(id)}`,
       { method: "PATCH", body: toBackendServicePatch(input) }
     )
     return mapService(data)
@@ -128,7 +128,7 @@ export const servicesApi = {
     approvalStatus: Exclude<ServiceApprovalStatus, "pending">
   ) {
     const data = await apiRequest<BackendService>(
-      `/admin/services/${encodeURIComponent(id)}/approval`,
+      `/api/admin/services/${encodeURIComponent(id)}/approval`,
       { method: "PATCH", body: { approvalStatus } }
     )
     return mapService(data)
@@ -136,20 +136,20 @@ export const servicesApi = {
 
   async adminList() {
     const data = await apiRequest<BackendList<BackendService>>(
-      "/admin/services"
+      "/api/admin/services"
     )
     return data.items.map(mapService)
   },
 
   delete(id: string) {
-    return apiRequest<void>(`/services/${encodeURIComponent(id)}`, {
+    return apiRequest<void>(`/api/services/${encodeURIComponent(id)}`, {
       method: "DELETE",
     })
   },
 
   async setAvailability(id: string, available: boolean) {
     const data = await apiRequest<BackendService>(
-      `/services/${encodeURIComponent(id)}/availability`,
+      `/api/services/${encodeURIComponent(id)}/availability`,
       { method: "PATCH", body: { isAvailable: available } }
     )
     return mapService(data)

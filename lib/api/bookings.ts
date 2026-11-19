@@ -38,7 +38,7 @@ const toPage = (items: Booking[]): PaginatedData<Booking> => ({
 
 export const bookingsApi = {
   async create(input: CreateBookingInput) {
-    const data = await apiRequest<BackendBooking>("/bookings", {
+    const data = await apiRequest<BackendBooking>("/api/bookings", {
       method: "POST",
       body: input,
     })
@@ -47,7 +47,7 @@ export const bookingsApi = {
 
   async customer(params: BookingListInput = {}) {
     const data = await apiRequest<BackendList<BackendBooking>>(
-      `/bookings/my${toQueryString({
+      `/api/bookings/my${toQueryString({
         status: params.status
           ? toBackendBookingStatus(params.status)
           : undefined,
@@ -58,7 +58,7 @@ export const bookingsApi = {
 
   async technician(params: BookingListInput = {}) {
     const data = await apiRequest<BackendList<BackendBooking>>(
-      `/bookings/technician${toQueryString({
+      `/api/bookings/technician${toQueryString({
         status: params.status
           ? toBackendBookingStatus(params.status)
           : undefined,
@@ -68,7 +68,7 @@ export const bookingsApi = {
   },
 
   async admin(params: BookingListInput = {}) {
-    const data = await apiRequest<BackendList<BackendBooking>>("/admin/bookings")
+    const data = await apiRequest<BackendList<BackendBooking>>("/api/admin/bookings")
     const items = data.items.map(mapBooking)
     return toPage(
       params.status
@@ -79,14 +79,14 @@ export const bookingsApi = {
 
   async getById(id: string) {
     const data = await apiRequest<BackendBooking>(
-      `/bookings/${encodeURIComponent(id)}`
+      `/api/bookings/${encodeURIComponent(id)}`
     )
     return mapBooking(data)
   },
 
   async cancel(id: string) {
     const data = await apiRequest<BackendBooking>(
-      `/bookings/${encodeURIComponent(id)}/cancel`,
+      `/api/bookings/${encodeURIComponent(id)}/cancel`,
       { method: "PATCH" }
     )
     return mapBooking(data)
@@ -94,7 +94,7 @@ export const bookingsApi = {
 
   async updateStatus(id: string, input: UpdateBookingStatusInput) {
     const data = await apiRequest<BackendBooking>(
-      `/bookings/${encodeURIComponent(id)}/status`,
+      `/api/bookings/${encodeURIComponent(id)}/status`,
       {
         method: "PATCH",
         body: {

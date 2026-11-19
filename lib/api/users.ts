@@ -30,7 +30,7 @@ const toPage = (items: User[]): PaginatedData<User> => ({
 export const usersApi = {
   async list(params: UserListInput = {}) {
     const data = await apiRequest<BackendList<BackendUser>>(
-      `/admin/users${toQueryString({
+      `/api/admin/users${toQueryString({
         search: params.search,
         role: params.role === "all" ? undefined : params.role,
       })}`
@@ -40,14 +40,14 @@ export const usersApi = {
 
   async updateRole(id: string, role: UserRole) {
     const data = await apiRequest<{ success: boolean; user: BackendUser }>(
-      `/admin/users/${encodeURIComponent(id)}/role`,
+      `/api/admin/users/${encodeURIComponent(id)}/role`,
       { method: "PATCH", body: { role } }
     )
     return mapUser(data.user)
   },
 
   async updateProfile(input: UpdateProfileInput) {
-    const data = await apiRequest<BackendUser>("/users/profile", {
+    const data = await apiRequest<BackendUser>("/api/users/profile", {
       method: "PATCH",
       body: input,
     })

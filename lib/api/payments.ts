@@ -27,7 +27,7 @@ export interface AdminTransactions {
 
 export const paymentsApi = {
   createCheckoutSession(bookingId: string) {
-    return apiRequest<CheckoutSession>("/payments/create-checkout-session", {
+    return apiRequest<CheckoutSession>("/api/payments/create-checkout-session", {
       method: "POST",
       body: { bookingId },
     })
@@ -35,17 +35,17 @@ export const paymentsApi = {
 
   verify(sessionId: string) {
     return apiRequest<PaymentVerification>(
-      `/payments/verify${toQueryString({ session_id: sessionId })}`
+      `/api/payments/verify${toQueryString({ session_id: sessionId })}`
     )
   },
 
   async customerHistory() {
-    const data = await apiRequest<BackendList<BackendPayment>>("/payments/my")
+    const data = await apiRequest<BackendList<BackendPayment>>("/api/payments/my")
     return data.items.map(mapPayment)
   },
 
   async adminTransactions() {
-    const data = await apiRequest<BackendList<BackendPayment>>("/admin/payments")
+    const data = await apiRequest<BackendList<BackendPayment>>("/api/admin/payments")
     return {
       items: data.items.map(mapPayment),
       totalRevenue: data.totalRevenue ?? 0,
