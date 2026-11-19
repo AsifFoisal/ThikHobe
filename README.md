@@ -102,7 +102,7 @@ Seed demo accounts (`npm run seed`):
 | Technician | `nusrat@fixmate.test` | `Demo1234` |
 | Customer | `tanvir@fixmate.test` | `Demo1234` |
 
-Change these passwords before any non-local deployment.
+Change these passwords before any non-local deployment. Before deploying, set the production frontend origin in `CLIENT_URL`, `CORS_ORIGINS`, and Better Auth trusted origins, and register the deployed Stripe webhook endpoint.
 
 ## Authentication
 
