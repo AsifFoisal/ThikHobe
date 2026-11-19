@@ -1,0 +1,106 @@
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
+
+import { buttonVariants } from "@/components/ui/button"
+import { getPageItems } from "@/lib/pagination"
+import { cn } from "@/lib/utils"
+
+interface DashboardPaginationProps {
+  page: number
+  totalPages: number
+  basePath: string
+  className?: string
+}
+
+export function DashboardPagination({
+  page,
+  totalPages,
+  basePath,
+  className,
+}: DashboardPaginationProps) {
+  if (totalPages <= 1) return null
+
+  const current = Math.min(Math.max(1, page), totalPages)
+  const items = getPageItems(current, totalPages)
+  const hrefFor = (target: number) => {
+    if (target <= 1) return basePath
+    const separator = basePath.includes("?") ? "&" : "?"
+    return `${basePath}${separator}page=${target}`
+  }
+  const disabledClass = cn(
+    buttonVariants({ size: "sm", variant: "outline" }),
+    "pointer-events-none opacity-40"
+  )
+  const pageLinkClass =
+    "inline-flex size-9 items-center justify-center rounded-[0.625rem] text-sm font-semibold text-muted-ink transition-colors hover:bg-sage hover:text-spruce focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-offset-2 focus-visible:ring-offset-paper focus-visible:outline-none"
+
+  return (
+    <nav
+      aria-label="Pagination"
+      className={cn(
+        "flex flex-wrap items-center justify-center gap-3 sm:justify-between",
+        className
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+        {current > 1 ? (
+          <Link
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+            href={hrefFor(current - 1)}
+          >
+            <ChevronLeft aria-hidden />
+            Previous
+          </Link>
+        ) : (
+          <span aria-disabled="true" className={disabledClass}>
+            <ChevronLeft aria-hidden />
+            Previous
+          </span>
+        )}
+      </div>
+
+      <div className="order-first flex w-full flex-wrap items-center justify-center gap-1 sm:order-none sm:w-auto">
+        {items.map((item, index) =>
+          item === "ellipsis" ? (
+            <span
+              aria-hidden
+              className="inline-flex size-9 items-center justify-center text-sm text-muted-ink"
+              key={`ellipsis-${index}`}
+            >
+              …
+            </span>
+          ) : item === current ? (
+            <span
+              aria-current="page"
+              className="inline-flex size-9 items-center justify-center rounded-[0.625rem] bg-spruce text-sm font-semibold text-paper"
+              key={item}
+            >
+              {item}
+            </span>
+          ) : (
+            <Link className={pageLinkClass} href={hrefFor(item)} key={item}>
+              {item}
+            </Link>
+          )
+        )}
+      </div>
+
+      <div className="flex items-center justify-between gap-2">
+        {current < totalPages ? (
+          <Link
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+            href={hrefFor(current + 1)}
+          >
+            Next
+            <ChevronRight aria-hidden />
+          </Link>
+        ) : (
+          <span aria-disabled="true" className={disabledClass}>
+            Next
+            <ChevronRight aria-hidden />
+          </span>
+        )}
+      </div>
+    </nav>
+  )
+}

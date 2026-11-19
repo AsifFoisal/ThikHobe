@@ -6,6 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --breakpoint-wide: 87.5rem;
+
   --font-sans:
     var(--font-hanken), "Noto Sans Bengali", ui-sans-serif, system-ui,
     sans-serif;
