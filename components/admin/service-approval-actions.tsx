@@ -7,6 +7,7 @@ import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { ApiError, servicesApi } from "@/lib/api"
 import type { Service } from "@/types"
 
+// Approval controls are only exposed while a service is pending review.
 export function ServiceApprovalActions({ service }: { service: Service }) {
   const router = useRouter()
 
