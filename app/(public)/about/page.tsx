@@ -9,9 +9,9 @@ import { AboutProblem } from "@/components/about/about-problem"
 import { AboutProcess } from "@/components/about/about-process"
 
 export const metadata: Metadata = {
-  title: "How FixMate works",
+  title: "How ThikHobe works",
   description:
-    "How FixMate connects customers with verified repair technicians, makes every repair status visible, and lets customers pay only after the work is completed.",
+    "How ThikHobe connects customers with verified repair technicians, makes every repair status visible, and lets customers pay only after the work is completed.",
 }
 
 export default function AboutPage() {

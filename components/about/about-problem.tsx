@@ -49,7 +49,7 @@ export function AboutProblem() {
         </div>
 
         <p className="mt-10 max-w-[62ch] text-base leading-7 text-sage">
-          FixMate changes the order:{" "}
+          ThikHobe changes the order:{" "}
           <span className="text-paper">information first, payment last.</span>{" "}
           The technician, the status, and the final amount are visible before
           money moves.

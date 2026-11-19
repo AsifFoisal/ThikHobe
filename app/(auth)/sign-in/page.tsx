@@ -8,7 +8,7 @@ import { getSessionProfile } from "@/lib/server-api"
 export const metadata: Metadata = {
   title: "Sign in",
   description:
-    "Sign in to FixMate to follow repair progress, manage bookings, and pay after completion.",
+    "Sign in to ThikHobe to follow repair progress, manage bookings, and pay after completion.",
 }
 
 export default async function SignInPage({

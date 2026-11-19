@@ -28,9 +28,9 @@ export function Logo({ tone = "default", className }: LogoProps) {
           tone === "light" ? "text-paper" : "text-ink"
         )}
       >
-        Fix
+        Thik
         <span className={tone === "light" ? "text-ember" : "text-fern"}>
-          Mate
+          Hobe
         </span>
       </span>
     </span>

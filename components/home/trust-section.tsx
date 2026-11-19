@@ -29,7 +29,7 @@ export function TrustSection() {
     <section className="section border-y border-line bg-sage/50" id="trust">
       <div className="container-page">
         <SectionHeading
-          description="Every FixMate job carries a technician, a status, and a final amount you can see. Here is the visibility the platform is built around."
+          description="Every ThikHobe job carries a technician, a status, and a final amount you can see. Here is the visibility the platform is built around."
           title="A repair you can follow, not just hope for."
         />
 

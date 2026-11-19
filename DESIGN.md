@@ -1,4 +1,4 @@
-# FixMate Design Foundation
+# ThikHobe Design Foundation
 
 > **Implementation note:** the visual system in this document remains current. Older auth/data scope statements below describe the pre-integration prototype. The app now uses Better Auth, the Express API, MongoDB, Stripe, and ImgBB; see `README.md`, `API.md`, and `server/README.md` for current behavior.
 
@@ -41,13 +41,13 @@ The homepage hero uses the display face at 36–56px with controlled line breaks
 
 ## Homepage composition
 
-The public homepage follows this rhythm: paper hero → white featured services → spruce process section → paper categories → white why-FixMate split → sage trust band → spruce final CTA → ink footer.
+The public homepage follows this rhythm: paper hero → white featured services → spruce process section → paper categories → white why-ThikHobe split → sage trust band → spruce final CTA → ink footer.
 
 - **Hero** (`components/home/hero.tsx`): split at `lg`, 4:3 repair photo with a verified badge and a static repair-progress card. The search form is native `GET /services`; the secondary CTA anchors to `#how-it-works`.
 - **Featured services** (`components/home/featured-services.tsx`): six latest approved and available sample services, using the reusable `ServiceCard`.
 - **How it works** (`components/home/how-it-works.tsx`): four numbered steps on a hairline rail plus a pay-after-completion promise panel. The section carries the strongest business differentiator.
 - **Categories** (`components/home/popular-categories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`.
-- **Why FixMate** (`components/home/why-fixmate.tsx`): image-led split with five concrete advantages, not a generic card grid.
+- **Why ThikHobe** (`components/home/why-thikhobe.tsx`): image-led split with five concrete advantages, not a generic card grid.
 - **Trust** (`components/home/trust-section.tsx`): illustrative platform figures, customer stories, and three trust indicators. The disclosure line is mandatory while data is static.
 - **Final CTA** and **SiteFooter**: the CTA uses the ember accent; the footer is ink, four columns, and exists only inside the public route group.
 

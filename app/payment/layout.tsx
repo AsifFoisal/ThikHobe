@@ -11,7 +11,7 @@ export default function PaymentLayout({
     <div className="flex min-h-svh flex-col bg-paper">
       <header className="border-b border-line bg-paper">
         <div className="mx-auto flex h-16 w-full max-w-3xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link aria-label="FixMate home" className="rounded-lg" href="/">
+          <Link aria-label="ThikHobe home" className="rounded-lg" href="/">
             <Logo />
           </Link>
           <Link
@@ -33,7 +33,7 @@ export default function PaymentLayout({
       <footer className="border-t border-line">
         <div className="mx-auto w-full max-w-3xl px-4 py-4 sm:px-6">
           <p className="text-center text-xs leading-5 text-muted-ink">
-            Payments are processed securely by Stripe. FixMate never stores card details.
+            Payments are processed securely by Stripe. ThikHobe never stores card details.
           </p>
         </div>
       </footer>

@@ -8,7 +8,7 @@ import { getSessionProfile } from "@/lib/server-api"
 export const metadata: Metadata = {
   title: "Create your account",
   description:
-    "Create a FixMate customer or technician account to book repairs, follow progress, and pay after completion.",
+    "Create a ThikHobe customer or technician account to book repairs, follow progress, and pay after completion.",
 }
 
 export default async function SignUpPage({

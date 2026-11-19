@@ -56,7 +56,7 @@ export function DashboardSidebar({
       >
         {mobile ? (
           <>
-            <Link aria-label="FixMate home" className="rounded-lg" href="/">
+            <Link aria-label="ThikHobe home" className="rounded-lg" href="/">
               <Logo />
             </Link>
             <Dialog.Close
@@ -77,7 +77,7 @@ export function DashboardSidebar({
           </button>
         ) : (
           <>
-            <Link aria-label="FixMate home" className="rounded-lg" href="/">
+            <Link aria-label="ThikHobe home" className="rounded-lg" href="/">
               <Logo />
             </Link>
             <button

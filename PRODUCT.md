@@ -1,4 +1,4 @@
-# FixMate
+# ThikHobe
 
 <!-- impeccable:product-schema 1 -->
 
@@ -20,11 +20,11 @@ Next.js App Router, TypeScript, Tailwind CSS, and Lucide icons. Public pages, cu
 
 ## Brand Commitments
 
-FixMate name with a tool-related logo. Exactly three core brand colors, reusable tokens, and one distinctive font excluding Inter and Space Grotesk. User delegates the visual direction. Use Impeccable and Ponytail throughout without compromising UI quality. Preserve completed work in subsequent stages.
+ThikHobe name with a tool-related logo. Exactly three core brand colors, reusable tokens, and one distinctive font excluding Inter and Space Grotesk. User delegates the visual direction. Use Impeccable and Ponytail throughout without compromising UI quality. Preserve completed work in subsequent stages.
 
 ## Evidence on Hand
 
-A clean Next.js starter with Base UI, Lucide, and Tailwind installed. No existing FixMate implementation, customer evidence, business statistics, brand assets, or backend. Sample services, people, prices, and records may be authored and must be identifiable as examples.
+A clean Next.js starter with Base UI, Lucide, and Tailwind installed. No existing ThikHobe implementation, customer evidence, business statistics, brand assets, or backend. Sample services, people, prices, and records may be authored and must be identifiable as examples.
 
 ## Product Principles
 

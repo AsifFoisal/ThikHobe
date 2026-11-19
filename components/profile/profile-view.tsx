@@ -112,7 +112,7 @@ export function ProfileView({ user }: { user: SessionProfile }) {
       <div className="max-w-2xl">
         <h1 className="type-h1">Profile</h1>
         <p className="type-lead mt-3">
-          Keep the identity and contact details attached to your FixMate
+          Keep the identity and contact details attached to your ThikHobe
           workspace up to date.
         </p>
       </div>

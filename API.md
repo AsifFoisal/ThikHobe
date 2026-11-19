@@ -1,4 +1,4 @@
-# FixMate API architecture
+# ThikHobe API architecture
 
 ## Layers
 

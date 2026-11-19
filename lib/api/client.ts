@@ -113,7 +113,7 @@ export async function apiRequest<T>(
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      "Unable to reach the FixMate server. Check your connection and try again.",
+      "Unable to reach the ThikHobe server. Check your connection and try again.",
       0,
       "NETWORK_ERROR"
     )

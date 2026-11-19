@@ -150,7 +150,7 @@ export function SignInForm({ redirectTo }: { redirectTo: string | null }) {
       </form>
 
       <p className="mt-6 border-t border-line pt-5 text-sm text-muted-ink">
-        New to FixMate?{" "}
+        New to ThikHobe?{" "}
         <Link
           className="font-semibold text-spruce underline-offset-4 hover:underline"
           href={signUpHref}

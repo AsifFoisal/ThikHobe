@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function PublicLoading() {
   return (
     <div aria-busy="true" className="container-page">
-      <span className="sr-only">Loading FixMate…</span>
+      <span className="sr-only">Loading ThikHobe…</span>
       <div className="grid gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[1.04fr_0.96fr] lg:items-center lg:gap-16 lg:pt-20 lg:pb-24">
         <div>
           <Skeleton className="h-14 w-full" />

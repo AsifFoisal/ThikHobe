@@ -18,19 +18,19 @@ const quickLinks = [
 ] as const
 
 const socialLinks = [
-  { label: "FixMate on X", href: siteConfig.social.x, Icon: XLogo },
+  { label: "ThikHobe on X", href: siteConfig.social.x, Icon: XLogo },
   {
-    label: "FixMate on Facebook",
+    label: "ThikHobe on Facebook",
     href: siteConfig.social.facebook,
     Icon: FacebookLogo,
   },
   {
-    label: "FixMate on Instagram",
+    label: "ThikHobe on Instagram",
     href: siteConfig.social.instagram,
     Icon: InstagramLogo,
   },
   {
-    label: "FixMate on LinkedIn",
+    label: "ThikHobe on LinkedIn",
     href: siteConfig.social.linkedin,
     Icon: LinkedInLogo,
   },
@@ -146,7 +146,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-sage">
-            © {new Date().getFullYear()} FixMate. All rights reserved.
+            © {new Date().getFullYear()} ThikHobe. All rights reserved.
           </p>
           <p className="text-xs text-sage">Repairs, handled in Dhaka.</p>
         </div>

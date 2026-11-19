@@ -41,9 +41,9 @@ const advantages: { title: string; description: string; icon: LucideIcon }[] = [
   },
 ]
 
-export function WhyFixMate() {
+export function WhyThikHobe() {
   return (
-    <section className="section border-y border-line bg-card" id="why-fixmate">
+    <section className="section border-y border-line bg-card" id="why-thikhobe">
       <div className="container-page grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
         <div className="relative">
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-sage">
@@ -79,7 +79,7 @@ export function WhyFixMate() {
           </h2>
           <p className="type-lead mt-4 max-w-[55ch]">
             Unclear quotes, phone-tag updates, and paying before you see the
-            result are the norm. FixMate replaces them with a visible process
+            result are the norm. ThikHobe replaces them with a visible process
             and a payment that waits for the work.
           </p>
 

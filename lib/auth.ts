@@ -21,13 +21,13 @@ const baseURL =
 
 // Reuse one client across Next.js dev reloads.
 const globalForMongo = globalThis as unknown as {
-  fixmateMongo?: { uri: string; client: MongoClient }
+  thikhobeMongo?: { uri: string; client: MongoClient }
 }
-const cachedMongo = globalForMongo.fixmateMongo
+const cachedMongo = globalForMongo.thikhobeMongo
 const client =
   cachedMongo?.uri === mongoUri ? cachedMongo.client : new MongoClient(mongoUri)
 if (process.env.NODE_ENV !== "production") {
-  globalForMongo.fixmateMongo = { uri: mongoUri, client }
+  globalForMongo.thikhobeMongo = { uri: mongoUri, client }
 }
 
 const trustedOrigins = Array.from(
@@ -42,13 +42,13 @@ const roleFromInput = (role: unknown): UserRole =>
   role === "technician" ? "technician" : "customer"
 
 export const auth = betterAuth({
-  appName: "FixMate",
+  appName: "ThikHobe",
   baseURL,
   secret,
   trustedOrigins,
 
   // Better Auth's user collection is the application's only users collection.
-  database: mongodbAdapter(client.db(process.env.DB_NAME ?? "fixmate")),
+  database: mongodbAdapter(client.db(process.env.DB_NAME ?? "thikhobe")),
 
   emailAndPassword: {
     enabled: true,
@@ -118,8 +118,8 @@ export const auth = betterAuth({
   plugins: [
     jwt({
       jwt: {
-        issuer: process.env.JWT_ISSUER ?? "fixmate",
-        audience: process.env.JWT_AUDIENCE ?? "fixmate-client",
+        issuer: process.env.JWT_ISSUER ?? "thikhobe",
+        audience: process.env.JWT_AUDIENCE ?? "thikhobe-client",
         definePayload: ({ user }) => ({
           id: user.id,
           email: user.email,

@@ -19,7 +19,7 @@ import type { BookingStatus } from "@/types"
 export const metadata: Metadata = {
   title: "All bookings",
   description:
-    "Read-only platform booking history with status filtering for FixMate administrators.",
+    "Read-only platform booking history with status filtering for ThikHobe administrators.",
 }
 
 const FILTERS = [

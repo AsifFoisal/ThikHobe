@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button"
 
 const pageIndex = [
   { label: "The problem", href: "#problem" },
-  { label: "How FixMate works", href: "#how-it-works" },
+  { label: "How ThikHobe works", href: "#how-it-works" },
   { label: "For customers & technicians", href: "#benefits" },
   { label: "Paying after service", href: "#payment" },
   { label: "What we repair", href: "#categories" },
@@ -21,7 +21,7 @@ export function AboutIntro() {
             Repair should be something you can see through.
           </h1>
           <p className="type-lead mt-6 max-w-[55ch]">
-            FixMate is a repair marketplace built around one idea: you should
+            ThikHobe is a repair marketplace built around one idea: you should
             know who is coming, what stage the job is at, and what you will pay
             before you pay it.
           </p>

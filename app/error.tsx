@@ -12,7 +12,7 @@ export default function GlobalError({ reset }: { reset: () => void }) {
     <div className="flex min-h-svh flex-col bg-paper">
       <header className="border-b border-line">
         <div className="container-page flex h-16 items-center">
-          <Link aria-label="FixMate home" className="rounded-lg" href="/">
+          <Link aria-label="ThikHobe home" className="rounded-lg" href="/">
             <Logo />
           </Link>
         </div>

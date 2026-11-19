@@ -1,4 +1,4 @@
-# FixMate final audit
+# ThikHobe final audit
 
 > **Historical note:** this audit was written before the backend integration. Auth, MongoDB, Express, Stripe, ImgBB, and live dashboard data have since been implemented. See `README.md`, `API.md`, and `server/README.md` for current behavior.
 

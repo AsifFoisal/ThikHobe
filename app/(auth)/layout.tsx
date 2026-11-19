@@ -62,7 +62,7 @@ export default function AuthLayout({
         </div>
 
         <p className="hidden text-xs text-sage lg:block">
-          FixMate · Repairs, handled in Dhaka.
+          ThikHobe · Repairs, handled in Dhaka.
         </p>
       </aside>
 
@@ -83,7 +83,7 @@ export default function AuthLayout({
           {children}
         </div>
         <p className="text-center text-xs text-muted-ink">
-          © {new Date().getFullYear()} FixMate. Repairs, handled.
+          © {new Date().getFullYear()} ThikHobe. Repairs, handled.
         </p>
       </main>
     </div>

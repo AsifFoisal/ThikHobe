@@ -12,7 +12,7 @@ import { formatDate } from "@/lib/format"
 export const metadata: Metadata = {
   title: "Payment successful",
   description:
-    "FixMate verified Stripe checkout confirmation with payment details and next steps.",
+    "ThikHobe verified Stripe checkout confirmation with payment details and next steps.",
 }
 
 interface PaymentSuccessPageProps {

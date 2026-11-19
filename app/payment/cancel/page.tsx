@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card"
 export const metadata: Metadata = {
   title: "Payment cancelled",
   description:
-    "FixMate payment cancellation surface explaining that no payment was completed and no payment information was changed.",
+    "ThikHobe payment cancellation surface explaining that no payment was completed and no payment information was changed.",
 }
 
 export default function PaymentCancelPage() {

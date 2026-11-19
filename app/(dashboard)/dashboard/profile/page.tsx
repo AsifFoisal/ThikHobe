@@ -6,7 +6,7 @@ import { requireSessionUser } from "@/lib/server-api"
 export const metadata: Metadata = {
   title: "Profile",
   description:
-    "Update your FixMate name, contact details, bio, and profile photo.",
+    "Update your ThikHobe name, contact details, bio, and profile photo.",
 }
 
 export default async function ProfilePage() {

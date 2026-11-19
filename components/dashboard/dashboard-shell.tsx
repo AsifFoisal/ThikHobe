@@ -64,7 +64,7 @@ export function DashboardShell({
                 </Dialog.Portal>
               </Dialog.Root>
               <Link
-                aria-label="FixMate home"
+                aria-label="ThikHobe home"
                 className="rounded-lg lg:hidden"
                 href="/"
               >

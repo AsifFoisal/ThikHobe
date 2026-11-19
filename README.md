@@ -1,6 +1,6 @@
-# FixMate
+# ThikHobe
 
-FixMate is a full-stack smart device and home appliance repair platform. Customers request repairs, technicians manage services and jobs, admins moderate the marketplace, and customers pay with Stripe only after a job is completed.
+ThikHobe is a full-stack smart device and home appliance repair platform. Customers request repairs, technicians manage services and jobs, admins moderate the marketplace, and customers pay with Stripe only after a job is completed.
 
 ## Stack
 
@@ -97,10 +97,10 @@ Seed demo accounts (`npm run seed`):
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Admin | `admin@fixmate.test` | `Demo1234` |
-| Technician | `rafi@fixmate.test` | `Demo1234` |
-| Technician | `nusrat@fixmate.test` | `Demo1234` |
-| Customer | `tanvir@fixmate.test` | `Demo1234` |
+| Admin | `admin@thikhobe.test` | `Demo1234` |
+| Technician | `rafi@thikhobe.test` | `Demo1234` |
+| Technician | `nusrat@thikhobe.test` | `Demo1234` |
+| Customer | `tanvir@thikhobe.test` | `Demo1234` |
 
 Change these passwords before any non-local deployment. Before deploying, set the production frontend origin in `CLIENT_URL`, `CORS_ORIGINS`, and Better Auth trusted origins, and register the deployed Stripe webhook endpoint.
 
