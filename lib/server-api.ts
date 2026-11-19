@@ -20,19 +20,61 @@ export class ServerApiError extends Error {
   }
 }
 
-export async function getSessionProfile(): Promise<SessionProfile | null> {
-  const requestHeaders = await headers()
-  const session = await auth.api
-    .getSession({ headers: requestHeaders })
-    .catch(() => null)
+type AuthSession = NonNullable<
+  Awaited<ReturnType<typeof auth.api.getSession>>
+>
 
+const sessionCookiePattern =
+  /(?:^|;\s*)(?:__Secure-)?better-auth\.session_token=/
+
+// A transient auth/database failure must not be treated as a signed-out user.
+async function getSessionResult(): Promise<{
+  session: AuthSession | null
+  error: unknown
+}> {
+  const requestHeaders = await headers()
+  const expectsSession = sessionCookiePattern.test(
+    requestHeaders.get("cookie") ?? ""
+  )
+
+  try {
+    const session = await auth.api.getSession({ headers: requestHeaders })
+    if (session || !expectsSession) return { session, error: null }
+  } catch {
+    return retrySession(requestHeaders)
+  }
+
+  return retrySession(requestHeaders)
+}
+
+async function retrySession(
+  requestHeaders: Awaited<ReturnType<typeof headers>>
+): Promise<{
+  session: AuthSession | null
+  error: unknown
+}> {
+  await new Promise((resolve) => setTimeout(resolve, 150))
+  try {
+    return {
+      session: await auth.api.getSession({ headers: requestHeaders }),
+      error: null,
+    }
+  } catch (error) {
+    return { session: null, error }
+  }
+}
+
+export async function getSessionProfile(): Promise<SessionProfile | null> {
+  const { session } = await getSessionResult()
   return session?.user ? toSessionProfile(session.user) : null
 }
 
 export async function requireSessionUser(): Promise<SessionProfile> {
-  const user = await getSessionProfile()
-  if (!user) redirect("/sign-in")
-  return user
+  const { session, error } = await getSessionResult()
+  if (error) throw error
+
+  if (!session?.user) redirect("/sign-in")
+  return toSessionProfile(session.user)
 }
 
 export async function requireRole(role: UserRole): Promise<SessionProfile> {
@@ -49,10 +91,9 @@ export async function serverApi<T>(
   if (!apiBaseUrl) throw new Error("NEXT_PUBLIC_API_URL is not configured")
 
   const requestHeaders = await headers()
-  const session = await auth.api
-    .getSession({ headers: requestHeaders })
-    .catch(() => null)
+  const { session, error } = await getSessionResult()
 
+  if (requireAuth && error) throw error
   if (requireAuth && !session) redirect("/sign-in")
 
   let token: string | undefined

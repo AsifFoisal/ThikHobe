@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { auth } from "@/lib/auth"
 import { formatDate } from "@/lib/format"
+import { getSessionProfile } from "@/lib/server-api"
 
 export const metadata: Metadata = {
   title: "Payment successful",
@@ -107,11 +108,9 @@ export default async function PaymentSuccessPage({
   }
 
   const requestHeaders = await headers()
-  const session = await auth.api
-    .getSession({ headers: requestHeaders })
-    .catch(() => null)
+  const viewer = await getSessionProfile()
 
-  if (!session) {
+  if (!viewer) {
     return (
       <PaymentError
         description="Sign in to the account that paid for this repair, then open the payment link again."
@@ -192,7 +191,7 @@ export default async function PaymentSuccessPage({
 
   const rows = [
     { label: "Service", value: payload.serviceTitle },
-    { label: "Customer", value: session.user.email },
+    { label: "Customer", value: viewer.email },
     { label: "Amount paid", value: amount },
     { label: "Transaction ID", value: payload.transactionId },
     { label: "Payment date", value: paymentDate },

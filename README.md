@@ -88,10 +88,10 @@ The seed requires the Next.js app to be running because accounts are created thr
 
 ## Deployment and test accounts
 
-- Live site: _add the deployed frontend URL_
-- Live API: _add the deployed Express URL_
-- Client repository: _add the GitHub URL_
-- Server repository: _add the GitHub URL_
+- Live site: https://thikhobe.vercel.app
+- Live API: https://thikhobe-server.vercel.app
+- Client repository: https://github.com/AsifFoisal/ThikHobe
+- Server repository: https://github.com/AsifFoisal/ThikHobe-Server
 
 Seed demo accounts (`npm run seed`):
 
