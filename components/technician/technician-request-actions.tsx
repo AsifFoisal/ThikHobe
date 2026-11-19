@@ -13,6 +13,7 @@ import type { Booking, BookingStatus } from "@/types"
 
 type RequestAction = "accept" | "reject" | "start" | "complete"
 
+// These actions mirror the server-enforced status pipeline.
 const dialogCopy: Record<
   Exclude<RequestAction, "complete">,
   { title: string; description: string; confirm: string; destructive?: boolean }
