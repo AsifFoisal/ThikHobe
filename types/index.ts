@@ -61,6 +61,7 @@ export interface TechnicianSummary {
   image?: string
   area?: string
   bio?: string
+  skills?: string[]
   plan?: TechnicianPlan
   rating?: number
 }

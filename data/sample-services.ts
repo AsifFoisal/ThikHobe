@@ -14,6 +14,7 @@ const technicians = {
     name: "Rafiul Islam",
     area: "Dhanmondi",
     bio: "Board-level phone and laptop specialist with eight years of bench experience.",
+    skills: ["iPhone repair", "Micro-soldering", "Battery replacement"],
     plan: "pro",
   },
   nusrat: {
@@ -21,6 +22,7 @@ const technicians = {
     name: "Nusrat Jahan",
     area: "Mirpur",
     bio: "Certified laptop and desktop technician focused on same-day diagnostics.",
+    skills: ["Laptop diagnostics", "MacBook service", "Data recovery"],
     plan: "pro",
   },
   tanvir: {
@@ -28,54 +30,63 @@ const technicians = {
     name: "Tanvir Ahmed",
     area: "Uttara",
     bio: "HVAC technician handling split and window air conditioning systems.",
+    skills: ["Split AC", "Window AC", "Refrigerant systems"],
   },
   farhana: {
     id: "tech-farhana",
     name: "Farhana Akter",
     area: "Mohammadpur",
     bio: "Appliance technician focused on refrigeration and laundry systems.",
+    skills: ["Refrigeration", "Washing machines", "Thermostats"],
   },
   mahmud: {
     id: "tech-mahmud",
     name: "Mahmud Hasan",
     area: "Banani",
     bio: "TV and home electronics specialist with a focus on panel-level repair.",
+    skills: ["LED panels", "Main boards", "TV mounting"],
   },
   sadia: {
     id: "tech-sadia",
     name: "Sadia Islam",
     area: "Gulshan",
     bio: "Laundry and kitchen appliance repair specialist.",
+    skills: ["Front-load washers", "Drain systems", "Laundry appliances"],
   },
   imran: {
     id: "tech-imran",
     name: "Imran Hossain",
     area: "Dhanmondi",
     bio: "Licensed electrician for home wiring and electrical safety checks.",
+    skills: ["Home wiring", "Breakers", "Fixture installation"],
   },
   sabbir: {
     id: "tech-sabbir",
     name: "Sabbir Ahmed",
     area: "Mirpur",
     bio: "Micro-soldering and smartphone display specialist.",
+    skills: ["Samsung displays", "Charging ports", "Board repair"],
   },
   jahid: {
     id: "tech-jahid",
     name: "Jahid Hasan",
     area: "Gulshan",
     bio: "HVAC installer for split and cassette air conditioning systems.",
+    skills: ["AC installation", "Cassette units", "Drainage"],
   },
   rasel: {
     id: "tech-rasel",
     name: "Rasel Mahmud",
     area: "Mirpur",
     bio: "Refrigeration technician focused on sealed-system repairs and leak tracing.",
+    skills: ["Gas leaks", "Compressors", "Sealed systems"],
   },
   tariqul: {
     id: "tech-tariqul",
     name: "Tariqul Islam",
     area: "Dhanmondi",
     bio: "TV board and panel-level repair technician.",
+    skills: ["TV firmware", "Main boards", "Panel repair"],
     plan: "pro",
   },
   momena: {
@@ -83,6 +94,7 @@ const technicians = {
     name: "Momena Begum",
     area: "Mohammadpur",
     bio: "Laundry appliance technician and parts specialist.",
+    skills: ["Door seals", "Laundry parts", "Leak tests"],
   },
 } satisfies Record<string, TechnicianSummary>
 

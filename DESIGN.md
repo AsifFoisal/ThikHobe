@@ -70,6 +70,18 @@ Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, 
 - `services/loading.tsx` provides matching card skeletons and a filter-bar skeleton; `services/error.tsx` provides retry and home actions.
 - The grid is 1 column on mobile, 2 on tablet, and 3 on desktop.
 
+## Service details & booking
+
+`app/(public)/services/[id]/page.tsx` is a server-rendered detail page. Approved and available services are pre-rendered; pending, rejected, unavailable, or unknown IDs call `notFound()` and render the themed service Not Found page.
+
+- **Layout:** breadcrumb → two columns at `lg` (title, description, large image, technician on the left; sticky price summary on the right) → full-width repair request section.
+- **Summary:** starting price, final-amount explanation, estimated duration, mode, area, role-aware CTA, and the no-upfront-payment promise.
+- **Technician:** monogram avatar, verified and Pro badges when applicable, area, bio, and skills.
+- **Request section:** customer form; guest sign-in prompt with the intended destination preserved; staff notice for technician/admin accounts. The prototype runs as the demo customer (`DEMO_USER`) so the form is visible; the guest and staff branches remain implemented through component props.
+- **Form:** read-only name and email, phone, service address, preferred date, and problem description. React Hook Form and Zod enforce required fields, phone format, no past dates, and a 20-character description minimum.
+- **Scope:** a valid submit shows an honest preview notice and does not send or persist a booking. There is no success toast, duplicate-request check, or My Bookings navigation until a backend is in scope.
+- **States:** segment-specific loading skeletons and error boundary; `notFound` covers removed, pending, rejected, and unavailable services.
+
 ## Spacing and layout
 
 - Base unit: 4px, using the Tailwind spacing scale. Do not invent arbitrary margins.
@@ -95,6 +107,11 @@ Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, 
 - **ServiceCard** (`components/services/service-card.tsx`): the shared service card for the homepage and Browse Services. `ServiceCardSkeleton` and `FeaturedServicesSkeleton` provide the loading state.
 - **ServicesFilters** (`components/services/services-filters.tsx`): native GET filter bar for search, category, mode, and sort.
 - **ServicesPagination** (`components/services/services-pagination.tsx`): URL-preserving previous/next and page numbers with disabled and current states.
+- **ServiceSummaryCard** (`components/services/service-summary-card.tsx`): sticky price/duration/mode/area summary with the role-aware request CTA.
+- **TechnicianCard** (`components/services/technician-card.tsx`): technician identity, verification, bio, and skills.
+- **RepairRequestSection** (`components/bookings/repair-request-section.tsx`): customer form, guest sign-in prompt, or staff notice based on the viewer.
+- **RepairRequestForm** (`components/bookings/repair-request-form.tsx`): the validated customer request form with an honest prototype-only submit state.
+- **Field** (`components/forms/field.tsx`): shared labels, controls, hints, and inline error styling for forms.
 - **Avatar** (`components/ui/avatar.tsx`): initials by default, optional image, shared `sm`/`md`/`lg` sizes.
 - **Button** (`components/ui/button.tsx`): `default`, `secondary`, `outline`, `ghost`, `accent`, `destructive`, `link`; sizes `sm`, `default`, `lg`, `icon`, `icon-sm`.
 - **Badge** (`components/ui/badge.tsx`): tinted, full-radius status label with optional dot. Tones must come from the shared map.
@@ -124,7 +141,7 @@ Use this mapping everywhere. Never remap a status for visual variety.
 - Below `lg`, the header shows an identity avatar and a 40px menu toggle. The panel expands in the header flow with the same navigation links and an inline account card or guest CTA pair. Escape closes it and returns focus to the toggle.
 - Role tones: Customer neutral, Technician fern, Admin accent.
 - `isAuthLoading` renders size-matched skeletons in both the header and mobile panel. Session restoration is intentionally not implemented; this is the visual state reserved for it.
-- The demo account lives in `constants/demo.ts` and is presentation data only. Sign out closes the menu but does not alter authentication.
+- The demo account lives in `constants/demo.ts` and is presentation data only. The public layout currently passes it so the booking surface can show the customer state; guest and staff states remain supported through the navbar and request-section props. Sign out closes the menu but does not alter authentication.
 
 ## Motion and interaction
 
@@ -137,4 +154,4 @@ Use this mapping everywhere. Never remap a status for visual variety.
 
 This is a **visual prototype**. Sample services, people, prices, bookings, and statistics may be used to make screens believable, but they must read as examples. Authentication, payments, API calls, mock backends, CRUD operations, and simulated loading-to-success workflows are intentionally not implemented. The navbar's session loading and sign-out states are visual only. Interface controls are designed in place and may be presentational; never imply that a fake operation succeeded.
 
-Homepage services live in `data/sample-services.ts` and are filtered and sorted synchronously; no API is called. Browse Services reuses the same dataset through the server query module. Platform statistics and customer stories are illustrative and carry a visible disclosure. Photography is stored locally under `public/images/` and credited in `public/images/CREDITS.md`.
+Homepage services live in `data/sample-services.ts` and are filtered and sorted synchronously; no API is called. Browse Services reuses the same dataset through the server query module. Service technicians use monogram avatars because no real profile photos were supplied. The repair request form validates locally and shows a prototype-only notice; it does not create a booking. Platform statistics and customer stories are illustrative and carry a visible disclosure. Photography is stored locally under `public/images/` and credited in `public/images/CREDITS.md`.
