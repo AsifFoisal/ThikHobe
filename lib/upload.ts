@@ -11,7 +11,7 @@ function readAsDataUrl(file: File) {
 
 export async function uploadImage(file: File) {
   const image = await readAsDataUrl(file)
-  const data = await apiRequest<{ success: boolean; url: string }>("/uploads", {
+  const data = await apiRequest<{ success: boolean; url: string }>("/api/uploads", {
     method: "POST",
     body: { image },
   })
