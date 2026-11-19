@@ -1,14 +1,23 @@
 "use client"
 
 import { Dialog } from "@base-ui/react/dialog"
-import { House, PanelLeftClose, PanelLeftOpen, X } from "lucide-react"
+import {
+  House,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  X,
+} from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
+import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/Logo"
 import { Avatar } from "@/components/ui/Avatar"
 import { RoleBadge } from "@/components/ui/RoleBadge"
 import { DASHBOARD_NAV } from "@/constants/dashboard-nav"
+import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import type { SessionUser } from "@/types"
 
@@ -31,6 +40,8 @@ export function DashboardSidebar({
   onNavigate,
 }: DashboardSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [signingOut, setSigningOut] = useState(false)
   const items = DASHBOARD_NAV[user.role]
   const activeHref =
     pathname === "/dashboard"
@@ -41,6 +52,26 @@ export function DashboardSidebar({
               pathname === item.href || pathname.startsWith(`${item.href}/`)
           )
           .sort((a, b) => b.href.length - a.href.length)[0]?.href
+
+  const handleSignOut = async () => {
+    setSigningOut(true)
+
+    try {
+      const { error } = await authClient.signOut()
+      if (error) {
+        toast.error(error.message || "Could not sign out")
+        return
+      }
+
+      toast.success("Signed out")
+      onNavigate?.()
+      router.refresh()
+    } catch {
+      toast.error("Could not sign out")
+    } finally {
+      setSigningOut(false)
+    }
+  }
 
   return (
     <>
@@ -151,7 +182,7 @@ export function DashboardSidebar({
             </div>
           </div>
         ) : null}
-        <div className="border-t border-line p-2">
+        <div className="space-y-1 border-t border-line p-2">
           <Link
             aria-label={collapsed ? "Back to home" : undefined}
             className={cn(
@@ -166,6 +197,24 @@ export function DashboardSidebar({
             <House aria-hidden className="size-[18px] shrink-0" />
             {!collapsed ? <span>Back to home</span> : null}
           </Link>
+          <button
+            aria-label={collapsed ? "Sign out" : undefined}
+            className={cn(
+              navButtonClass,
+              "w-full",
+              collapsed ? "justify-center px-0" : "px-3",
+              "text-muted-ink hover:bg-destructive/5 hover:text-status-red disabled:cursor-not-allowed disabled:opacity-50"
+            )}
+            disabled={signingOut}
+            onClick={handleSignOut}
+            title={collapsed ? "Sign out" : undefined}
+            type="button"
+          >
+            <LogOut aria-hidden className="size-[18px] shrink-0" />
+            {!collapsed ? (
+              <span>{signingOut ? "Signing out…" : "Sign out"}</span>
+            ) : null}
+          </button>
         </div>
       </div>
     </>
