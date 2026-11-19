@@ -4,6 +4,7 @@ import { Dialog } from "@base-ui/react/dialog"
 import { useState } from "react"
 
 import { Button, buttonVariants } from "@/components/ui/button"
+import { previewToast } from "@/lib/preview-toast"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format"
 import type { Booking } from "@/types"
@@ -208,7 +209,7 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                   >
                     Cancel
                   </Dialog.Close>
-                  <Button size="sm" type="submit">
+                  <Button disabled={previewed} size="sm" type="submit">
                     Save completion
                   </Button>
                 </div>
@@ -234,6 +235,9 @@ export function TechnicianRequestActions({ booking }: { booking: Booking }) {
                     size: "sm",
                     variant: copy.destructive ? "destructive" : "default",
                   })}
+                  onClick={() =>
+                    previewToast("The request status is unchanged.")
+                  }
                 >
                   {copy.confirm}
                 </Dialog.Close>

@@ -40,6 +40,7 @@ export function BookingAction({
     return (
       <PayNowDialog
         amount={booking.finalAmount ?? booking.basePrice}
+        bookingId={booking.id}
         size={size}
       />
     )

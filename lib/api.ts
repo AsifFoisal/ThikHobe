@@ -1,7 +1,5 @@
 /**
- * Central API configuration.
- * This presentation build deliberately contains no request, mock, or storage layer.
+ * Central public API surface.
+ * Domain modules live in `lib/api/`; the UI's sample records stay in `data/`.
  */
-export const apiConfig = {
-  baseUrl: (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, ""),
-} as const
+export * from "./api/index"

@@ -14,7 +14,7 @@ import {
   hasServiceFilters,
   parseServicesQuery,
   queryServices,
-} from "@/lib/services-query"
+} from "@/data/services-query"
 
 export const metadata: Metadata = {
   title: "Browse repair services",
@@ -125,6 +125,7 @@ export default async function ServicesPage({
         </div>
       ) : null}
 
+      <h2 className="sr-only">Available repair services</h2>
       {items.length > 0 ? (
         <>
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

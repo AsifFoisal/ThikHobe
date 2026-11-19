@@ -3,6 +3,7 @@
 import { Dialog } from "@base-ui/react/dialog"
 
 import { buttonVariants } from "@/components/ui/button"
+import { previewToast } from "@/lib/preview-toast"
 import { cn } from "@/lib/utils"
 
 interface ConfirmDialogProps {
@@ -52,7 +53,10 @@ export function ConfirmDialog({
                 destructive &&
                   "bg-destructive text-white hover:bg-destructive/90"
               )}
-              onClick={onConfirm}
+              onClick={() => {
+                onConfirm?.()
+                previewToast()
+              }}
             >
               {confirmLabel}
             </Dialog.Close>

@@ -22,6 +22,7 @@ export function Toaster() {
           closeButton: "!border-line !bg-card !text-muted-ink",
           success: "[&_[data-icon]]:!text-fern",
           error: "[&_[data-icon]]:!text-destructive",
+          info: "[&_[data-icon]]:!text-spruce",
         },
       }}
     />

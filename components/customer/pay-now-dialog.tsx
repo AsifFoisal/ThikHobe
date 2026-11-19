@@ -8,10 +8,15 @@ import { formatPrice } from "@/lib/format"
 
 interface PayNowDialogProps {
   amount: number
+  bookingId: string
   size?: "sm" | "default"
 }
 
-export function PayNowDialog({ amount, size = "sm" }: PayNowDialogProps) {
+export function PayNowDialog({
+  amount,
+  bookingId,
+  size = "sm",
+}: PayNowDialogProps) {
   return (
     <Dialog.Root>
       <Dialog.Trigger className={buttonVariants({ size })}>
@@ -23,19 +28,35 @@ export function PayNowDialog({ amount, size = "sm" }: PayNowDialogProps) {
           <span className="grid size-11 place-items-center rounded-full bg-sage text-spruce">
             <CreditCard aria-hidden className="size-5" strokeWidth={1.8} />
           </span>
-          <Dialog.Title className="type-h3 mt-4">Checkout preview</Dialog.Title>
+          <Dialog.Title className="type-h3 mt-4">
+            Checkout handoff preview
+          </Dialog.Title>
           <Dialog.Description className="mt-2 text-sm leading-6 text-muted-ink">
-            Stripe Checkout is not connected in this frontend prototype. No card
-            details are collected and no payment will be taken.
+            This prototype does not contact the payment backend or Stripe. In a
+            connected build, FixMate would send the booking ID to the backend,
+            receive a Stripe Checkout URL, and redirect the browser.
           </Dialog.Description>
-          <div className="mt-4 rounded-lg border border-line bg-paper p-3">
+          <div className="mt-4 border-y border-line py-3">
             <div className="flex items-center justify-between gap-3 text-sm">
-              <span className="text-muted-ink">Amount due</span>
+              <span className="text-muted-ink">Booking</span>
+              <span className="font-semibold text-ink tabular">
+                #{bookingId}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center justify-between gap-3 text-sm">
+              <span className="text-muted-ink">Amount on record</span>
               <span className="font-semibold text-ink tabular">
                 {formatPrice(amount)}
               </span>
             </div>
+            <p className="mt-2 text-xs leading-5 text-muted-ink">
+              Display only. The backend and Stripe determine the amount charged;
+              no amount is calculated or trusted on the client.
+            </p>
           </div>
+          <p className="mt-3 text-xs leading-5 text-muted-ink">
+            No checkout session is created and no payment is taken.
+          </p>
           <div className="mt-6 flex justify-end">
             <Dialog.Close className={buttonVariants({ size: "sm" })}>
               Close

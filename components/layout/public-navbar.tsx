@@ -19,6 +19,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PUBLIC_NAV, ROLE_DASHBOARD } from "@/constants"
+import { previewToast } from "@/lib/preview-toast"
 import { cn } from "@/lib/utils"
 import type { SessionUser } from "@/types"
 
@@ -125,7 +126,12 @@ function ProfileMenu({ user }: { user: SessionUser }) {
             <Menu.Separator className={menuSeparatorClass} />
 
             {/* Presentation-only: authentication is not wired in this prototype. */}
-            <Menu.Item className={cn(menuItemClass, "text-muted-ink")}>
+            <Menu.Item
+              className={cn(menuItemClass, "text-muted-ink")}
+              onClick={() =>
+                previewToast("Sign-out is not connected in this preview.")
+              }
+            >
               <LogOut aria-hidden className="size-4" />
               Sign out
             </Menu.Item>
@@ -228,7 +234,12 @@ function MobilePanel({
                 {/* Presentation-only: authentication is not wired in this prototype. */}
                 <button
                   className={cn(mobileActionClass, "w-full text-left")}
-                  onClick={onClose}
+                  onClick={() => {
+                    onClose()
+                    previewToast(
+                      "Sign-out is not connected in this preview."
+                    )
+                  }}
                   type="button"
                 >
                   <LogOut aria-hidden className="size-4 text-muted-ink" />

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 
+import { previewToast } from "@/lib/preview-toast"
 import { cn } from "@/lib/utils"
 
 interface AvailabilityToggleProps {
@@ -33,8 +34,14 @@ export function AvailabilityToggle({
         )}
         disabled={disabled}
         onClick={() => {
-          setAvailable((current) => !current)
-          setAnnouncement("Preview only — availability is not saved.")
+          const next = !available
+          setAvailable(next)
+          setAnnouncement(
+            `Preview only — availability is not saved. Preview is now ${
+              next ? "available" : "unavailable"
+            }.`
+          )
+          previewToast("Availability is not saved.")
         }}
         role="switch"
         title={disabled ? disabledReason : undefined}

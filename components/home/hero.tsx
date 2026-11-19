@@ -137,7 +137,7 @@ export function Hero() {
                 </div>
               ))}
             </div>
-            <div className="mt-1.5 grid grid-cols-4 gap-1 text-[0.5625rem] leading-4 text-muted-ink">
+            <div className="mt-1.5 grid grid-cols-4 gap-1 text-[0.6875rem] leading-4 text-muted-ink">
               <span>Requested</span>
               <span>Accepted</span>
               <span className="font-semibold text-ember-ink">In progress</span>

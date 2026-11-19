@@ -1,0 +1,32 @@
+import { ChartSkeleton } from "@/components/dashboard/chart-skeleton"
+import { StatGridSkeleton } from "@/components/dashboard/stat-grid-skeleton"
+import { Card } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+
+export default function AdminOverviewLoading() {
+  return (
+    <div aria-busy="true" className="space-y-6 lg:space-y-8">
+      <span className="sr-only">Loading admin overview</span>
+      <div className="space-y-3">
+        <Skeleton className="h-10 w-64 max-w-full" />
+        <Skeleton className="h-5 w-full max-w-lg" />
+        <Skeleton className="h-3 w-72 max-w-full" />
+      </div>
+      <StatGridSkeleton />
+      <div className="grid gap-6 xl:grid-cols-3">
+        <ChartSkeleton fill />
+        <ChartSkeleton fill />
+        <ChartSkeleton fill />
+      </div>
+      <Card className="p-5 sm:p-6">
+        <Skeleton className="h-6 w-52" />
+        <Skeleton className="mt-2 h-4 w-72" />
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          {Array.from({ length: 5 }, (_, index) => (
+            <Skeleton className="h-36 w-full" key={index} />
+          ))}
+        </div>
+      </Card>
+    </div>
+  )
+}

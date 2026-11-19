@@ -1,11 +1,14 @@
 import type { Metadata } from "next"
 import { ReceiptText, TrendingUp, Wallet } from "lucide-react"
+import Link from "next/link"
 
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { DataTable } from "@/components/dashboard/data-table"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
+import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { EmptyState } from "@/components/ui/state"
 import {
   SAMPLE_MONTHLY_REVENUE,
   SAMPLE_PLATFORM_PAYMENTS,
@@ -19,27 +22,54 @@ export const metadata: Metadata = {
 }
 
 export default function AdminTransactionsPage() {
-  const totalRevenue = SAMPLE_PLATFORM_PAYMENTS.reduce(
+  const payments = SAMPLE_PLATFORM_PAYMENTS
+  const totalRevenue = payments.reduce(
     (total, payment) => total + payment.amount,
     0
   )
-  const averagePayment = Math.round(
-    totalRevenue / SAMPLE_PLATFORM_PAYMENTS.length
+  const averagePayment =
+    payments.length > 0 ? Math.round(totalRevenue / payments.length) : 0
+
+  const header = (
+    <div className="max-w-2xl">
+      <h1 className="type-h1">Transactions</h1>
+      <p className="type-lead mt-3">
+        Every sample payment on the platform, with the people, service, and
+        transaction reference behind it.
+      </p>
+      <p className="type-meta mt-2">
+        Preview workspace · sample receipts. No live payment provider is
+        connected.
+      </p>
+    </div>
   )
+
+  if (payments.length === 0) {
+    return (
+      <div className="space-y-6 lg:space-y-8">
+        {header}
+        <Card>
+          <EmptyState
+            action={
+              <Link
+                className={buttonVariants({ size: "sm" })}
+                href="/dashboard/admin/bookings"
+              >
+                View bookings
+              </Link>
+            }
+            description="Completed payments will appear here with their customer, technician, service, amount, transaction ID, and payment date."
+            icon={ReceiptText}
+            title="No transactions yet"
+          />
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6 lg:space-y-8">
-      <div className="max-w-2xl">
-        <h1 className="type-h1">Transactions</h1>
-        <p className="type-lead mt-3">
-          Every sample payment on the platform, with the people, service, and
-          transaction reference behind it.
-        </p>
-        <p className="type-meta mt-2">
-          Preview workspace · sample receipts. No live payment provider is
-          connected.
-        </p>
-      </div>
+      {header}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
@@ -52,7 +82,7 @@ export default function AdminTransactionsPage() {
           hint="Paid transaction records"
           icon={ReceiptText}
           label="Transactions"
-          value={String(SAMPLE_PLATFORM_PAYMENTS.length)}
+          value={String(payments.length)}
         />
         <StatCard
           hint="Mean completed payment"
@@ -74,7 +104,7 @@ export default function AdminTransactionsPage() {
           <h2 className="type-h3">All transactions</h2>
           <div className="flex items-center gap-2">
             <Badge tone="neutral">
-              {SAMPLE_PLATFORM_PAYMENTS.length} payments
+              {payments.length} payments
             </Badge>
             <p className="text-sm font-semibold text-ink tabular">
               {formatPrice(totalRevenue)}
@@ -146,7 +176,7 @@ export default function AdminTransactionsPage() {
                 },
               ]}
               getRowKey={(payment) => payment.id}
-              rows={SAMPLE_PLATFORM_PAYMENTS}
+              rows={payments}
             />
           </div>
         </Card>
