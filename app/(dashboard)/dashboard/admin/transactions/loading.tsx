@@ -1,8 +1,8 @@
-import { ChartSkeleton } from "@/components/dashboard/chart-skeleton"
-import { StatGridSkeleton } from "@/components/dashboard/stat-grid-skeleton"
-import { TableSkeleton } from "@/components/dashboard/table-skeleton"
-import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ChartSkeleton } from "@/components/dashboard/ChartSkeleton"
+import { StatGridSkeleton } from "@/components/dashboard/StatGridSkeleton"
+import { TableSkeleton } from "@/components/dashboard/TableSkeleton"
+import { Card } from "@/components/ui/Card"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 export default function AdminTransactionsLoading() {
   return (

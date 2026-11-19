@@ -2,15 +2,15 @@ import type { Metadata } from "next"
 import { CalendarX } from "lucide-react"
 import Link from "next/link"
 
-import { DataTable } from "@/components/dashboard/data-table"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { DataTable } from "@/components/dashboard/DataTable"
+import { Badge } from "@/components/ui/Badge"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 import {
   BookingStatusBadge,
   PaymentStatusBadge,
-} from "@/components/ui/status-badge"
-import { EmptyState } from "@/components/ui/state"
+} from "@/components/ui/StatusBadge"
+import { EmptyState } from "@/components/ui/State"
 import { formatBookingFinalAmount, formatDate, formatPrice } from "@/lib/format"
 import { getAdminBookings } from "@/lib/server-data"
 import { cn } from "@/lib/utils"

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { ProfileView } from "@/components/profile/profile-view"
+import { ProfileView } from "@/components/profile/ProfileView"
 import { requireSessionUser } from "@/lib/server-api"
 
 export const metadata: Metadata = {

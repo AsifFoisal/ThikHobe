@@ -3,9 +3,9 @@
 import { RotateCcw } from "lucide-react"
 import Link from "next/link"
 
-import { Logo } from "@/components/layout/logo"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { ToolsIllustration } from "@/components/ui/tools-illustration"
+import { Logo } from "@/components/layout/Logo"
+import { Button, buttonVariants } from "@/components/ui/Button"
+import { ToolsIllustration } from "@/components/ui/ToolsIllustration"
 
 export default function GlobalError({ reset }: { reset: () => void }) {
   return (

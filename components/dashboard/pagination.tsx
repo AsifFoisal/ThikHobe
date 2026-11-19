@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/Button"
 import { getPageItems } from "@/lib/pagination"
 import { cn } from "@/lib/utils"
 

@@ -2,12 +2,12 @@ import type { Metadata } from "next"
 import { SearchX, ShieldCheck, X } from "lucide-react"
 import Link from "next/link"
 
-import { ServiceCard } from "@/components/services/service-card"
-import { ServicesFilters } from "@/components/services/services-filters"
-import { ServicesPagination } from "@/components/services/services-pagination"
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { EmptyState } from "@/components/ui/state"
+import { ServiceCard } from "@/components/services/ServiceCard"
+import { ServicesFilters } from "@/components/services/ServicesFilters"
+import { ServicesPagination } from "@/components/services/ServicesPagination"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
+import { EmptyState } from "@/components/ui/State"
 import {
   buildServicesHref,
   hasNonDefaultServiceQuery,

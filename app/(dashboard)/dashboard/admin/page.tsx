@@ -10,12 +10,12 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-import { BookingStatusChart } from "@/components/dashboard/booking-status-chart"
-import { ChartCard } from "@/components/dashboard/chart-card"
-import { StatCard } from "@/components/dashboard/stat-card"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { BookingStatusChart } from "@/components/dashboard/BookingStatusChart"
+import { ChartCard } from "@/components/dashboard/ChartCard"
+import { StatCard } from "@/components/dashboard/StatCard"
+import { Badge } from "@/components/ui/Badge"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 import { BOOKING_STATUS_META, ROLE_LABELS } from "@/constants"
 import {
   BOOKING_STATUS_COLORS,

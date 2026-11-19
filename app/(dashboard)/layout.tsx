@@ -1,4 +1,4 @@
-import { DashboardRouteShell } from "@/components/dashboard/dashboard-route-shell"
+import { DashboardRouteShell } from "@/components/dashboard/DashboardRouteShell"
 import { requireSessionUser } from "@/lib/server-api"
 
 export default async function DashboardLayout({

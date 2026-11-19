@@ -1,8 +1,8 @@
 import { ArrowLeft, Check } from "lucide-react"
 import Link from "next/link"
 
-import { Logo } from "@/components/layout/logo"
-import { BookingStatusBadge } from "@/components/ui/status-badge"
+import { Logo } from "@/components/layout/Logo"
+import { BookingStatusBadge } from "@/components/ui/StatusBadge"
 
 const promises = [
   "Verified technicians on every listing",
@@ -62,7 +62,7 @@ export default function AuthLayout({
         </div>
 
         <p className="hidden text-xs text-sage lg:block">
-          ThikHobe · Repairs, handled in Dhaka.
+          ThikHobe · Repairs, handled in Bangladesh.
         </p>
       </aside>
 

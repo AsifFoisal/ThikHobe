@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 
-import { Button, buttonVariants } from "@/components/ui/button"
-import { ErrorState } from "@/components/ui/state"
+import { Button, buttonVariants } from "@/components/ui/Button"
+import { ErrorState } from "@/components/ui/State"
 
 export default function ServicesError({
   reset,

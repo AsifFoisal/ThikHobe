@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { CircleX } from "lucide-react"
 import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 
 export const metadata: Metadata = {
   title: "Payment cancelled",

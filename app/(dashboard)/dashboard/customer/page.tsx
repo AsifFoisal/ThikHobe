@@ -8,10 +8,10 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-import { BookingStatusChart } from "@/components/dashboard/booking-status-chart"
-import { RecentBookingsCard } from "@/components/customer/recent-bookings-card"
-import { StatCard } from "@/components/dashboard/stat-card"
-import { buttonVariants } from "@/components/ui/button"
+import { BookingStatusChart } from "@/components/dashboard/BookingStatusChart"
+import { RecentBookingsCard } from "@/components/customer/RecentBookingsCard"
+import { StatCard } from "@/components/dashboard/StatCard"
+import { buttonVariants } from "@/components/ui/Button"
 import { BOOKING_STATUS_META } from "@/constants"
 import {
   BOOKING_STATUS_COLORS,

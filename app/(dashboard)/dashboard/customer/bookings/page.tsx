@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { CreditCard } from "lucide-react"
 import Link from "next/link"
 
-import { CustomerBookings } from "@/components/customer/customer-bookings"
-import { buttonVariants } from "@/components/ui/button"
+import { CustomerBookings } from "@/components/customer/CustomerBookings"
+import { buttonVariants } from "@/components/ui/Button"
 import { getMyBookings } from "@/lib/server-data"
 
 export const metadata: Metadata = {

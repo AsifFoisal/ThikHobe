@@ -1,5 +1,5 @@
-import { ServiceCardSkeleton } from "@/components/services/service-card-skeleton"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ServiceCardSkeleton } from "@/components/services/ServiceCardSkeleton"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 export default function ServicesLoading() {
   return (

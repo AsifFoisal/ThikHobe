@@ -1,9 +1,9 @@
 import { SearchX } from "lucide-react"
 import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { EmptyState } from "@/components/ui/state"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
+import { EmptyState } from "@/components/ui/State"
 
 export default function DashboardNotFound() {
   return (

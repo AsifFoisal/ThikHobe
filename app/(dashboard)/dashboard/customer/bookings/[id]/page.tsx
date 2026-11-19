@@ -5,15 +5,15 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { ReactNode } from "react"
 
-import { BookingAction } from "@/components/customer/booking-actions"
+import { BookingAction } from "@/components/customer/BookingActions"
 import { getBookingAction } from "@/lib/booking-actions"
-import { BookingTimeline } from "@/components/customer/booking-timeline"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
+import { BookingTimeline } from "@/components/customer/BookingTimeline"
+import { Badge } from "@/components/ui/Badge"
+import { Card } from "@/components/ui/Card"
 import {
   BookingStatusBadge,
   PaymentStatusBadge,
-} from "@/components/ui/status-badge"
+} from "@/components/ui/StatusBadge"
 import {
   formatBookingFinalAmount,
   formatDate,

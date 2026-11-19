@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Hanken_Grotesk } from "next/font/google"
 
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/Toaster"
 import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 

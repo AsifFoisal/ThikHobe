@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 
-import { AboutBenefits } from "@/components/about/about-benefits"
-import { AboutCategories } from "@/components/about/about-categories"
-import { AboutCta } from "@/components/about/about-cta"
-import { AboutIntro } from "@/components/about/about-intro"
-import { AboutPayment } from "@/components/about/about-payment"
-import { AboutProblem } from "@/components/about/about-problem"
-import { AboutProcess } from "@/components/about/about-process"
+import { AboutBenefits } from "@/components/about/AboutBenefits"
+import { AboutCategories } from "@/components/about/AboutCategories"
+import { AboutCta } from "@/components/about/AboutCTA"
+import { AboutIntro } from "@/components/about/AboutIntro"
+import { AboutPayment } from "@/components/about/AboutPayment"
+import { AboutProblem } from "@/components/about/AboutProblem"
+import { AboutProcess } from "@/components/about/AboutProcess"
 
 export const metadata: Metadata = {
   title: "How ThikHobe works",

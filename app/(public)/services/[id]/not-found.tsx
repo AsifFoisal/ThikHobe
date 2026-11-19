@@ -1,7 +1,7 @@
 import { Wrench } from "lucide-react"
 import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/Button"
 
 export default function ServiceNotFound() {
   return (

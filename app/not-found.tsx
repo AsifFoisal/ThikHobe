@@ -1,8 +1,8 @@
 import Link from "next/link"
 
-import { Logo } from "@/components/layout/logo"
-import { ToolsIllustration } from "@/components/ui/tools-illustration"
-import { buttonVariants } from "@/components/ui/button"
+import { Logo } from "@/components/layout/Logo"
+import { ToolsIllustration } from "@/components/ui/ToolsIllustration"
+import { buttonVariants } from "@/components/ui/Button"
 
 export default function NotFound() {
   return (

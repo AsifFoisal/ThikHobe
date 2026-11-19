@@ -1,17 +1,17 @@
 import type { Metadata } from "next"
 
-import { FeaturedServices } from "@/components/home/featured-services"
-import { FinalCTA } from "@/components/home/final-cta"
-import { Hero } from "@/components/home/hero"
-import { HowItWorks } from "@/components/home/how-it-works"
-import { PopularCategories } from "@/components/home/popular-categories"
-import { TrustSection } from "@/components/home/trust-section"
-import { WhyThikHobe } from "@/components/home/why-thikhobe"
+import { FeaturedServices } from "@/components/home/FeaturedServices"
+import { FinalCTA } from "@/components/home/FinalCTA"
+import { Hero } from "@/components/home/Hero"
+import { HowItWorks } from "@/components/home/HowItWorks"
+import { PopularCategories } from "@/components/home/PopularCategories"
+import { TrustSection } from "@/components/home/TrustSection"
+import { WhyThikHobe } from "@/components/home/WhyThikHobe"
 
 export const metadata: Metadata = {
   title: "Verified device & appliance repair",
   description:
-    "Book verified technicians for phone, laptop, and home appliance repairs in Dhaka. Track every step and pay only when the job is complete.",
+    "Book verified technicians for phone, laptop, and home appliance repairs in Bangladesh. Track every step and pay only when the job is complete.",
   openGraph: {
     title: "ThikHobe — Repairs, handled.",
     description:

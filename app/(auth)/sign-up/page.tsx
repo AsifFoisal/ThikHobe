@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
-import { SignUpForm } from "@/components/auth/sign-up-form"
+import { SignUpForm } from "@/components/auth/SignUpForm"
 import { ROLE_DASHBOARD } from "@/constants"
 import { getSessionProfile } from "@/lib/server-api"
 

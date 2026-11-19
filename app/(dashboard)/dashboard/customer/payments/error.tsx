@@ -3,9 +3,9 @@
 import { RotateCcw } from "lucide-react"
 import Link from "next/link"
 
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { ErrorState } from "@/components/ui/state"
+import { Button, buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
+import { ErrorState } from "@/components/ui/State"
 
 export default function CustomerPaymentsError({
   reset,

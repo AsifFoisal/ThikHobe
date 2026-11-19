@@ -7,8 +7,8 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-import { Card } from "@/components/ui/card"
-import { AddServiceForm } from "@/components/technician/add-service-form"
+import { Card } from "@/components/ui/Card"
+import { AddServiceForm } from "@/components/technician/AddServiceForm"
 import { requireSessionUser } from "@/lib/server-api"
 
 export const metadata: Metadata = {

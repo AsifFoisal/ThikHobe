@@ -1,7 +1,7 @@
 import { headers } from "next/headers"
 
-import { PublicNavbar } from "@/components/layout/public-navbar"
-import { SiteFooter } from "@/components/layout/site-footer"
+import { PublicNavbar } from "@/components/layout/PublicNavbar"
+import { SiteFooter } from "@/components/layout/SiteFooter"
 import { auth } from "@/lib/auth"
 import { toSessionUser } from "@/lib/session"
 

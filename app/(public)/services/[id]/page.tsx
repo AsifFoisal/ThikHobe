@@ -4,9 +4,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { ServiceSummaryCard } from "@/components/services/service-summary-card"
-import { TechnicianCard } from "@/components/services/technician-card"
-import { Badge } from "@/components/ui/badge"
+import { ServiceSummaryCard } from "@/components/services/ServiceSummaryCard"
+import { TechnicianCard } from "@/components/services/TechnicianCard"
+import { Badge } from "@/components/ui/Badge"
 import { getServiceById } from "@/lib/server-data"
 import { getSessionProfile, ServerApiError } from "@/lib/server-api"
 

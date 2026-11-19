@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { CalendarDays } from "lucide-react"
 import Link from "next/link"
 
-import { PaymentHistory } from "@/components/customer/payment-history"
-import { buttonVariants } from "@/components/ui/button"
+import { PaymentHistory } from "@/components/customer/PaymentHistory"
+import { buttonVariants } from "@/components/ui/Button"
 import { getMyPayments } from "@/lib/server-data"
 
 export const metadata: Metadata = {

@@ -8,12 +8,12 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-import { ChartCard } from "@/components/dashboard/chart-card"
-import { StatCard } from "@/components/dashboard/stat-card"
-import { Avatar } from "@/components/ui/avatar"
-import { BookingStatusBadge } from "@/components/ui/status-badge"
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { ChartCard } from "@/components/dashboard/ChartCard"
+import { StatCard } from "@/components/dashboard/StatCard"
+import { Avatar } from "@/components/ui/Avatar"
+import { BookingStatusBadge } from "@/components/ui/StatusBadge"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 import { formatDate } from "@/lib/format"
 import { getTechnicianBookings, getTechnicianServices } from "@/lib/server-data"
 

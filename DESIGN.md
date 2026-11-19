@@ -43,12 +43,12 @@ The homepage hero uses the display face at 36–56px with controlled line breaks
 
 The public homepage follows this rhythm: paper hero → white featured services → spruce process section → paper categories → white why-ThikHobe split → sage trust band → spruce final CTA → ink footer.
 
-- **Hero** (`components/home/hero.tsx`): split at `lg`, 4:3 repair photo with a verified badge and a static repair-progress card. The search form is native `GET /services`; the secondary CTA anchors to `#how-it-works`.
-- **Featured services** (`components/home/featured-services.tsx`): six latest approved and available sample services, using the reusable `ServiceCard`.
-- **How it works** (`components/home/how-it-works.tsx`): four numbered steps on a hairline rail plus a pay-after-completion promise panel. The section carries the strongest business differentiator.
-- **Categories** (`components/home/popular-categories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`.
-- **Why ThikHobe** (`components/home/why-thikhobe.tsx`): image-led split with five concrete advantages, not a generic card grid.
-- **Trust** (`components/home/trust-section.tsx`): illustrative platform figures, customer stories, and three trust indicators. The disclosure line is mandatory while data is static.
+- **Hero** (`components/home/Hero.tsx`): split at `lg`, 4:3 repair photo with a verified badge and a static repair-progress card. The search form is native `GET /services`; the secondary CTA anchors to `#how-it-works`.
+- **Featured services** (`components/home/FeaturedServices.tsx`): six latest approved and available sample services, using the reusable `ServiceCard`.
+- **How it works** (`components/home/HowItWorks.tsx`): four numbered steps on a hairline rail plus a pay-after-completion promise panel. The section carries the strongest business differentiator.
+- **Categories** (`components/home/PopularCategories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`.
+- **Why ThikHobe** (`components/home/WhyThikHobe.tsx`): image-led split with five concrete advantages, not a generic card grid.
+- **Trust** (`components/home/TrustSection.tsx`): illustrative platform figures, customer stories, and three trust indicators. The disclosure line is mandatory while data is static.
 - **Final CTA** and **SiteFooter**: the CTA uses the ember accent; the footer is ink, four columns, and exists only inside the public route group.
 
 Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, and a bordered details action. Use the same card on the homepage and Browse Services.
@@ -111,7 +111,7 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 
 `app/(dashboard)/` owns the shared shell for all three roles. `/dashboard` remains the component-preview route that exercises the shell and primitives; the customer, technician, and admin pages are built under their role segments. It is dynamic only because its preview pagination reads `searchParams`.
 
-- **Shell** (`components/dashboard/dashboard-shell.tsx`): a 256px sticky sidebar at `lg`, reduced to a 76px icon rail when collapsed, and a sticky top bar at 64px / 72px. The top bar carries the workspace label, avatar, name, and role. The sidebar toggle sits in the sidebar header; the mobile menu and logo sit in the top bar. The mobile drawer is a Base UI dialog with a backdrop, focus trap, Escape close, and focus return to the trigger.
+- **Shell** (`components/dashboard/DashboardShell.tsx`): a 256px sticky sidebar at `lg`, reduced to a 76px icon rail when collapsed, and a sticky top bar at 64px / 72px. The top bar carries the workspace label, avatar, name, and role. The sidebar toggle sits in the sidebar header; the mobile menu and logo sit in the top bar. The mobile drawer is a Base UI dialog with a backdrop, focus trap, Escape close, and focus return to the trigger.
 - **Role navigation** (`constants/dashboard-nav.ts`): one typed map for all roles. Customer — Overview, My bookings, Payments, Profile. Technician — Overview, Add service, My services, Requests, Profile. Admin — Overview, Users, Services, Bookings, Transactions, Profile. The longest matching href is active, receives `aria-current="page"` and a sage fill, and the `/dashboard` preview maps to the role's Overview. Collapsed links keep their accessible labels and tooltips.
 - **Top bar identity**: name and role are hidden below `sm`; the drawer repeats them with the full email so identity is never lost on mobile.
 - **Primitives**: `StatCard` / `StatCardSkeleton`; `DataTable` (desktop table or stacked definition rows, `tableFrom="md" | "xl"`, 36rem minimum); `SearchInput` and `FilterSelect`; `DashboardPagination` (URL-backed with current and disabled states); `ChartCard` (Recharts bars using the fern token and CSS-variable axes, with a `fill` option for stretched grid cards); `ConfirmDialog` (Base UI modal with focus trap, Escape, scroll lock, and a destructive confirm; `onConfirm` is optional and changes no data by default); `TableSkeleton`; shared `EmptyState`; and the existing `Field` controls. `/dashboard` shows these in a gallery: stats, sample bookings, a weekly chart, form fields, confirmation, empty, and loading specimens.
@@ -204,17 +204,17 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 
 ## Components
 
-- **Logo** (`components/layout/logo.tsx`): spruce tile with a tilted wrench, ink wordmark with fern/ember second syllable. Use `tone="light"` on dark surfaces.
-- **PublicNavbar** (`components/layout/public-navbar.tsx`): sticky global header. Accepts `user` and `isAuthLoading`; use it on every public page.
-- **SiteFooter** (`components/layout/site-footer.tsx`): ink four-column footer with quick links, all repair categories, contact details, modern X/Facebook/Instagram/LinkedIn icons, and copyright. It belongs to the public layout only.
-- **SectionHeading** (`components/ui/section-heading.tsx`): shared section title, supporting copy, and optional action.
-- **ServiceCard** (`components/services/service-card.tsx`): the shared service card for the homepage and Browse Services. `ServiceCardSkeleton` and `FeaturedServicesSkeleton` provide the loading state.
-- **ServicesFilters** (`components/services/services-filters.tsx`): native GET filter bar for search, category, mode, and sort.
-- **ServicesPagination** (`components/services/services-pagination.tsx`): URL-preserving previous/next and page numbers with disabled and current states.
-- **ServiceSummaryCard** (`components/services/service-summary-card.tsx`): sticky price/duration/mode/area summary with the role-aware request CTA.
-- **TechnicianCard** (`components/services/technician-card.tsx`): technician identity, verification, bio, and skills.
+- **Logo** (`components/layout/Logo.tsx`): spruce tile with a tilted wrench, ink wordmark with fern/ember second syllable. Use `tone="light"` on dark surfaces.
+- **PublicNavbar** (`components/layout/PublicNavbar.tsx`): sticky global header. Accepts `user` and `isAuthLoading`; use it on every public page.
+- **SiteFooter** (`components/layout/SiteFooter.tsx`): ink four-column footer with quick links, all repair categories, contact details, modern X/Facebook/Instagram/LinkedIn icons, and copyright. It belongs to the public layout only.
+- **SectionHeading** (`components/ui/SectionHeading.tsx`): shared section title, supporting copy, and optional action.
+- **ServiceCard** (`components/services/ServiceCard.tsx`): the shared service card for the homepage and Browse Services. `ServiceCardSkeleton` and `FeaturedServicesSkeleton` provide the loading state.
+- **ServicesFilters** (`components/services/ServicesFilters.tsx`): native GET filter bar for search, category, mode, and sort.
+- **ServicesPagination** (`components/services/ServicesPagination.tsx`): URL-preserving previous/next and page numbers with disabled and current states.
+- **ServiceSummaryCard** (`components/services/ServiceSummaryCard.tsx`): sticky price/duration/mode/area summary with the role-aware request CTA.
+- **TechnicianCard** (`components/services/TechnicianCard.tsx`): technician identity, verification, bio, and skills.
 - **About sections** (`components/about/`): editorial intro, problem, vertical process, customer/technician benefits, payment ledger, category list, and closing CTA.
-- **Category icons** (`components/services/category-icons.tsx`): the shared Lucide map for all seven categories, used by the homepage and About page.
+- **Category icons** (`components/services/CategoryIcons.tsx`): the shared Lucide map for all seven categories, used by the homepage and About page.
 - **Auth screens** (`app/(auth)/`): split auth shell with sign-up and sign-in pages.
 - **Auth forms** (`components/auth/`): validated sign-up/sign-in forms, shared password field with visibility toggle, and account-type cards.
 - **Dashboard foundation** (`components/dashboard/` and `app/(dashboard)/`): role-aware shell and sidebar, stat cards, data table, search and filter controls, URL pagination, Recharts chart cards, confirmation dialog, and table skeleton. Navigation lives in `constants/dashboard-nav.ts`; the shared page-item helper lives in `lib/pagination.ts`.
@@ -223,17 +223,17 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 - **Admin dashboard** (`components/admin/` and `app/(dashboard)/dashboard/admin/`): role-change dialog, service approval actions, user filtering, platform charts, and read-only record tables. Shared platform data lives in `data/sample-platform.ts`.
 - **Shared profile** (`components/profile/` and `app/(dashboard)/dashboard/profile/`): one profile form, circular photo preview with local validation, read-only email/role, and identity/next-steps panels for all demo roles.
 - **Payment surfaces** (`app/payment/`): standalone payment layout, success result states, and cancellation page. Success receipts are verified-response or labelled-preview data only.
-- **RequestRepairDialog** (`components/bookings/request-repair-dialog.tsx`): accessible trigger and modal containing the customer request form.
-- **RepairRequestForm** (`components/bookings/repair-request-form.tsx`): the validated customer request form with an honest prototype-only submit state.
-- **Field** (`components/forms/field.tsx`): shared labels, controls, hints, and inline error styling for forms.
-- **Avatar** (`components/ui/avatar.tsx`): initials by default, optional image, shared `sm`/`md`/`lg` sizes.
-- **Button** (`components/ui/button.tsx`): `default`, `secondary`, `outline`, `ghost`, `accent`, `destructive`, `link`; sizes `sm`, `default`, `lg`, `icon`, `icon-sm`.
-- **Badge** (`components/ui/badge.tsx`): tinted, full-radius status label with optional dot. Tones must come from the shared map.
-- **RoleBadge** (`components/ui/role-badge.tsx`): the shared Customer / Technician / Admin role indicator.
-- **StatusBadge** (`components/ui/status-badge.tsx`): the only place booking, payment, and approval labels are resolved.
+- **RequestRepairDialog** (`components/bookings/RequestRepairDialog.tsx`): accessible trigger and modal containing the customer request form.
+- **RepairRequestForm** (`components/bookings/RepairRequestForm.tsx`): the validated customer request form with an honest prototype-only submit state.
+- **Field** (`components/forms/Field.tsx`): shared labels, controls, hints, and inline error styling for forms.
+- **Avatar** (`components/ui/Avatar.tsx`): initials by default, optional image, shared `sm`/`md`/`lg` sizes.
+- **Button** (`components/ui/Button.tsx`): `default`, `secondary`, `outline`, `ghost`, `accent`, `destructive`, `link`; sizes `sm`, `default`, `lg`, `icon`, `icon-sm`.
+- **Badge** (`components/ui/Badge.tsx`): tinted, full-radius status label with optional dot. Tones must come from the shared map.
+- **RoleBadge** (`components/ui/RoleBadge.tsx`): the shared Customer / Technician / Admin role indicator.
+- **StatusBadge** (`components/ui/StatusBadge.tsx`): the only place booking, payment, and approval labels are resolved.
 - **Card**, **Skeleton**, **EmptyState**, **ErrorState**, and **LoadingState** provide shared surfaces and feedback.
 - **State primitives**: `StatGridSkeleton` and `ChartSkeleton` compose the dashboard skeletons; `ToolsIllustration` powers the 404 and error pages; `previewToast` provides the one-at-a-time preview notification channel.
-- **Toaster** (`components/ui/toaster.tsx`): Sonner, bottom-right, light theme, brand tokens. Only truthful preview notifications are fired; never announce a backend success that did not happen.
+- **Toaster** (`components/ui/Toaster.tsx`): Sonner, bottom-right, light theme, brand tokens. Only truthful preview notifications are fired; never announce a backend success that did not happen.
 
 ### Status mapping
 

@@ -3,9 +3,9 @@ import { CheckCircle2, CircleAlert, Link2Off } from "lucide-react"
 import Link from "next/link"
 import { headers } from "next/headers"
 
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/Badge"
+import { buttonVariants } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 import { auth } from "@/lib/auth"
 import { formatDate } from "@/lib/format"
 

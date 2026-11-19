@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { Logo } from "@/components/layout/logo"
+import { Logo } from "@/components/layout/Logo"
 
 export default function PaymentLayout({
   children,
