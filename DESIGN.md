@@ -96,6 +96,15 @@ Service cards keep a 4:3 image, two-line title clamp, bottom-aligned price row, 
 
 Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`. Every anchor has `scroll-mt-24` so the sticky navbar does not overlap it.
 
+## Authentication screens
+
+`app/(auth)/` owns `/sign-in` and `/sign-up` outside the public marketing shell. The layout is a full-height split: a spruce brand panel with the light logo, supporting promises, and the shared status language; a paper form side with “Back to home,” the form, and a minimal legal line. On mobile the brand panel collapses to a logo bar.
+
+- **Sign up:** Full name, email, password, and Customer/Technician account type. Admin registration is absent; the UI states that admin accounts are managed internally.
+- **Sign in:** Email and password with a preserved `redirect` context shown as a return note.
+- **Interaction:** React Hook Form and Zod validation, inline errors, password visibility toggles, account-type selection with native radios styled as cards, and links between the two auth pages that preserve `redirect`.
+- **Scope:** this is a visual authentication prototype. It does not connect to BetterAuth, create accounts or sessions, show fake success/error toasts, simulate loading, or enforce role-aware route protection. Valid submissions show an explicit preview notice instead. The dashboard routes do not exist yet.
+
 ## Spacing and layout
 
 - Base unit: 4px, using the Tailwind spacing scale. Do not invent arbitrary margins.
@@ -125,6 +134,8 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 - **TechnicianCard** (`components/services/technician-card.tsx`): technician identity, verification, bio, and skills.
 - **About sections** (`components/about/`): editorial intro, problem, vertical process, customer/technician benefits, payment ledger, category list, and closing CTA.
 - **Category icons** (`components/services/category-icons.tsx`): the shared Lucide map for all seven categories, used by the homepage and About page.
+- **Auth screens** (`app/(auth)/`): split auth shell with sign-up and sign-in pages.
+- **Auth forms** (`components/auth/`): validated sign-up/sign-in forms, shared password field with visibility toggle, and account-type cards.
 - **RequestRepairDialog** (`components/bookings/request-repair-dialog.tsx`): accessible trigger and modal containing the customer request form.
 - **RepairRequestForm** (`components/bookings/repair-request-form.tsx`): the validated customer request form with an honest prototype-only submit state.
 - **Field** (`components/forms/field.tsx`): shared labels, controls, hints, and inline error styling for forms.
