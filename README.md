@@ -5,12 +5,14 @@ ThikHobe is a full-stack smart device and home appliance repair platform. Custom
 ## Stack
 
 **Client**
+
 - Next.js 16 App Router, React 19, TypeScript
 - Tailwind CSS 4, Base UI, Lucide, Sonner, Recharts
 - React Hook Form + Zod
 - Better Auth client with the JWT plugin
 
 **Server**
+
 - Node.js and Express 5
 - MongoDB Node.js driver
 - Better Auth JWT verification through JWKS using `jose`
@@ -80,11 +82,11 @@ npm run dev
 # terminal 2
 cd server
 npm install
-npm run seed     # optional: demo users, services, and bookings
+npm run seed     # optional: create accounts and reset demo marketplace data
 npm run dev
 ```
 
-The seed requires the Next.js app to be running because accounts are created through Better Auth.
+The seed requires the Next.js app to be running because accounts are created through Better Auth. It clears services, bookings, and payments, then seeds approved/pending/rejected services and paid/in-progress customer bookings. Service images are hosted on ImgBB.
 
 ## Deployment and test accounts
 
@@ -95,12 +97,13 @@ The seed requires the Next.js app to be running because accounts are created thr
 
 Seed demo accounts (`npm run seed`):
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Admin | `admin@thikhobe.test` | `Demo1234` |
-| Technician | `rafi@thikhobe.test` | `Demo1234` |
-| Technician | `nusrat@thikhobe.test` | `Demo1234` |
-| Customer | `tanvir@thikhobe.test` | `Demo1234` |
+| Role       | Email                     | Password        |
+| ---------- | ------------------------- | --------------- |
+| Admin      | `admin@thikhobe.com`      | `admin123`      |
+| Technician | `technician@thikhobe.com` | `technician123` |
+| Customer   | `customer@thikhobe.com`   | `customer123`   |
+
+The seed resets services, bookings, and payments. It creates 15 services under the technician (9 approved, 4 pending, 2 rejected) and 5 bookings for the customer (2 paid/completed, 2 in progress, 1 accepted). Service images are hosted on ImgBB, not in the repository.
 
 Change these passwords before any non-local deployment. Before deploying, set the production frontend origin in `CLIENT_URL`, `CORS_ORIGINS`, and Better Auth trusted origins, and register the deployed Stripe webhook endpoint.
 
