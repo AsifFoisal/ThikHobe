@@ -13,19 +13,14 @@ import {
   PaymentStatusBadge,
 } from "@/components/ui/StatusBadge"
 import { EmptyState } from "@/components/ui/State"
-import {
-  formatBookingFinalAmount,
-  formatDate,
-  formatPrice,
-} from "@/lib/format"
+import { formatBookingFinalAmount, formatDate, formatPrice } from "@/lib/format"
 import { getTechnicianBookings } from "@/lib/server-data"
 import { cn } from "@/lib/utils"
 import type { Booking, BookingStatus } from "@/types"
 
 export const metadata: Metadata = {
   title: "Repair requests",
-  description:
-    "Repair requests assigned to you, with status-specific actions.",
+  description: "Repair requests assigned to you, with status-specific actions.",
 }
 
 const FILTERS = [
@@ -75,9 +70,7 @@ export default async function TechnicianRequestsPage({
   const rawStatus = Array.isArray(params.status)
     ? params.status[0]
     : params.status
-  const activeFilter: RequestFilter = isFilter(rawStatus)
-    ? rawStatus
-    : "all"
+  const activeFilter: RequestFilter = isFilter(rawStatus) ? rawStatus : "all"
 
   const allBookings = await getTechnicianBookings()
 
@@ -116,10 +109,7 @@ export default async function TechnicianRequestsPage({
         </p>
       </div>
 
-      <nav
-        aria-label="Filter repair requests"
-        className="flex flex-wrap gap-2"
-      >
+      <nav aria-label="Filter repair requests" className="flex flex-wrap gap-2">
         {FILTERS.map((filter) => {
           const active = activeFilter === filter.value
           return (
@@ -141,10 +131,8 @@ export default async function TechnicianRequestsPage({
               {filter.label}
               <span
                 className={cn(
-                  "rounded-full px-1.5 text-[11px] tabular",
-                  active
-                    ? "bg-paper/15 text-paper"
-                    : "bg-sage text-muted-ink"
+                  "tabular rounded-full px-1.5 text-[11px]",
+                  active ? "bg-paper/15 text-paper" : "bg-sage text-muted-ink"
                 )}
               >
                 {counts[filter.value]}
@@ -173,7 +161,7 @@ export default async function TechnicianRequestsPage({
       ) : (
         <>
           <Card className="hidden overflow-hidden xl:block">
-            <div className="overflow-x-auto p-4">
+            <div>
               <DataTable
                 caption="Repair requests assigned to you"
                 tableFrom="xl"
@@ -186,7 +174,7 @@ export default async function TechnicianRequestsPage({
                         <p className="font-medium text-ink">
                           {booking.service.title}
                         </p>
-                        <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                        <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                           #{booking.id}
                         </p>
                       </div>
@@ -259,96 +247,96 @@ export default async function TechnicianRequestsPage({
 
           <div className="grid gap-4 xl:hidden">
             {bookings.map((booking) => {
-            const payment = paymentLine(booking)
+              const payment = paymentLine(booking)
 
-            return (
-              <Card className="flex h-full flex-col p-5" key={booking.id}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-base font-semibold leading-6 text-ink">
-                      {booking.service.title}
-                    </h2>
-                    <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
-                      #{booking.id} · {booking.service.category}
-                    </p>
-                  </div>
-                  <BookingStatusBadge status={booking.status} />
-                </div>
-
-                <div className="mt-4 flex items-center gap-2.5">
-                  <Avatar name={booking.customer.name} size="sm" />
-                  <div>
-                    <p className="text-sm font-medium text-ink">
-                      {booking.customer.name}
-                    </p>
-                    <p className="text-xs text-muted-ink">Customer</p>
-                  </div>
-                </div>
-
-                <dl className="mt-4 grid gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
-                  <div>
-                    <dt className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
-                      <Phone aria-hidden className="size-3.5" />
-                      Phone
-                    </dt>
-                    <dd className="mt-1 text-ink">
-                      {booking.customer.phone ?? "Not provided"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
-                      <CalendarDays aria-hidden className="size-3.5" />
-                      Preferred date
-                    </dt>
-                    <dd className="mt-1 text-ink">
-                      {formatDate(booking.preferredDate)}
-                    </dd>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <dt className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
-                      <MapPin aria-hidden className="size-3.5" />
-                      Address
-                    </dt>
-                    <dd className="mt-1 leading-6 text-ink">
-                      {booking.address}
-                    </dd>
-                  </div>
-                </dl>
-
-                <div className="mt-4 border-t border-line pt-3">
-                  <p className="text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
-                    Reported problem
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-muted-ink">
-                    {booking.problemDescription}
-                  </p>
-                </div>
-
-                <div className="mt-auto pt-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-paper px-3 py-2">
-                    <div>
-                      <p className="text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
-                        {payment.label}
-                      </p>
-                      <p className="mt-0.5 text-sm font-semibold text-ink tabular">
-                        {payment.value}
+              return (
+                <Card className="flex h-full flex-col p-5" key={booking.id}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="text-base leading-6 font-semibold text-ink">
+                        {booking.service.title}
+                      </h2>
+                      <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
+                        #{booking.id} · {booking.service.category}
                       </p>
                     </div>
-                    {payment.badge}
+                    <BookingStatusBadge status={booking.status} />
                   </div>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
-                    <p className="text-xs text-muted-ink">
-                      {booking.status === "completed"
-                        ? "Completed — no further status actions."
-                        : booking.status === "rejected" ||
-                            booking.status === "cancelled"
-                          ? "Closed — no further status actions."
-                          : "Assigned to you"}
-                    </p>
-                    <TechnicianRequestActions booking={booking} />
+                  <div className="mt-4 flex items-center gap-2.5">
+                    <Avatar name={booking.customer.name} size="sm" />
+                    <div>
+                      <p className="text-sm font-medium text-ink">
+                        {booking.customer.name}
+                      </p>
+                      <p className="text-xs text-muted-ink">Customer</p>
+                    </div>
                   </div>
-                </div>
+
+                  <dl className="mt-4 grid gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+                    <div>
+                      <dt className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
+                        <Phone aria-hidden className="size-3.5" />
+                        Phone
+                      </dt>
+                      <dd className="mt-1 text-ink">
+                        {booking.customer.phone ?? "Not provided"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
+                        <CalendarDays aria-hidden className="size-3.5" />
+                        Preferred date
+                      </dt>
+                      <dd className="mt-1 text-ink">
+                        {formatDate(booking.preferredDate)}
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
+                        <MapPin aria-hidden className="size-3.5" />
+                        Address
+                      </dt>
+                      <dd className="mt-1 leading-6 text-ink">
+                        {booking.address}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <div className="mt-4 border-t border-line pt-3">
+                    <p className="text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
+                      Reported problem
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-muted-ink">
+                      {booking.problemDescription}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-paper px-3 py-2">
+                      <div>
+                        <p className="text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
+                          {payment.label}
+                        </p>
+                        <p className="tabular mt-0.5 text-sm font-semibold text-ink">
+                          {payment.value}
+                        </p>
+                      </div>
+                      {payment.badge}
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+                      <p className="text-xs text-muted-ink">
+                        {booking.status === "completed"
+                          ? "Completed — no further status actions."
+                          : booking.status === "rejected" ||
+                              booking.status === "cancelled"
+                            ? "Closed — no further status actions."
+                            : "Assigned to you"}
+                      </p>
+                      <TechnicianRequestActions booking={booking} />
+                    </div>
+                  </div>
                 </Card>
               )
             })}

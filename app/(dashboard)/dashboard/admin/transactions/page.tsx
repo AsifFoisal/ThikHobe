@@ -106,14 +106,14 @@ export default async function AdminTransactionsPage() {
           <h2 className="type-h3">All transactions</h2>
           <div className="flex items-center gap-2">
             <Badge tone="neutral">{payments.length} payments</Badge>
-            <p className="text-sm font-semibold text-ink tabular">
+            <p className="tabular text-sm font-semibold text-ink">
               {formatPrice(totalRevenue)}
             </p>
           </div>
         </div>
 
         <Card className="overflow-hidden">
-          <div className="p-4">
+          <div>
             <DataTable
               caption="All platform payment transactions"
               columns={[
@@ -141,7 +141,7 @@ export default async function AdminTransactionsPage() {
                   cell: (payment) => (
                     <div className="min-w-0">
                       <p className="text-ink">{payment.serviceTitle}</p>
-                      <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                      <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                         #{payment.bookingId}
                       </p>
                     </div>
@@ -150,8 +150,9 @@ export default async function AdminTransactionsPage() {
                 {
                   key: "amount",
                   header: "Amount",
+                  align: "right",
                   cell: (payment) => (
-                    <span className="font-semibold text-ink tabular">
+                    <span className="tabular font-semibold text-ink">
                       {formatPrice(payment.amount)}
                     </span>
                   ),
@@ -160,7 +161,7 @@ export default async function AdminTransactionsPage() {
                   key: "transaction",
                   header: "Transaction ID",
                   cell: (payment) => (
-                    <span className="text-xs text-muted-ink tabular">
+                    <span className="tabular text-xs text-muted-ink">
                       {payment.transactionId}
                     </span>
                   ),

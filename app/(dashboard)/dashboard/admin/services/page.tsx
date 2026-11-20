@@ -95,9 +95,7 @@ export default async function AdminServicesPage({
               in this view
             </p>
           </div>
-          <Badge tone="neutral">
-            {counts.pending} pending review
-          </Badge>
+          <Badge tone="neutral">{counts.pending} pending review</Badge>
         </div>
 
         <nav
@@ -125,10 +123,8 @@ export default async function AdminServicesPage({
                 {filter.label}
                 <span
                   className={cn(
-                    "rounded-full px-1.5 text-[11px] tabular",
-                    active
-                      ? "bg-paper/15 text-paper"
-                      : "bg-sage text-muted-ink"
+                    "tabular rounded-full px-1.5 text-[11px]",
+                    active ? "bg-paper/15 text-paper" : "bg-sage text-muted-ink"
                   )}
                 >
                   {counts[filter.value]}
@@ -153,7 +149,7 @@ export default async function AdminServicesPage({
             title="No services found"
           />
         ) : (
-          <div className="p-4">
+          <div>
             <DataTable
               caption="All platform services awaiting review or already reviewed"
               tableFrom="xl"
@@ -174,7 +170,7 @@ export default async function AdminServicesPage({
                       </span>
                       <div className="min-w-0">
                         <p className="font-medium text-ink">{service.title}</p>
-                        <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                        <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                           #{service.id}
                         </p>
                       </div>
@@ -200,8 +196,9 @@ export default async function AdminServicesPage({
                 {
                   key: "price",
                   header: "Price",
+                  align: "right",
                   cell: (service) => (
-                    <span className="font-medium text-ink tabular">
+                    <span className="tabular font-medium text-ink">
                       {formatPrice(service.basePrice)}
                     </span>
                   ),

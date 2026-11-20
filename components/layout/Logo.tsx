@@ -29,9 +29,7 @@ export function Logo({ tone = "default", className }: LogoProps) {
         )}
       >
         Thik
-        <span className={tone === "light" ? "text-ember" : "text-fern"}>
-          Hobe
-        </span>
+        <span className="text-ember">Hobe</span>
       </span>
     </span>
   )

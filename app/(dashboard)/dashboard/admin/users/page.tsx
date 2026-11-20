@@ -136,7 +136,7 @@ export default async function AdminUsersPage({
             title="No users found"
           />
         ) : (
-          <div className="p-4">
+          <div>
             <DataTable
               caption="Platform users"
               tableFrom="xl"
@@ -146,7 +146,12 @@ export default async function AdminUsersPage({
                   header: "User",
                   cell: (user) => (
                     <div className="flex items-center gap-3">
-                      <Avatar name={user.name} size="sm" src={user.image} />
+                      <Avatar
+                        className="rounded-[0.625rem]"
+                        name={user.name}
+                        size="sm"
+                        src={user.image}
+                      />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-ink">{user.name}</p>

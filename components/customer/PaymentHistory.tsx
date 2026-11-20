@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card"
 import { PaymentStatusBadge } from "@/components/ui/StatusBadge"
 import { EmptyState } from "@/components/ui/State"
 import { formatDate, formatPrice } from "@/lib/format"
+import { cn } from "@/lib/utils"
 import type { Payment } from "@/types"
 
 export function PaymentHistory({ payments }: { payments: Payment[] }) {
@@ -42,7 +43,7 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
           <p className="text-[11px] font-medium tracking-[0.08em] text-muted-ink uppercase">
             Total paid
           </p>
-          <p className="mt-0.5 text-lg font-semibold text-ink tabular">
+          <p className="tabular mt-0.5 text-lg font-semibold text-ink">
             {formatPrice(totalPaid)}
           </p>
         </div>
@@ -55,7 +56,7 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
               Payment history for this account
             </caption>
             <thead>
-              <tr>
+              <tr className="border-t-2 border-ember bg-spruce">
                 {[
                   "Service",
                   "Technician",
@@ -64,7 +65,10 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
                   "Payment date",
                 ].map((heading) => (
                   <th
-                    className="border-b border-line bg-sage/40 px-3 py-3 text-[0.6875rem] font-semibold tracking-[0.12em] text-muted-ink uppercase"
+                    className={cn(
+                      "border-b border-paper/10 bg-spruce px-4 py-3.5 text-[0.6875rem] font-semibold text-paper/70 first:pl-5 last:pr-5",
+                      heading === "Amount" && "text-right"
+                    )}
                     key={heading}
                     scope="col"
                   >
@@ -76,29 +80,29 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
             <tbody>
               {payments.map((payment) => (
                 <tr
-                  className="border-b border-line last:border-b-0 hover:bg-sage/15"
+                  className="border-b border-line/80 transition-colors last:border-b-0 hover:bg-sage/25"
                   key={payment.id}
                 >
-                  <td className="px-3 py-3.5 align-top">
+                  <td className="px-4 py-4 align-top first:pl-5 last:pr-5">
                     <p className="font-medium text-ink">
                       {payment.serviceTitle}
                     </p>
-                    <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                    <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                       #{payment.bookingId}
                     </p>
                   </td>
-                  <td className="px-3 py-3.5 align-top text-muted-ink">
+                  <td className="px-4 py-4 align-top text-muted-ink first:pl-5 last:pr-5">
                     {payment.technicianName}
                   </td>
-                  <td className="px-3 py-3.5 align-top font-semibold text-ink tabular">
+                  <td className="tabular px-4 py-4 text-right align-top font-semibold text-ink first:pl-5 last:pr-5">
                     {formatPrice(payment.amount)}
                   </td>
-                  <td className="px-3 py-3.5 align-top">
-                    <span className="text-xs text-muted-ink tabular">
+                  <td className="px-4 py-4 align-top first:pl-5 last:pr-5">
+                    <span className="tabular text-xs text-muted-ink">
                       {payment.transactionId}
                     </span>
                   </td>
-                  <td className="px-3 py-3.5 align-top whitespace-nowrap text-muted-ink">
+                  <td className="px-4 py-4 align-top whitespace-nowrap text-muted-ink first:pl-5 last:pr-5">
                     {formatDate(payment.paidAt)}
                   </td>
                 </tr>
@@ -121,7 +125,7 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
                     {payment.technicianName}
                   </p>
                 </div>
-                <p className="shrink-0 text-sm font-semibold text-ink tabular">
+                <p className="tabular shrink-0 text-sm font-semibold text-ink">
                   {formatPrice(payment.amount)}
                 </p>
               </div>
@@ -131,7 +135,7 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
                   <dt className="text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
                     Transaction ID
                   </dt>
-                  <dd className="mt-1 text-xs text-ink tabular">
+                  <dd className="tabular mt-1 text-xs text-ink">
                     {payment.transactionId}
                   </dd>
                 </div>
@@ -146,7 +150,7 @@ export function PaymentHistory({ payments }: { payments: Payment[] }) {
               </dl>
 
               <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-3">
-                <p className="text-[11px] text-muted-ink tabular">
+                <p className="tabular text-[11px] text-muted-ink">
                   #{payment.bookingId}
                 </p>
                 <PaymentStatusBadge status="paid" />

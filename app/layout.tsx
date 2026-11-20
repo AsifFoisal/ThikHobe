@@ -47,8 +47,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={cn(hanken.variable, hanken.className)}>
+    <html
+      lang="en"
+      className={cn(hanken.variable, hanken.className)}
+      suppressHydrationWarning
+    >
       <body className="min-h-svh bg-paper text-ink antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "document.documentElement.dataset.entryPath=location.pathname;delete document.documentElement.dataset.introShown;if(location.pathname==='/'){document.documentElement.dataset.introActive='true'}else{delete document.documentElement.dataset.introActive};",
+          }}
+        />
         <a className="skip-link" href="#main">
           Skip to content
         </a>

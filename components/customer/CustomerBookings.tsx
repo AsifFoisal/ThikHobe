@@ -12,11 +12,7 @@ import {
   PaymentStatusBadge,
 } from "@/components/ui/StatusBadge"
 import { EmptyState } from "@/components/ui/State"
-import {
-  formatBookingFinalAmount,
-  formatDate,
-  formatPrice,
-} from "@/lib/format"
+import { formatBookingFinalAmount, formatDate, formatPrice } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { Booking } from "@/types"
 
@@ -54,11 +50,9 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
       <Card className="hidden overflow-hidden xl:block">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[52rem] border-collapse text-left text-sm">
-            <caption className="sr-only">
-              All bookings for this account
-            </caption>
+            <caption className="sr-only">All bookings for this account</caption>
             <thead>
-              <tr>
+              <tr className="border-t-2 border-ember bg-spruce">
                 {[
                   "Service",
                   "Technician",
@@ -69,8 +63,9 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                 ].map((heading) => (
                   <th
                     className={cn(
-                      "border-b border-line bg-sage/40 px-3 py-3 text-[0.6875rem] font-semibold tracking-[0.12em] text-muted-ink uppercase",
-                      heading === "Actions" && "text-right"
+                      "border-b border-paper/10 bg-spruce px-4 py-3.5 text-[0.6875rem] font-semibold text-paper/70 first:pl-5 last:pr-5",
+                      (heading === "Actions" || heading === "Amount") &&
+                        "text-right"
                     )}
                     key={heading}
                     scope="col"
@@ -87,10 +82,10 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
 
                 return (
                   <tr
-                    className="border-b border-line last:border-b-0 hover:bg-sage/15"
+                    className="border-b border-line/80 transition-colors last:border-b-0 hover:bg-sage/25"
                     key={booking.id}
                   >
-                    <td className="px-3 py-3.5 align-top">
+                    <td className="px-4 py-4 align-top first:pl-5 last:pr-5">
                       <div className="flex items-start gap-3">
                         <span className="relative mt-0.5 size-11 shrink-0 overflow-hidden rounded-[0.625rem] bg-sage">
                           <Image
@@ -108,7 +103,7 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                           >
                             {booking.service.title}
                           </Link>
-                          <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                          <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                             #{booking.id}
                           </p>
                           <Link
@@ -116,29 +111,26 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                             href={getBookingHref(booking)}
                           >
                             View timeline
-                            <ArrowUpRight
-                              aria-hidden
-                              className="size-3.5"
-                            />
+                            <ArrowUpRight aria-hidden className="size-3.5" />
                           </Link>
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-3.5 align-top">
-                      <p className="text-sm text-ink">{booking.technician.name}</p>
+                    <td className="px-4 py-4 align-top first:pl-5 last:pr-5">
+                      <p className="text-sm text-ink">
+                        {booking.technician.name}
+                      </p>
                     </td>
-                    <td className="px-3 py-3.5 align-top">
-                      <p className="whitespace-nowrap text-sm text-muted-ink">
+                    <td className="px-4 py-4 align-top first:pl-5 last:pr-5">
+                      <p className="text-sm whitespace-nowrap text-muted-ink">
                         {formatDate(booking.preferredDate)}
                       </p>
                     </td>
-                    <td className="px-3 py-3.5 align-top">
+                    <td className="px-4 py-4 text-right align-top first:pl-5 last:pr-5">
                       <p
                         className={cn(
-                          "text-sm tabular",
-                          hasFinal
-                            ? "font-semibold text-ink"
-                            : "text-muted-ink"
+                          "tabular text-sm",
+                          hasFinal ? "font-semibold text-ink" : "text-muted-ink"
                         )}
                       >
                         {formatBookingFinalAmount(booking)}
@@ -147,13 +139,13 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                         Base {formatPrice(booking.basePrice)}
                       </p>
                     </td>
-                    <td className="px-3 py-3.5 align-top">
+                    <td className="px-4 py-4 align-top first:pl-5 last:pr-5">
                       <div className="flex flex-col items-start gap-1.5">
                         <BookingStatusBadge status={booking.status} />
                         <PaymentStatusBadge status={booking.paymentStatus} />
                       </div>
                     </td>
-                    <td className="px-3 py-3.5 align-top text-right">
+                    <td className="px-4 py-4 text-right align-top first:pl-5 last:pr-5">
                       {action ? (
                         <BookingAction booking={booking} />
                       ) : (
@@ -200,7 +192,7 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                           {booking.service.title}
                         </Link>
                       </h3>
-                      <p className="mt-1 text-xs text-muted-ink tabular">
+                      <p className="tabular mt-1 text-xs text-muted-ink">
                         #{booking.id}
                       </p>
                     </div>
@@ -232,7 +224,7 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                       <dt className="text-[11px] font-medium tracking-[0.06em] text-muted-ink uppercase">
                         Base price
                       </dt>
-                      <dd className="mt-1 text-sm text-muted-ink tabular">
+                      <dd className="tabular mt-1 text-sm text-muted-ink">
                         {formatPrice(booking.basePrice)}
                       </dd>
                     </div>
@@ -242,10 +234,8 @@ export function CustomerBookings({ bookings }: { bookings: Booking[] }) {
                       </dt>
                       <dd
                         className={cn(
-                          "mt-1 text-sm tabular",
-                          hasFinal
-                            ? "font-semibold text-ink"
-                            : "text-muted-ink"
+                          "tabular mt-1 text-sm",
+                          hasFinal ? "font-semibold text-ink" : "text-muted-ink"
                         )}
                       >
                         {formatBookingFinalAmount(booking)}

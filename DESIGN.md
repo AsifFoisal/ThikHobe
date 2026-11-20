@@ -114,7 +114,7 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 - **Shell** (`components/dashboard/DashboardShell.tsx`): a 256px sticky sidebar at `lg`, reduced to a 76px icon rail when collapsed, and a sticky top bar at 64px / 72px. The top bar carries the workspace label, avatar, name, and role. The sidebar toggle sits in the sidebar header; the mobile menu and logo sit in the top bar. The mobile drawer is a Base UI dialog with a backdrop, focus trap, Escape close, and focus return to the trigger.
 - **Role navigation** (`constants/dashboard-nav.ts`): one typed map for all roles. Customer — Overview, My bookings, Payments, Profile. Technician — Overview, Add service, My services, Requests, Profile. Admin — Overview, Users, Services, Bookings, Transactions, Profile. The longest matching href is active, receives `aria-current="page"` and a sage fill, and the `/dashboard` preview maps to the role's Overview. Collapsed links keep their accessible labels and tooltips.
 - **Top bar identity**: name and role are hidden below `sm`; the drawer repeats them with the full email so identity is never lost on mobile.
-- **Primitives**: `StatCard` / `StatCardSkeleton`; `DataTable` (desktop table or stacked definition rows, `tableFrom="md" | "xl"`, 36rem minimum); `SearchInput` and `FilterSelect`; `DashboardPagination` (URL-backed with current and disabled states); `ChartCard` (Recharts bars using the fern token and CSS-variable axes, with a `fill` option for stretched grid cards); `ConfirmDialog` (Base UI modal with focus trap, Escape, scroll lock, and a destructive confirm; `onConfirm` is optional and changes no data by default); `TableSkeleton`; shared `EmptyState`; and the existing `Field` controls. `/dashboard` shows these in a gallery: stats, sample bookings, a weekly chart, form fields, confirmation, empty, and loading specimens.
+- **Primitives**: `StatCard` / `StatCardSkeleton`; `DataTable` (a spruce ledger header with an ember top rule, sentence-case labels, hairline rows, right-aligned numeric columns, squircle identity cells, and a stacked mobile ledger with a dark caption band; `tableFrom="md" | "xl"`, 36rem minimum); `SearchInput` and `FilterSelect`; `DashboardPagination` (URL-backed with current and disabled states); `ChartCard` (Recharts bars using the fern token and CSS-variable axes, with a `fill` option for stretched grid cards); `ConfirmDialog` (Base UI modal with focus trap, Escape, scroll lock, and a destructive confirm; `onConfirm` is optional and changes no data by default); `TableSkeleton`; shared `EmptyState`; and the existing `Field` controls. `/dashboard` shows these in a gallery: stats, sample bookings, a weekly chart, form fields, confirmation, empty, and loading specimens.
 - **Responsive rhythm**: four stats from `xl`; table and chart share a row from `xl`; the four specimen cards stay 2-up until the named `wide` breakpoint. The table becomes stacked definition rows below `md`, and the sidebar becomes a drawer below `lg`.
 - **Scope**: preview pagination changes `?page` over the sample table. Search, status filtering, form fields, and the confirmation action are presentational. No mock backend, fake notifications, persisted changes, or success flows are wired in.
 
@@ -192,7 +192,7 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 - Public container: `.container-page`, max 80rem with fluid 20–40px gutters.
 - Dashboard container: `.container-dashboard`, max 96rem with fluid 16–32px gutters.
 - Breakpoints: Tailwind defaults — `sm` 40rem, `md` 48rem, `lg` 64rem, `xl` 80rem, `2xl` 96rem — plus the named `wide` breakpoint at 87.5rem for dashboard rows that need four comfortable columns.
-- Public grids: 1 column on mobile, 2 on tablet, 3–4 on desktop. The compact shared `DataTable` defaults to stacked rows below `md`; the dense customer, technician, and admin record tables hold a table from `xl` and use stacked rows below it. The transaction table holds from `md`.
+- Public grids: 1 column on mobile, 2 on tablet, 3–4 on desktop. Dashboard tables use the spruce ledger header and hairline rows. The shared `DataTable` and customer booking/payment tables use a stacked ledger below `md`/`xl`; the transaction table holds its table from `md`. The stacked ledger keeps a dark caption band, a primary identity block, and right-aligned meta values.
 - Customer booking cards are 2-up from `md` and single-column on phones; the booking-detail summary moves above the repair details below `xl`.
 
 ## Shape and elevation
@@ -204,9 +204,10 @@ Section IDs: `#problem`, `#how-it-works`, `#benefits`, `#payment`, `#categories`
 
 ## Components
 
-- **Logo** (`components/layout/Logo.tsx`): spruce tile with a tilted wrench, ink wordmark with fern/ember second syllable. Use `tone="light"` on dark surfaces.
+- **Logo** (`components/layout/Logo.tsx`): spruce tile with a tilted wrench, ink wordmark with an ember second syllable (`paper` wordmark on dark surfaces). Use `tone="light"` on dark surfaces.
 - **PublicNavbar** (`components/layout/PublicNavbar.tsx`): sticky global header. Accepts `user` and `isAuthLoading`; use it on every public page.
-- **SiteFooter** (`components/layout/SiteFooter.tsx`): ink four-column footer with quick links, all repair categories, contact details, modern X/Facebook/Instagram/LinkedIn icons, and copyright. It belongs to the public layout only.
+- **SiteFooter** (`components/layout/SiteFooter.tsx`): ink brand-closing footer with an oversized paper/ember ThikHobe wordmark, a flat ember divider, brand copy and social icons, Explore/Repairs/Contact columns, and a copyright bar. It belongs to the public layout only.
+- **SiteIntro** (`components/layout/SiteIntro.tsx`): homepage-only film opening using the DiMaac `FilmSplitLoader` (`components/dimaac/film-split-loader.tsx`, GSAP). It appears on each full homepage document load/reload, using document-level entry-path and intro-shown markers. It locks page scroll while open and hands off on completion with a 700ms crossfade: the loader fades and scales away while the public shell fades and rises from 18px. It never renders on other pages, client route changes, or inside the dashboard/auth/payment shells. There is no title/subtitle/logo layer: the split opens directly into the homepage. `--film-bg`, `--film-fg`, and `--film-on` map to spruce/paper, the `Hobe` word uses ember, and the loader keeps its reduced-motion fallback.
 - **SectionHeading** (`components/ui/SectionHeading.tsx`): shared section title, supporting copy, and optional action.
 - **ServiceCard** (`components/services/ServiceCard.tsx`): the shared service card for the homepage and Browse Services. `ServiceCardSkeleton` and `FeaturedServicesSkeleton` provide the loading state.
 - **ServicesFilters** (`components/services/ServicesFilters.tsx`): native GET filter bar for search, category, mode, and sort.
@@ -262,6 +263,7 @@ Use this mapping everywhere. Never remap a status for visual variety.
 ## Motion and interaction
 
 - One purposeful transition language: 200ms ease for controls, soft hover lifts, no bouncing or looping decoration.
+- `SiteIntro` is the only full-screen opening. Its 700ms fade/rise handoff is the handoff to the public shell; route changes keep the existing skeletons and never replay the film intro.
 - All non-essential motion is removed under `prefers-reduced-motion`.
 - Focus is always visible: 2px fern outline with a 3px offset. Buttons additionally use a ring on keyboard focus.
 - Hover states change background, border, or text color; they do not change layout dimensions.

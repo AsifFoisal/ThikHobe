@@ -79,7 +79,7 @@ export default async function TechnicianServicesPage() {
             <Badge tone="neutral">{services.length} services</Badge>
           </div>
 
-          <div className="p-4">
+          <div>
             <DataTable
               caption="Services belonging to your account"
               tableFrom="xl"
@@ -99,10 +99,8 @@ export default async function TechnicianServicesPage() {
                         />
                       </span>
                       <div className="min-w-0">
-                        <p className="font-medium text-ink">
-                          {service.title}
-                        </p>
-                        <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                        <p className="font-medium text-ink">{service.title}</p>
+                        <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                           #{service.id}
                         </p>
                       </div>
@@ -119,8 +117,9 @@ export default async function TechnicianServicesPage() {
                 {
                   key: "price",
                   header: "Price",
+                  align: "right",
                   cell: (service) => (
-                    <span className="font-medium text-ink tabular">
+                    <span className="tabular font-medium text-ink">
                       {formatPrice(service.basePrice)}
                     </span>
                   ),

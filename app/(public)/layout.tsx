@@ -1,5 +1,6 @@
-import { PublicNavbar } from "@/components/layout/PublicNavbar"
 import { SiteFooter } from "@/components/layout/SiteFooter"
+import { SiteIntro } from "@/components/layout/SiteIntro"
+import { PublicNavbar } from "@/components/layout/PublicNavbar"
 import { getSessionProfile } from "@/lib/server-api"
 
 export default async function PublicLayout({
@@ -10,12 +11,15 @@ export default async function PublicLayout({
   const user = await getSessionProfile()
 
   return (
-    <div className="flex min-h-svh flex-col">
-      <PublicNavbar user={user} />
-      <main className="flex-1" id="main">
-        {children}
-      </main>
-      <SiteFooter />
-    </div>
+    <>
+      <SiteIntro />
+      <div className="site-content flex min-h-svh flex-col">
+        <PublicNavbar user={user} />
+        <main className="flex-1" id="main">
+          {children}
+        </main>
+        <SiteFooter />
+      </div>
+    </>
   )
 }

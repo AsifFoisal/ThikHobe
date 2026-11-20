@@ -103,7 +103,7 @@ Seed demo accounts (`npm run seed`):
 | Technician | `technician@thikhobe.com` | `technician123` |
 | Customer   | `customer@thikhobe.com`   | `customer123`   |
 
-The seed resets services, bookings, and payments. It creates 15 services under the technician (9 approved, 4 pending, 2 rejected) and 5 bookings for the customer (2 paid/completed, 2 in progress, 1 accepted). Service images are hosted on ImgBB, not in the repository.
+The seed resets services, bookings, and payments. It creates 15 services under the technician (9 approved, 4 pending, 2 rejected) and 5 bookings for the customer (2 paid/completed, 2 in progress, 1 accepted). Service images are hosted on ImgBB, not in the repository. The two paid bookings create real Stripe test PaymentIntents; a valid test `STRIPE_SECRET_KEY` is required.
 
 Change these passwords before any non-local deployment. Before deploying, set the production frontend origin in `CLIENT_URL`, `CORS_ORIGINS`, and Better Auth trusted origins, and register the deployed Stripe webhook endpoint.
 
@@ -124,6 +124,7 @@ Private routes use `verifyToken`, `verifyCustomer`, `verifyTechnician`, and `ver
 - Admin user role management, service approvals, bookings, and transactions
 - Shared profile editing with Better Auth session refresh
 - Role-aware dashboard navigation and route guards
+- Branded film intro on every full homepage load/reload, never on other pages or client route changes
 
 ## Stripe test mode
 

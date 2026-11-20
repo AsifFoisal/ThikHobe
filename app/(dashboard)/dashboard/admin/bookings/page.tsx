@@ -47,9 +47,7 @@ export default async function AdminBookingsPage({
   const rawStatus = Array.isArray(params.status)
     ? params.status[0]
     : params.status
-  const activeFilter: BookingFilter = isFilter(rawStatus)
-    ? rawStatus
-    : "all"
+  const activeFilter: BookingFilter = isFilter(rawStatus) ? rawStatus : "all"
 
   const allBookings = await getAdminBookings()
 
@@ -123,10 +121,8 @@ export default async function AdminBookingsPage({
                 {filter.label}
                 <span
                   className={cn(
-                    "rounded-full px-1.5 text-[11px] tabular",
-                    active
-                      ? "bg-paper/15 text-paper"
-                      : "bg-sage text-muted-ink"
+                    "tabular rounded-full px-1.5 text-[11px]",
+                    active ? "bg-paper/15 text-paper" : "bg-sage text-muted-ink"
                   )}
                 >
                   {counts[filter.value]}
@@ -151,7 +147,7 @@ export default async function AdminBookingsPage({
             title="No bookings found"
           />
         ) : (
-          <div className="p-4">
+          <div>
             <DataTable
               caption="All platform bookings"
               tableFrom="xl"
@@ -164,7 +160,7 @@ export default async function AdminBookingsPage({
                       <p className="font-medium text-ink">
                         {booking.service.title}
                       </p>
-                      <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase tabular">
+                      <p className="tabular mt-1 text-[11px] tracking-[0.06em] text-muted-ink uppercase">
                         #{booking.id}
                       </p>
                     </div>
@@ -214,9 +210,10 @@ export default async function AdminBookingsPage({
                 {
                   key: "amount",
                   header: "Amount",
+                  align: "right",
                   cell: (booking) => (
                     <div>
-                      <p className="font-medium text-ink tabular">
+                      <p className="tabular font-medium text-ink">
                         {formatBookingFinalAmount(booking)}
                       </p>
                       <p className="mt-1 text-[11px] text-muted-ink">
