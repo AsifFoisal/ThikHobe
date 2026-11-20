@@ -37,13 +37,13 @@ One family: **Hanken Grotesk**, self-hosted through `next/font/google`, weights 
 
 Body copy is 16px with relaxed leading and a 65–75 character measure. Use weight and scale for hierarchy, not extra colors.
 
-The homepage hero uses the display face at 36–56px with controlled line breaks so the mandated headline holds together on desktop and mobile. Other page heroes may use the larger `.type-display` end of the scale.
+The homepage hero uses the display face at 32–68px with a controlled two-line break so the headline holds together on desktop and mobile. Other page heroes may use the larger `.type-display` end of the scale.
 
 ## Homepage composition
 
-The public homepage follows this rhythm: paper hero → white featured services → spruce process section → paper categories → white why-ThikHobe split → sage trust band → spruce final CTA → ink footer.
+The public homepage follows this rhythm: spruce photo hero → white featured services → spruce process section → paper categories → white why-ThikHobe split → sage trust band → spruce final CTA → ink footer.
 
-- **Hero** (`components/home/Hero.tsx`): split at `lg`, 4:3 repair photo with a verified badge and a static repair-progress card. The search form is native `GET /services`; the secondary CTA anchors to `#how-it-works`.
+- **Hero** (`components/home/Hero.tsx`): full-bleed workshop photo under a flat spruce scrim that starts behind the transparent homepage header, centered display headline, **Browse services** and **How it works** actions, and a paper trust-badge row. Search lives on Browse Services.
 - **Featured services** (`components/home/FeaturedServices.tsx`): six latest approved and available sample services, using the reusable `ServiceCard`.
 - **How it works** (`components/home/HowItWorks.tsx`): four numbered steps on a hairline rail plus a pay-after-completion promise panel. The section carries the strongest business differentiator.
 - **Categories** (`components/home/PopularCategories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`.
@@ -250,10 +250,10 @@ Use this mapping everywhere. Never remap a status for visual variety.
 
 ## Navigation
 
-- Sticky public header on paper with a 1px line: 64px tall below `lg`, 72px at `lg` and above. It shares `.container-page` with the content.
-- Desktop links are 36px pills; the active route uses a sage fill, spruce text, and `aria-current="page"`.
-- Guest state: ghost **Sign in** and primary **Sign up**. Signed-in state: 32px avatar, truncated name, role badge, and chevron opening a 320px Base UI menu with account details, role dashboard, profile, and sign out.
-- Below `lg`, the header shows an identity avatar and a 40px menu toggle. The panel expands in the header flow with the same navigation links and an inline account card or guest CTA pair. Escape closes it and returns focus to the toggle.
+- Sticky public header: 64px tall below `lg`, 72px at `lg` and above. Interior pages use paper with a 1px line. The homepage header overlays the hero — transparent with the light logo at the top, then the paper header returns with a 200ms color/shadow transition once scrolled or while the mobile menu is open. The line is an inset shadow so it does not add a pixel to the header height. It shares `.container-page` with the content.
+- Desktop navigation sits in a recessed sage tray; links are 40px pills and the active route is marked by a raised white pill that slides between links. The active link uses spruce text and `aria-current="page"`. The sage trays keep the controls legible over both the photo hero and paper headers.
+- Guest state: quiet **Sign in** and a raised spruce **Sign up**, both inside a recessed tray. Signed-in state: a raised profile pill with a 32px avatar, truncated name, role badge, and chevron opening a 320px Base UI menu with account details, role dashboard, profile, and sign out.
+- Below `lg`, the header shows an identity avatar and a 40px raised menu toggle inside a recessed well. The panel expands in the header flow with the same tray-and-pill links and an inline account card or guest CTA pair. Escape closes it and returns focus to the toggle.
 - Role tones: Customer neutral, Technician fern, Admin accent.
 - `isAuthLoading` renders size-matched skeletons in both the header and mobile panel. Session restoration is intentionally not implemented; this is the visual state reserved for it.
 - The demo account lives in `constants/demo.ts` and is presentation data only. The public layout currently passes it so the booking surface can show the customer state; guest and staff states remain supported through the navbar and request-section props. Sign out closes the menu but does not alter authentication.

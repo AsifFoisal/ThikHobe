@@ -11,12 +11,11 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState, type KeyboardEvent } from "react"
+import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/Logo"
 import { Avatar } from "@/components/ui/Avatar"
-import { buttonVariants } from "@/components/ui/Button"
 import { RoleBadge } from "@/components/ui/RoleBadge"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { PUBLIC_NAV, ROLE_DASHBOARD } from "@/constants"
@@ -27,11 +26,9 @@ import type { SessionUser } from "@/types"
 type NavItem = (typeof PUBLIC_NAV)[number]
 
 const desktopLinkClass =
-  "inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors"
-const mobileLinkClass =
-  "flex items-center rounded-lg px-3 py-2.5 text-[0.9375rem] font-medium transition-colors"
+  "relative z-10 inline-flex h-10 items-center rounded-full px-5 text-sm font-medium transition-colors duration-200"
 const mobileActionClass =
-  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-sage/60 hover:text-spruce"
+  "flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-white/60 hover:text-spruce"
 const menuItemClass =
   "flex cursor-default items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-ink outline-none select-none data-highlighted:bg-sage data-highlighted:text-spruce"
 const menuSeparatorClass = "my-1 h-px bg-line"
@@ -53,20 +50,108 @@ function NavLink({
   mobile?: boolean
   onClick?: () => void
 }) {
+  if (mobile) {
+    return (
+      <Link
+        aria-current={active ? "page" : undefined}
+        className={cn(
+          "flex min-h-11 items-center rounded-full px-4 text-[0.9375rem] font-medium transition-colors duration-200",
+          active
+            ? "neu-pill font-semibold text-spruce"
+            : "text-muted-ink hover:bg-white/60 hover:text-spruce"
+        )}
+        href={item.href}
+        onClick={onClick}
+      >
+        {item.label}
+      </Link>
+    )
+  }
+
   return (
     <Link
       aria-current={active ? "page" : undefined}
       className={cn(
-        mobile ? mobileLinkClass : desktopLinkClass,
-        active
-          ? "bg-sage text-spruce"
-          : "text-muted-ink hover:bg-sage/60 hover:text-spruce"
+        desktopLinkClass,
+        active ? "text-spruce" : "text-muted-ink hover:text-spruce"
       )}
+      data-active={active ? "true" : undefined}
       href={item.href}
-      onClick={onClick}
     >
       {item.label}
     </Link>
+  )
+}
+
+function DesktopNav({ pathname }: { pathname: string }) {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(null)
+  const [animated, setAnimated] = useState(false)
+
+  useEffect(() => {
+    const track = trackRef.current
+
+    if (!track) {
+      return
+    }
+
+    const measure = () => {
+      const activeLink = track.querySelector<HTMLElement>(
+        '[data-active="true"]'
+      )
+
+      if (activeLink) {
+        setPill({
+          left: activeLink.offsetLeft,
+          width: activeLink.offsetWidth,
+        })
+      }
+    }
+
+    measure()
+
+    const frame = requestAnimationFrame(() => setAnimated(true))
+    const observer = new ResizeObserver(measure)
+
+    observer.observe(track)
+    void document.fonts.ready.then(measure).catch(() => {})
+
+    return () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+    }
+  }, [pathname])
+
+  return (
+    <nav aria-label="Main navigation" className="hidden lg:block">
+      <div
+        className="neu-tray relative flex items-center rounded-full p-1.5"
+        ref={trackRef}
+      >
+        <span
+          aria-hidden
+          className={cn(
+            "neu-pill pointer-events-none absolute top-1.5 bottom-1.5 left-0 rounded-full",
+            animated
+              ? "transition-[transform,width] duration-[350ms] ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none"
+              : "transition-none",
+            pill ? "opacity-100" : "opacity-0"
+          )}
+          style={{
+            transform: `translateX(${pill?.left ?? 0}px)`,
+            width: pill?.width ?? 0,
+          }}
+        />
+
+        {PUBLIC_NAV.map((item) => (
+          <NavLink
+            active={isNavActive(pathname, item.href)}
+            item={item}
+            key={item.href}
+          />
+        ))}
+      </div>
+    </nav>
   )
 }
 
@@ -79,9 +164,9 @@ function ProfileMenu({
 }) {
   return (
     <Menu.Root modal={false}>
-      <Menu.Trigger className="group flex h-10 items-center gap-2.5 rounded-full border border-line bg-card py-1 pr-3 pl-1 transition-colors outline-none hover:border-line-strong hover:bg-sage/30 focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-offset-2 focus-visible:ring-offset-paper data-popup-open:bg-sage/50">
+      <Menu.Trigger className="group neu-pill neu-pill-hover flex h-10 items-center gap-2.5 rounded-full py-1 pr-3 pl-1 outline-none focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-offset-2 focus-visible:ring-offset-paper data-popup-open:bg-sage/60">
         <Avatar name={user.name} size="sm" src={user.image} />
-        <span className="max-w-[8rem] truncate text-sm font-semibold text-ink">
+        <span className="max-w-[7.5rem] truncate text-sm font-semibold text-ink">
           {user.name}
         </span>
         <RoleBadge role={user.role} />
@@ -159,13 +244,7 @@ function AuthSkeleton({ mobile = false }: { mobile?: boolean }) {
     )
   }
 
-  return (
-    <div aria-hidden className="ml-auto hidden items-center gap-3 lg:flex">
-      <Skeleton className="size-8 rounded-full" />
-      <Skeleton className="h-3.5 w-24" />
-      <Skeleton className="h-5 w-16 rounded-full" />
-    </div>
-  )
+  return <Skeleton className="h-[3.25rem] w-52 rounded-full" />
 }
 
 function MobilePanel({
@@ -187,7 +266,10 @@ function MobilePanel({
       id="public-mobile-nav"
     >
       <div className="container-page py-4">
-        <nav aria-label="Mobile navigation" className="flex flex-col gap-1">
+        <nav
+          aria-label="Mobile navigation"
+          className="neu-tray flex flex-col gap-0.5 rounded-3xl p-1.5"
+        >
           {PUBLIC_NAV.map((item) => (
             <NavLink
               active={isNavActive(pathname, item.href)}
@@ -204,7 +286,7 @@ function MobilePanel({
             <AuthSkeleton mobile />
           ) : user ? (
             <>
-              <div className="flex items-center gap-3">
+              <div className="neu-pill flex items-center gap-3 rounded-2xl p-3">
                 <Avatar name={user.name} size="md" src={user.image} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-ink">
@@ -253,17 +335,14 @@ function MobilePanel({
           ) : (
             <div className="grid grid-cols-2 gap-2">
               <Link
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "w-full"
-                )}
+                className="neu-pill neu-pill-hover flex h-12 items-center justify-center rounded-full text-sm font-semibold text-ink"
                 href="/sign-in"
                 onClick={onClose}
               >
                 Sign in
               </Link>
               <Link
-                className={cn(buttonVariants({ size: "lg" }), "w-full")}
+                className="neu-cta flex h-12 items-center justify-center rounded-full text-sm font-semibold"
                 href="/sign-up"
                 onClick={onClose}
               >
@@ -289,6 +368,21 @@ export function PublicNavbar({
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const isHome = pathname === "/"
+
+  useEffect(() => {
+    if (!isHome) {
+      return
+    }
+
+    const updateScrolled = () => setScrolled(window.scrollY > 8)
+
+    updateScrolled()
+    window.addEventListener("scroll", updateScrolled, { passive: true })
+
+    return () => window.removeEventListener("scroll", updateScrolled)
+  }, [isHome])
 
   const handleSignOut = async () => {
     try {
@@ -310,71 +404,74 @@ export function PublicNavbar({
     }
   }
 
+  const overlayHeader = isHome && !scrolled && !mobileOpen
+
   return (
     <header
-      className="sticky top-0 z-50 border-b border-line bg-paper"
+      className={cn(
+        "sticky top-0 z-50 transition-[background-color,box-shadow] duration-200 ease-out",
+        overlayHeader
+          ? "bg-transparent"
+          : "bg-paper shadow-[inset_0_-1px_0_var(--line)]"
+      )}
       onKeyDown={handleKeyDown}
     >
-      <div className="container-page flex h-16 items-center gap-3 lg:h-[4.5rem] lg:gap-8">
-        <Link className="rounded-lg" href="/">
-          <Logo />
+      <div className="container-page grid h-16 grid-cols-[1fr_auto] items-center gap-4 lg:h-[4.5rem] lg:grid-cols-[1fr_auto_1fr]">
+        <Link className="w-fit rounded-lg" href="/">
+          <Logo tone={overlayHeader ? "light" : "default"} />
         </Link>
 
-        <nav
-          aria-label="Main navigation"
-          className="hidden items-center gap-1 lg:flex"
-        >
-          {PUBLIC_NAV.map((item) => (
-            <NavLink
-              active={isNavActive(pathname, item.href)}
-              item={item}
-              key={item.href}
-            />
-          ))}
-        </nav>
+        <DesktopNav pathname={pathname} />
 
-        {isAuthLoading ? (
-          <AuthSkeleton />
-        ) : user ? (
-          <div className="ml-auto hidden items-center lg:flex">
-            <ProfileMenu onSignOut={handleSignOut} user={user} />
-          </div>
-        ) : (
-          <div className="ml-auto hidden items-center gap-2 lg:flex">
-            <Link
-              className={buttonVariants({ variant: "ghost", size: "sm" })}
-              href="/sign-in"
-            >
-              Sign in
-            </Link>
-            <Link className={buttonVariants({ size: "sm" })} href="/sign-up">
-              Sign up
-            </Link>
-          </div>
-        )}
+        <div className="hidden justify-self-end lg:flex">
+          {isAuthLoading ? (
+            <AuthSkeleton />
+          ) : user ? (
+            <div className="neu-tray rounded-full p-1.5">
+              <ProfileMenu onSignOut={handleSignOut} user={user} />
+            </div>
+          ) : (
+            <div className="neu-tray flex items-center gap-1 rounded-full p-1.5">
+              <Link
+                className="inline-flex h-10 items-center rounded-full px-3.5 text-sm font-medium text-muted-ink transition-colors hover:bg-white/60 hover:text-spruce"
+                href="/sign-in"
+              >
+                Sign in
+              </Link>
+              <Link
+                className="neu-cta inline-flex h-10 items-center rounded-full px-5 text-sm font-semibold"
+                href="/sign-up"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
+        </div>
 
-        <div className="ml-auto flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-2 justify-self-end lg:hidden">
           {isAuthLoading ? (
             <Skeleton className="size-8 rounded-full" />
           ) : user ? (
             <Avatar name={user.name} size="sm" src={user.image} />
           ) : null}
 
-          <button
-            aria-controls="public-mobile-nav"
-            aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            className="inline-flex size-10 items-center justify-center rounded-[0.625rem] border border-line bg-card text-ink transition-colors outline-none hover:bg-sage/60 focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
-            id="mobile-nav-toggle"
-            onClick={() => setMobileOpen((open) => !open)}
-            type="button"
-          >
-            {mobileOpen ? (
-              <X aria-hidden className="size-5" />
-            ) : (
-              <MenuIcon aria-hidden className="size-5" />
-            )}
-          </button>
+          <div className="neu-tray rounded-full p-1">
+            <button
+              aria-controls="public-mobile-nav"
+              aria-expanded={mobileOpen}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              className="neu-pill neu-pill-hover grid size-10 place-items-center rounded-full text-ink outline-none focus-visible:ring-2 focus-visible:ring-fern focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+              id="mobile-nav-toggle"
+              onClick={() => setMobileOpen((open) => !open)}
+              type="button"
+            >
+              {mobileOpen ? (
+                <X aria-hidden className="size-5" />
+              ) : (
+                <MenuIcon aria-hidden className="size-5" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
