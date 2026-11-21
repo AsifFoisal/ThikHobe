@@ -62,7 +62,7 @@ export function SiteIntro() {
         role="status"
       >
         <FilmSplitLoader
-          alt="A technician repairing a laptop at a workbench"
+          alt="Repair tools, parts, and test equipment on an electronics workbench"
           className="h-full w-full"
           duration={2.4}
           onComplete={() => {
@@ -80,7 +80,7 @@ export function SiteIntro() {
 
             setExiting(true)
           }}
-          src="/images/hero-technician.jpg"
+          src="/images/hero-parts.jpg"
           words={["Thik", "Hobe"]}
         />
       </div>
