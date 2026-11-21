@@ -46,7 +46,7 @@ The public homepage follows this rhythm: spruce photo hero → white featured se
 - **Hero** (`components/home/Hero.tsx`): full-bleed workshop photo under a flat spruce scrim that starts behind the transparent homepage header, centered display headline, **Browse services** and **How it works** actions, and a paper trust-badge row. Search lives on Browse Services.
 - **Featured services** (`components/home/FeaturedServices.tsx`): six latest approved and available sample services, using the reusable `ServiceCard`.
 - **How it works** (`components/home/HowItWorks.tsx`): four numbered steps on a hairline rail plus a pay-after-completion promise panel. The section carries the strongest business differentiator.
-- **Categories** (`components/home/PopularCategories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`.
+- **Categories** (`components/home/PopularCategories.tsx`): seven category tiles plus an all-services tile, each linking to `/services?category=…`. Each tile carries a short category summary, the live count of available services, and the lowest starting price from the API; the all-services tile shows the catalog totals.
 - **Why ThikHobe** (`components/home/WhyThikHobe.tsx`): image-led split with five concrete advantages, not a generic card grid.
 - **Trust** (`components/home/TrustSection.tsx`): illustrative platform figures, customer stories, and three trust indicators. The disclosure line is mandatory while data is static.
 - **Final CTA** and **SiteFooter**: the CTA uses the ember accent; the footer is ink, four columns, and exists only inside the public route group.
