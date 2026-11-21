@@ -8,7 +8,7 @@ export function Toaster() {
       closeButton
       gap={10}
       offset={24}
-      position="bottom-right"
+      position="top-right"
       theme="light"
       toastOptions={{
         duration: 4200,
