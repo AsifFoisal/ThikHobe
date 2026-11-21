@@ -4,6 +4,7 @@ import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
 import { jwt } from "better-auth/plugins"
 import { APIError, createAuthMiddleware } from "better-auth/api"
+import { attachDatabasePool } from "@vercel/functions"
 import { MongoClient } from "mongodb"
 
 import type { UserRole } from "@/types"
@@ -19,16 +20,25 @@ const baseURL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   "http://localhost:3000"
 
-// Reuse one client across Next.js dev reloads.
+// Reuse one client across Next.js reloads and warm serverless invocations.
+// Vercel Fluid Compute suspends the instance between requests, which kills
+// open sockets and leaves the Mongo topology closed — attachDatabasePool
+// drains idle connections before suspension, and the short maxIdleTimeMS
+// keeps stale sockets from piling up while the instance is active.
 const globalForMongo = globalThis as unknown as {
   thikhobeMongo?: { uri: string; client: MongoClient }
 }
 const cachedMongo = globalForMongo.thikhobeMongo
 const client =
-  cachedMongo?.uri === mongoUri ? cachedMongo.client : new MongoClient(mongoUri)
-if (process.env.NODE_ENV !== "production") {
-  globalForMongo.thikhobeMongo = { uri: mongoUri, client }
-}
+  cachedMongo?.uri === mongoUri
+    ? cachedMongo.client
+    : new MongoClient(mongoUri, {
+        maxIdleTimeMS: 10_000,
+        serverSelectionTimeoutMS: 10_000,
+        maxPoolSize: 10,
+      })
+globalForMongo.thikhobeMongo = { uri: mongoUri, client }
+attachDatabasePool(client)
 
 const trustedOrigins = Array.from(
   new Set(
