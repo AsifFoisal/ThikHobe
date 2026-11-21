@@ -1,15 +1,15 @@
+import { Suspense } from "react"
 import { ArrowRight, Wrench } from "lucide-react"
 import Link from "next/link"
 
 import { ServiceCard } from "@/components/services/ServiceCard"
+import { FeaturedServicesSkeleton } from "@/components/services/ServiceCardSkeleton"
 import { buttonVariants } from "@/components/ui/Button"
 import { EmptyState } from "@/components/ui/State"
 import { SectionHeading } from "@/components/ui/SectionHeading"
 import { getFeaturedServices } from "@/lib/server-data"
 
-export async function FeaturedServices() {
-  const services = await getFeaturedServices()
-
+export function FeaturedServices() {
   return (
     <section className="section border-y border-line bg-card">
       <div className="container-page">
@@ -30,29 +30,47 @@ export async function FeaturedServices() {
           title="Repair services, ready when you are."
         />
 
-        {services.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            action={
-              <Link
-                className={buttonVariants({ variant: "outline" })}
-                href="/services"
-              >
-                Browse services
-              </Link>
-            }
-            className="mt-8"
-            description="Approved and available repair services will appear here as technicians list them."
-            icon={Wrench}
-            title="No services are listed yet"
-          />
-        )}
+        <Suspense
+          fallback={
+            <div className="mt-10">
+              <FeaturedServicesSkeleton />
+            </div>
+          }
+        >
+          <FeaturedServicesList />
+        </Suspense>
       </div>
     </section>
+  )
+}
+
+async function FeaturedServicesList() {
+  const services = await getFeaturedServices()
+
+  if (services.length === 0) {
+    return (
+      <EmptyState
+        action={
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            href="/services"
+          >
+            Browse services
+          </Link>
+        }
+        className="mt-8"
+        description="Approved and available repair services will appear here as technicians list them."
+        icon={Wrench}
+        title="No services are listed yet"
+      />
+    )
+  }
+
+  return (
+    <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((service) => (
+        <ServiceCard key={service.id} service={service} />
+      ))}
+    </div>
   )
 }

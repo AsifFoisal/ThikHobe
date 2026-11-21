@@ -125,8 +125,10 @@ export function FilmSplitLoader({
         gsap.set(image, { scale: 1.5 })
         gsap.set(content, { opacity: 0 })
         // Start from a clean transform, so a replay never stacks on where the last run ended
-        gsap.set(riseWords, { clearProps: "transform" })
-        gsap.set(riseWords, { yPercent: 120 })
+        if (riseWords.length) {
+          gsap.set(riseWords, { clearProps: "transform" })
+          gsap.set(riseWords, { yPercent: 120 })
+        }
 
         // Part one: words appear, spread apart, the card pops up, grows and straightens.
         // It is built in "natural" seconds and then stretched to the duration you asked for.
@@ -150,11 +152,15 @@ export function FilmSplitLoader({
           paused: true,
           onComplete: () => onCompleteRef.current?.(),
         })
-        tl.add(opening).to(
-          riseWords,
-          { yPercent: 0, duration: 0.5, stagger: 0.03, ease: "power3.out" },
-          "-=0.2"
-        )
+        tl.add(opening)
+
+        if (riseWords.length) {
+          tl.to(
+            riseWords,
+            { yPercent: 0, duration: 0.5, stagger: 0.03, ease: "power3.out" },
+            "-=0.2"
+          )
+        }
 
         // Wait for the picture so the card never grows empty (but never wait longer than 1.5 s)
         let cancelled = false
