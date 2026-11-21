@@ -28,3 +28,7 @@ Service photography is hosted on [ImgBB](https://imgbb.com/) and referenced by U
 | `service-washer-alt`   | [4700389](https://www.pexels.com/photo/4700389/)   |
 | `service-electric`     | [27928761](https://www.pexels.com/photo/27928761/) |
 | `service-electric-alt` | [34054464](https://www.pexels.com/photo/34054464/) |
+| `service-ac-pcb`       | [34099331](https://www.pexels.com/photo/34099331/) |
+| `service-fridge-compressor` | [38709544](https://www.pexels.com/photo/38709544/) |
+| `service-washer-pulsator` | [37492288](https://www.pexels.com/photo/37492288/) |
+| `service-laptop-upgrade` | [37489058](https://www.pexels.com/photo/37489058/) |

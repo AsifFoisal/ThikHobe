@@ -101,9 +101,10 @@ Seed demo accounts (`npm run seed`):
 | ---------- | ------------------------- | --------------- |
 | Admin      | `admin@thikhobe.com`      | `admin123`      |
 | Technician | `technician@thikhobe.com` | `technician123` |
+| Technician | `technician2@thikhobe.com` | `technician456` |
 | Customer   | `customer@thikhobe.com`   | `customer123`   |
 
-The seed resets services, bookings, and payments. It creates 15 services under the technician (9 approved, 4 pending, 2 rejected) and 5 bookings for the customer (2 paid/completed, 2 in progress, 1 accepted). Service images are hosted on ImgBB, not in the repository. The two paid bookings create real Stripe test PaymentIntents; a valid test `STRIPE_SECRET_KEY` is required.
+The seed resets services, bookings, and payments. It creates 19 services across two technicians (13 approved, 4 pending, 2 rejected) and 5 bookings for the customer (2 paid/completed, 2 in progress, 1 accepted). Service images are hosted on ImgBB, not in the repository. The two paid bookings create real Stripe test PaymentIntents; a valid test `STRIPE_SECRET_KEY` is required.
 
 Change these passwords before any non-local deployment. Before deploying, set the production frontend origin in `CLIENT_URL`, `CORS_ORIGINS`, and Better Auth trusted origins, and register the deployed Stripe webhook endpoint.
 
