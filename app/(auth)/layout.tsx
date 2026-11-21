@@ -1,4 +1,5 @@
 import { ArrowLeft, Check } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 
 import { Logo } from "@/components/layout/Logo"
@@ -17,53 +18,71 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="min-h-svh bg-paper lg:grid lg:grid-cols-[0.92fr_1.08fr]">
-      <aside className="bg-spruce px-5 py-5 text-paper sm:px-8 lg:flex lg:min-h-svh lg:flex-col lg:justify-between lg:px-12 lg:py-10">
-        <div>
-          <Link
-            className="inline-flex w-fit rounded-lg focus-visible:outline-paper"
-            href="/"
-          >
-            <Logo tone="light" />
-          </Link>
-          <p className="mt-2 text-sm text-sage lg:hidden">Repairs, handled.</p>
-        </div>
+      <aside className="relative isolate overflow-hidden bg-spruce px-5 py-5 text-paper sm:px-8 lg:sticky lg:top-0 lg:flex lg:h-svh lg:flex-col lg:self-start lg:px-12 lg:py-10">
+        <Image
+          alt=""
+          aria-hidden
+          className="hidden object-cover object-center lg:block"
+          fill
+          priority
+          sizes="46vw"
+          src="/images/hero-parts.jpg"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 hidden bg-spruce/[0.88] lg:block"
+        />
 
-        <div className="hidden lg:block">
-          <p className="type-h1 max-w-[11ch] text-paper">
-            The repair stays visible from request to receipt.
-          </p>
-          <p className="mt-4 max-w-[38ch] text-sm leading-7 text-sage">
-            One account keeps the service, the status, and the payment in one
-            place.
-          </p>
-          <ul className="mt-8 space-y-3">
-            {promises.map((promise) => (
-              <li
-                className="flex items-start gap-3 text-sm leading-6 text-sage"
-                key={promise}
-              >
-                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-white/10 text-paper">
-                  <Check aria-hidden className="size-3" strokeWidth={2.2} />
-                </span>
-                {promise}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 rounded-xl border border-white/15 bg-white/5 p-4">
-            <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-sage uppercase">
-              A repair, in the open
+        <div className="relative lg:flex lg:flex-1 lg:flex-col lg:justify-between">
+          <div>
+            <Link
+              className="inline-flex w-fit rounded-lg focus-visible:outline-paper"
+              href="/"
+            >
+              <Logo tone="light" />
+            </Link>
+            <p className="mt-2 text-sm text-sage lg:hidden">
+              Repairs, handled.
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <BookingStatusBadge status="requested" />
-              <BookingStatusBadge status="in_progress" />
-              <BookingStatusBadge status="completed" />
+          </div>
+
+          <div className="hidden lg:block">
+            <p className="type-h1 max-w-[20ch] text-balance text-paper">
+              The repair stays visible from request to receipt.
+            </p>
+            <p className="mt-5 max-w-[38ch] text-sm leading-7 text-sage">
+              One account keeps the service, the status, and the payment in one
+              place.
+            </p>
+            <ul className="mt-8 space-y-3">
+              {promises.map((promise) => (
+                <li
+                  className="flex items-start gap-3 text-sm leading-6 text-sage"
+                  key={promise}
+                >
+                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-white/10 text-paper">
+                    <Check aria-hidden className="size-3" strokeWidth={2.2} />
+                  </span>
+                  {promise}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 rounded-xl border border-white/15 bg-white/5 p-4">
+              <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-sage uppercase">
+                A repair, in the open
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <BookingStatusBadge status="requested" />
+                <BookingStatusBadge status="in_progress" />
+                <BookingStatusBadge status="completed" />
+              </div>
             </div>
           </div>
-        </div>
 
-        <p className="hidden text-xs text-sage lg:block">
-          ThikHobe · Repairs, handled in Bangladesh.
-        </p>
+          <p className="hidden text-xs text-sage lg:block">
+            ThikHobe · Repairs, handled in Bangladesh.
+          </p>
+        </div>
       </aside>
 
       <main
