@@ -18,10 +18,10 @@ export const metadata: Metadata = {
       "Verified technicians for phones, laptops, and home appliances. Follow the repair and pay only when it is complete.",
     images: [
       {
-        url: "/images/hero-technician.jpg",
-        width: 1600,
-        height: 1067,
-        alt: "A technician repairing a laptop at a workbench.",
+        url: "/images/hero-parts.jpg",
+        width: 2200,
+        height: 1467,
+        alt: "Repair tools, parts, and test equipment on an electronics workbench.",
       },
     ],
   },

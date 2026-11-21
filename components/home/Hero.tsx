@@ -22,12 +22,12 @@ export function Hero() {
   return (
     <section className="relative isolate -mt-16 overflow-hidden bg-spruce text-paper lg:-mt-[4.5rem]">
       <Image
-        alt="A technician repairing a laptop at a workbench"
+        alt="Repair tools, parts, and test equipment on an electronics workbench"
         className="object-cover object-center"
         fill
         priority
         sizes="100vw"
-        src="/images/hero-technician.jpg"
+        src="/images/hero-parts.jpg"
       />
       <div aria-hidden className="absolute inset-0 bg-spruce/85" />
 

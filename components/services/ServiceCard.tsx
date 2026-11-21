@@ -16,10 +16,10 @@ import { cn } from "@/lib/utils"
 import type { Service, ServiceCategory } from "@/types"
 
 const FALLBACK_IMAGES: Record<ServiceCategory, string> = {
-  Smartphone: "https://i.ibb.co/LdjsQMCM/71920d00fc19.jpg",
-  "Laptop & PC": "https://i.ibb.co/SwLSgc3s/37259923e039.jpg",
+  Smartphone: "/images/services/iphone-screen-battery.jpg",
+  "Laptop & PC": "/images/services/macbook-logic-board.jpg",
   AC: "https://i.ibb.co/v66CR9CF/bb2cc34204e9.jpg",
-  Refrigerator: "https://i.ibb.co/5X7xQx11/100f40d96407.jpg",
+  Refrigerator: "/images/services/refrigerator-door-seal.jpg",
   TV: "https://i.ibb.co/27XDhbWd/b3a45b7b8f7e.jpg",
   "Washing Machine": "https://i.ibb.co/VWM1wmVN/61c8e9ee1870.jpg",
   Electrical: "https://i.ibb.co/Z4yfft0/1f8b228796b0.jpg",
