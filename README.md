@@ -10,6 +10,7 @@ ThikHobe is a full-stack smart device and home appliance repair platform. Custom
 - Tailwind CSS 4, Base UI, Lucide, Sonner, Recharts
 - React Hook Form + Zod
 - Better Auth client with the JWT plugin
+- Stripe for payment gateway
 
 **Server**
 
